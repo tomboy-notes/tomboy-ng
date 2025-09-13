@@ -8,7 +8,7 @@ object EditBoxForm: TEditBoxForm
   ClientWidth = 784
   Constraints.MinHeight = 200
   Constraints.MinWidth = 200
-  LCLVersion = '4.99.0.0'
+  LCLVersion = '4.1.0.0'
   OnActivate = FormActivate
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery

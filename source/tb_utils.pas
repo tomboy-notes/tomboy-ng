@@ -186,7 +186,7 @@ end;
 procedure MyLog(content : string; InitFile : boolean = false);    // a temp method to debug actions at OS shutdown
 var T : TextFile;
 begin
-    assignFile(T, '/home/dbannon/tomboy.log');
+    assignFile(T, GetEnvironmentVariableUTF8('HOME') + '/tomboy.log');
     if InitFile then
         rewrite(T)              // create or clear
     else append(T);

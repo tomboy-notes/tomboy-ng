@@ -174,12 +174,15 @@ type
 		procedure BitBtnHideClick(Sender: TObject);
         procedure BitBtnQuitClick(Sender: TObject);
         procedure ButtMenuClick(Sender: TObject);
-//        procedure ButtonCloseClick(Sender: TObject);
+                //        procedure ButtonCloseClick(Sender: TObject);
         procedure ButtonConfigClick(Sender: TObject);
         procedure ButtonDismissClick(Sender: TObject);
 		procedure ButtSysTrayHelpClick(Sender: TObject);
         procedure CheckBoxDontShowChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var {%H-}CloseAction: TCloseAction);
+                        // Called during any controlled shutdown. Note, during a PowerDown, QueryEndSession
+                        // will have already saved the open notes. During PowerDown, this method, here
+                        // does not seem able to keep the app alive beyond a few mSec ??
         procedure FormCloseQuery(Sender : TObject; var CanClose : Boolean);
         procedure FormCreate(Sender: TObject);
         procedure FormDestroy(Sender: TObject);
@@ -196,6 +199,10 @@ type
         CommsServer : TSimpleIPCServer;
         // Start SimpleIPC server listening for some other second instance.
 
+        // Used to save allope notes at any of the possible close down situations.
+        function CloseOpenNotes(requester: string): boolean;
+        // This is actually a TApplication call back, triggered ONLY during a PowerDown
+        procedure QueryEndSession(var cancel: Boolean);
         procedure StartIPCServer();
         procedure CommMessageReceived(Sender: TObject);
         // Attempt to detect we are in a dark theme, sets relevent colours, if main form
@@ -261,7 +268,8 @@ uses LazLogger, LazFileUtils, LazUTF8,
     Note_Lister, cli, LazVersion,
     tb_utils, {$ifdef LINUX}LCLVersion,{$endif} LCLIntf
     {$ifdef Linux}, libnotify {$endif}
-    {$ifdef windows}, registry{$endif} ;
+    {$ifdef windows}, registry{$endif}
+    {$ifdef UNIX}, BaseUnix   {$endif};
 
 function SingleNoteFileName() : string;
 begin
@@ -311,7 +319,15 @@ end;
 //            S T A R T   U P   T H I N G S
 // -----------------------------------------------------------------
 
-
+// This is used to handle SigTERM and SigHUP sent from, eg, kill command
+// It does not come ino play during a PowerDown eent
+procedure HandleSigTERM(aSignal: LongInt); cdecl;
+begin
+    if not Sett.AreClosing then begin
+        MyLog('Signal received #' + inttostr(aSignal));
+        MainForm.Close;                                 // Sufficent if user activated
+    end else MyLog('Signal ignored #' + inttostr(aSignal));
+end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
@@ -332,6 +348,12 @@ begin
 //        TrayIcon.Show;                            // Gnome does not like showing it before menu is populated, so, call from SearchForm.create
     end;
     LabelBadNoteAdvice.Caption := '';
+    MyLog('Start of log', True);                    // ToDo : remove this
+    Application.OnQueryEndSession := @QueryEndSession;       // Thats to handle a PowerDown situation
+    {$ifdef UNIX}
+    FpSignal(SigTERM, @HandleSigTERM);                       // Thats to handle SigTERM from, eg the kill command
+    FpSignal(SigHUP, @HandleSigTERM);                        // HUP, as above
+    {$endif}
 end;
 
 { -------------- Close process -----------------
@@ -340,28 +362,54 @@ end;
     Finally, when any pending work, perhaps setup by above, FormDestroy is called
 }
 
-procedure TMainForm.FormCloseQuery(Sender : TObject; var CanClose : Boolean);
+function TMainForm.CloseOpenNotes(requester : string) : boolean;
 var
-    AForm : TForm;
-    NoteIndex : integer;
-    aPNote : PNote;
+     AForm : TForm;
+     NoteIndex : integer;
+     aPNote : PNote;
+begin
+    result := False;
+    if assigned(TheMainNoteLister) then begin
+        AForm := TheMainNoteLister.FindFirstOpenNote(NoteIndex);
+        while AForm <> Nil do begin                              // AForm may become nil at any time
+            inc(NotesSavedAtClose);                              // ToDo : do we need this now ?
+            MyLog(Requester + ' About to save ' + AForm.Caption);
+            aPNote := TheMainNoteLister.GetNote(NoteIndex);
+            while (aPNote^.OpenNote <> Nil)                              // the realtest is BusySaving, check for nil first thu
+                    and (TEditBoxForm(aPNote^.OpenNote).BusySaving) do   // possible an auto save is happening.
+                sleep(5);
+            sleep(2);                                            // allow time to close after saving
+            if (aPNote^.OpenNote <> Nil) then begin
+                AForm.close;
+                Application.ProcessMessages;                     // flush each closure as we go.
+                // Wait here until the form becomes nil
+                while (aPNote^.OpenNote <> Nil) do
+                     Sleep(5);
+                sleep(2);
+           end;
+//           AForm := TheMainNoteLister.FindNextOpenNote(NoteIndex);
+           AForm := TheMainNoteLister.FindFirstOpenNote(NoteIndex);       // starting from top is more reliable. why ??
+       end;
+       AForm := TheMainNoteLister.FindFirstOpenNote(NoteIndex);
+       Result := (AForm <> Nil);
+    end;                               // if assigned notelister
+end;
+
+procedure TMainForm.QueryEndSession(var cancel:Boolean);
+begin
+    Sett.AreClosing:=True;      // This is a PowerDown Close
+    MyLog('TMainForm.QueryEndSession - PowerDown.');
+    CloseOpenNotes('QES');
+    MyLog('TMainForm.QueryEndSession - PowerDown close permitted.');
+    Cancel := False;
+end;
+
+
+procedure TMainForm.FormCloseQuery(Sender : TObject; var CanClose : Boolean);
 begin
     Sett.AreClosing:=True;
-    if assigned(TheMainNoteLister) then begin
-      AForm := TheMainNoteLister.FindFirstOpenNote(NoteIndex);
-      while AForm <> Nil do begin
-          inc(NotesSavedAtClose);
-          AForm.close;
-          Application.ProcessMessages;                        // flush each closure as we go.
-          aPNote := TheMainNoteLister.GetNote(NoteIndex);
-          // Wait here until either the form becomes nil or we can read its BusySaving as true;
-          // Its most likely that progress here is dependent of form becoming Nil ! But not certain ....
-          while (aPNote^.OpenNote <> Nil) and (not TEditBoxForm(aPNote^.OpenNote).BusySaving) do
-                Sleep(2);
-          sleep(2);                                           // Long enough for EditBox to launch a save thread ??
-          AForm := TheMainNoteLister.FindNextOpenNote(NoteIndex);
-      end;
-    end;
+    CloseOpenNotes('FCQ');
+    CanClose := True;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -894,7 +942,7 @@ begin
         // The file MUST exist and contain either a date stamp or just two single inverted commas
         // $> date +\'%Y/%m/%d\' > SOURCE_DATE   or  $> echo "''" > SOURCE_DATE
         // The '' one exists in git, gets overwritten when making Deb SRC package.
-        TheDate := {$i SOURCE_DATE};                                            // use source date
+//        TheDate := {$i SOURCE_DATE};                                            // use source date
         if TheDate = '' then TheDate := {$i %DATE%};                            // use compile date
         // https://wiki.freepascal.org/$include - note %XXX% is only env var, XXX is file or envvar.
         Stg := rsAbout + #10 + rsAboutVer + ' ' + Version_String;                    // version is in cli unit.
