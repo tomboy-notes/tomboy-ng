@@ -1100,7 +1100,7 @@ begin
     // TiniFile does not care it it does not find the config file, just returns default values.
      ConfigFile :=  TINIFile.Create(LabelSettingPath.Caption);
      try
-   	    NoteDirectory := ConfigFile.readstring('BasicSettings', 'NotesPath', NoteDirectory);
+   	    NoteDirectory := appendPathDelim(ConfigFile.readstring('BasicSettings', 'NotesPath', NoteDirectory));
         CheckShowIntLinks.Checked :=
             ('true' = ConfigFile.readstring('BasicSettings', 'ShowIntLinks', 'true'));
         CheckShowExtLinks.Checked :=
