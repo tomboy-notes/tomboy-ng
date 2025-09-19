@@ -320,7 +320,7 @@ end;
 // -----------------------------------------------------------------
 
 // This is used to handle SigTERM and SigHUP sent from, eg, kill command
-// It does not come ino play during a PowerDown eent
+// It does not come ino play during a PowerDown event for LCL apps
 procedure HandleSigTERM(aSignal: LongInt); cdecl;
 begin
     if not Sett.AreClosing then begin
