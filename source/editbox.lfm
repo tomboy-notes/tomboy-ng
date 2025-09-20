@@ -1519,4 +1519,11 @@ object EditBoxForm: TEditBoxForm
     Left = 653
     Top = 75
   end
+  object TimerTripleClick: TTimer
+    Enabled = False
+    Interval = 10
+    OnTimer = TimerTripleClickTimer
+    Left = 408
+    Top = 472
+  end
 end

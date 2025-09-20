@@ -252,6 +252,7 @@ unit EditBox;
     2024/10/05  Made DeletingThisNote public so SearchForm can delete an Open note.
     2024/10/16  Fixed the way that Save on Quit works, no contention !
     2024/12/24  Altered Indent to work (a little) like Tomboy, embedded Tab #9 char at start line
+    2025/09/20  Changed format of new note title so the new triple click can select it all.
 }
 
 
@@ -284,6 +285,16 @@ type TiLActionRec = record                     // a record used to describe how 
                     BlockNo : integer;         // this block to act on.
                     Offset : integer;          // pos in text to insert at
                     end;
+
+
+{$define TRIPLECLICK}
+{$ifdef TRIPLECLICK}
+// Auxiliary class, just to access OnTripleClick
+type
+  TAuxKMemo = class(TKMemo)
+end;
+{$endif}
+
 
 type
     { TEditBoxForm }
@@ -372,6 +383,7 @@ type
         SpeedButtonText: TSpeedButton;
         SpeedButtonTools: TSpeedButton;
         SpeedRollBack: TSpeedButton;
+        TimerTripleClick: TTimer;
 //		TaskDialogDelete: TTaskDialog;           just why was this here ?  Messes with Windows
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
@@ -446,6 +458,7 @@ type
         procedure SpeedButtonToolsClick(Sender: TObject);
 		procedure TimerSaveTimer(Sender: TObject);
         procedure TimerHousekeepingTimer(Sender: TObject);
+        procedure TimerTripleClickTimer(Sender: TObject);
 
     private
         {$ifdef LDEBUG}TG1, TG2, TG3, TG4 : qword;{$endif}
@@ -617,6 +630,9 @@ type
         function CanInsertFileLink(out SoP, OnPara, InLink: boolean): boolean;
 
     public
+        {$ifdef TRIPLECLICK}
+        BeforeSingle : integer;     // Selection Index just before click, used for triple click.
+        {$endif}
         SingleNoteFileName : string;    // Set by the calling process. FFN inc path, carefull, cli has a real global version
         SingleNoteMode : Boolean;       // Set true if a MainUnit.SingleNoteFileName is provided, in Create()
         NoteFileName : string;          // Will contain the full note name, path, ID and .note
@@ -657,6 +673,11 @@ type
                                 then scan and insert any that need be there. In all cases, we honour the use links
                                 setting from Sett. }
         procedure CheckForLinks(const FullBody: boolean);
+        {$ifdef TRIPLECLICK}
+        function FindEndSentence(TheIndex: integer): integer;
+        function FindStartSentence(TheIndex: integer): integer;
+        procedure KMemoOnTripleClick(Sender: TObject);
+        {$endif}
     end;
 
 
@@ -2343,6 +2364,12 @@ end;
 
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
+    {$ifdef TRIPLECLICK}
+    // Enable OnTripleClick in KMemo.
+    KMemo1.ControlStyle := KMemo1.ControlStyle + [csTripleClicks];
+    // cast to TAuxKMemo, and you can use protected members!
+    TAuxKMemo(KMemo1).OnTripleClick := @KMemoOnTripleClick;
+    {$endif}
     MenuItemInsertDirLink.Caption := rsInsertDirLink;           // This to stop duplicates in .po files
     MenuItemInsertFileLink.Caption := rsInsertFileLink;
     MenuItemToolsInsertDirLink.Caption := rsInsertDirLink;
@@ -3535,7 +3562,7 @@ begin
         end;
         {$ifdef TDEBUG}T4  := gettickcount64();{$endif}
         if Sett.CheckShowExtLinks.Checked then
-                CheckForExtLinks(Content, BuffOffset);                           // Mark any unmarked web or file links
+                CheckForExtLinks(Content, BuffOffset);                       // Mark any unmarked web or file links
         KMemo1.blocks.UnLockUpdate;                                          // can take tens of mS, 100mS in a 50k note
         {$ifdef TDEBUG}T5  := gettickcount64();
         debugln('CheckForLinks Timing T1=' + (T2-T1).ToString + 'mS '  + (T3-T2).ToString + 'mS '  + (T4-T3).ToString + 'mS '  + (T5-T4).ToString + 'mS ');
@@ -3545,6 +3572,95 @@ begin
     {$ifdef LDEBUG}CloseFile(MyLogFile);{$endif}
 end;
 
+// ----------------  T R I P L E    C L I C K  ---------------------------------
+
+{$ifdef TRIPLECLICK}
+procedure TEditBoxForm.TimerTripleClickTimer(Sender: TObject);
+var
+    TripleStart, TripleEnd : integer;
+begin
+//    writeln('procedure TEditBoxForm.TimerTripleClickTimer BS=', BeforeSingle);
+    TimerTripleClick.Enabled := False;
+    TripleStart := FindStartSentence(BeforeSingle);
+//    writeln('procedure TEditBoxForm.TimerTripleClickTimer TS=', TripleStart);
+    TripleEnd := FindEndSentence(BeforeSingle);
+//    writeln('procedure TEditBoxForm.TimerTripleClickTimer TE=', TripleEnd);
+    if (TripleStart = -1) or (TripleEnd = -1) then
+        exit;                                      // invalid, on '.' or newline
+    KMemo1.Select(TripleStart, TripleEnd - TripleStart);
+end;
+
+
+function TEditBoxForm.FindEndSentence(TheIndex: integer): integer;
+var Buff : string;                 // used as a utf8 char
+   CurrIndex : integer;            // CurrIndex is a SelectionIndex, from start of doc.
+begin
+   CurrIndex := TheIndex;
+//   writeln('TEditBoxForm.FindEndSentence SL=', KMemo1.Blocks.SelectableLength);
+//   writeln('TEditBoxForm.FindEndSentence TL=', length(KMemo1.blocks.Text));
+   while CurrIndex < (KMemo1.Blocks.SelectableLength-1) do begin
+       KMemo1.Select(CurrIndex, 1);
+       Buff := KMemo1.Blocks.SelText;          // One Char, possibly UTF8, newline etc ?
+//writeln('Scaning for end [', Buff, '] ', ord(Buff[1]));
+       if (CurrIndex = TheIndex)
+           and (Buff = LineEnding) then        // ToDo : check this on Windows
+               exit(-1);                       // Cursor on NewLine, do nothing
+       if Buff = LineEnding then begin         // ToDo : check this on Windows
+           if CurrIndex = KMemo1.Blocks.SelectableLength then begin
+                dec(CurrIndex);
+//                writeln(' At end of doc')
+           end;
+//           writeln('TEditBoxForm.FindEndSentence 1 CI=', CurrIndex, ' SL=', KMemo1.Blocks.SelectableLength);
+           exit(CurrIndex);                    // That needs a -1 on last char of note, ie no newine at the end. !!!!!!!!
+       end;
+       if Buff = '.' then begin
+           inc(CurrIndex);                     // Mv over that '.'
+           KMemo1.Select(CurrIndex, 1);
+           if KMemo1.SelText = ' ' then        // we will select that space too
+               inc(CurrIndex);
+//           writeln('TEditBoxForm.FindEndSentence 2 CI=', CurrIndex, ' SL=', KMemo1.Blocks.SelectableLength);
+           exit(CurrIndex);
+       end;
+       inc(CurrIndex);
+   end;
+//   writeln('TEditBoxForm.FindEndSentence Overrun');    // don't get here ?
+   Result := CurrIndex+1;          // The while failed, CurrIndex is end of content. Para ?
+end;
+
+function TEditBoxForm.FindStartSentence(TheIndex: integer): integer;
+var Buff : string;
+    CurrIndex : integer;             // CurrIndex is a SelectionIndex, from start of doc.
+begin
+    CurrIndex := TheIndex;
+    while CurrIndex >= 0 do begin
+        if CurrIndex = 0 then exit(0);           // Title
+        KMemo1.Select(CurrIndex, 1);             // Faster than individual setting !
+        Buff := KMemo1.Blocks.SelText;           // One Char, possibly UTF8, newline etc ?
+        if Buff = LineEnding then                // ToDo : check this on Windows
+            exit(CurrIndex+1);                   // We are not removing leading spaces after a newline
+        if CurrIndex = TheIndex then
+            if Buff = '.' then exit(-1);         // Does not make sense to triple click on '.'
+        if Buff = '.' then begin                 // don't count spaces after that.
+            inc(CurrIndex);                      // mv one char to right
+            KMemo1.Select(CurrIndex, 1);         // grab that char
+            if KMemo1.Blocks.SelText = ' ' then
+                inc(CurrIndex);
+            exit(CurrIndex);
+        end;
+        if Buff = LineEnding then                // ToDo : check this on Windows
+            exit(CurrIndex);
+        dec(CurrIndex);                          // Still searching ....
+    end;
+    Result := CurrIndex;
+
+end;
+
+procedure TEditBoxForm.KMemoOnTripleClick(Sender: TObject);
+begin
+    TimerTripleClick.Interval := 10;            // Hmm, setting this in OI is not enogh ?
+    TimerTripleClick.Enabled := True;
+end;
+{$endif TRIPLECLICK}
 
 function TEditBoxForm.UnlinkBlock(StartBlock : integer) : integer;    // WRONG - ??  MUST NOT MERGE A HYPERLINK BLOCK ?????
 var
@@ -3859,6 +3975,8 @@ end;
 
 
 
+
+
 { ---------------------- C A L C U L A T E    F U N C T I O N S ---------------}
 
 
@@ -4161,7 +4279,9 @@ end;
 
 procedure TEditBoxForm.KMemo1Click(Sender: TObject);
 begin
-//   debugln('Mouseclick ' + inttostr(kmemo1.RealSelStart));
+    {$ifdef TRIPLECLICK}
+    BeforeSingle := KMemo1.CaretPos;
+    {$endif}
 end;
 
 
@@ -4277,7 +4397,7 @@ begin
     end;
 
     if (Key = VK_BACK) then begin                // BackSpace sanity checks, deal with Github issue #331 ?
-        debugln('TEditBox.KMemo1KeyDown - BS Pre - SelStart=', inttostr(KMemo1.SelStart), ' and SelEnd=', inttostr(KMemo1.SelEnd));
+//        debugln('TEditBox.KMemo1KeyDown - BS Pre - SelStart=', inttostr(KMemo1.SelStart), ' and SelEnd=', inttostr(KMemo1.SelEnd));
         if KMemo1.SelLength <> 0 then               // Treat as Delete if something selected.
             Key := VK_Delete
         else                                     // Nothing selected
@@ -4760,7 +4880,7 @@ end;
 
 function TEditBoxForm.NewNoteTitle(): ANSIString;
 begin
-  Result := 'New Note ' + FormatDateTime('YYYY-MM-DD hh:mm:ss.zzz', Now);
+  Result := 'New Note ' + FormatDateTime('YYYY-MM-DD hh:mm:ss_zzz', Now);
 end;
 
 function TEditBoxForm.GetAFilename() : ANSIString;

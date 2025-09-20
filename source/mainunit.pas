@@ -942,7 +942,7 @@ begin
         // The file MUST exist and contain either a date stamp or just two single inverted commas
         // $> date +\'%Y/%m/%d\' > SOURCE_DATE   or  $> echo "''" > SOURCE_DATE
         // The '' one exists in git, gets overwritten when making Deb SRC package.
-//        TheDate := {$i SOURCE_DATE};                                            // use source date
+        TheDate := {$i SOURCE_DATE};                                            // use source date
         if TheDate = '' then TheDate := {$i %DATE%};                            // use compile date
         // https://wiki.freepascal.org/$include - note %XXX% is only env var, XXX is file or envvar.
         Stg := rsAbout + #10 + rsAboutVer + ' ' + Version_String;                    // version is in cli unit.
