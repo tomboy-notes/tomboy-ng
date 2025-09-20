@@ -538,6 +538,7 @@ type
             NoteSaveName : string);
         function RelativePos(const Term: ANSIString; const MText: PChar; StartAt: integer): integer;
         function PreviousParagraphText(const Backby: integer): string;
+        procedure RemoveWordLeft();
         function RestoreLimitedAttributes(const BlockNo: TKMemoBlockIndex; var FontAtt: FontLimitedAttrib): boolean;
         function SaveLimitedAttributes(const BlockNo: TKMemoBlockIndex; out
             FontAtt: FontLimitedAttrib): boolean;
@@ -3572,95 +3573,7 @@ begin
     {$ifdef LDEBUG}CloseFile(MyLogFile);{$endif}
 end;
 
-// ----------------  T R I P L E    C L I C K  ---------------------------------
 
-{$ifdef TRIPLECLICK}
-procedure TEditBoxForm.TimerTripleClickTimer(Sender: TObject);
-var
-    TripleStart, TripleEnd : integer;
-begin
-//    writeln('procedure TEditBoxForm.TimerTripleClickTimer BS=', BeforeSingle);
-    TimerTripleClick.Enabled := False;
-    TripleStart := FindStartSentence(BeforeSingle);
-//    writeln('procedure TEditBoxForm.TimerTripleClickTimer TS=', TripleStart);
-    TripleEnd := FindEndSentence(BeforeSingle);
-//    writeln('procedure TEditBoxForm.TimerTripleClickTimer TE=', TripleEnd);
-    if (TripleStart = -1) or (TripleEnd = -1) then
-        exit;                                      // invalid, on '.' or newline
-    KMemo1.Select(TripleStart, TripleEnd - TripleStart);
-end;
-
-
-function TEditBoxForm.FindEndSentence(TheIndex: integer): integer;
-var Buff : string;                 // used as a utf8 char
-   CurrIndex : integer;            // CurrIndex is a SelectionIndex, from start of doc.
-begin
-   CurrIndex := TheIndex;
-//   writeln('TEditBoxForm.FindEndSentence SL=', KMemo1.Blocks.SelectableLength);
-//   writeln('TEditBoxForm.FindEndSentence TL=', length(KMemo1.blocks.Text));
-   while CurrIndex < (KMemo1.Blocks.SelectableLength-1) do begin
-       KMemo1.Select(CurrIndex, 1);
-       Buff := KMemo1.Blocks.SelText;          // One Char, possibly UTF8, newline etc ?
-//writeln('Scaning for end [', Buff, '] ', ord(Buff[1]));
-       if (CurrIndex = TheIndex)
-           and (Buff = LineEnding) then        // ToDo : check this on Windows
-               exit(-1);                       // Cursor on NewLine, do nothing
-       if Buff = LineEnding then begin         // ToDo : check this on Windows
-           if CurrIndex = KMemo1.Blocks.SelectableLength then begin
-                dec(CurrIndex);
-//                writeln(' At end of doc')
-           end;
-//           writeln('TEditBoxForm.FindEndSentence 1 CI=', CurrIndex, ' SL=', KMemo1.Blocks.SelectableLength);
-           exit(CurrIndex);                    // That needs a -1 on last char of note, ie no newine at the end. !!!!!!!!
-       end;
-       if Buff = '.' then begin
-           inc(CurrIndex);                     // Mv over that '.'
-           KMemo1.Select(CurrIndex, 1);
-           if KMemo1.SelText = ' ' then        // we will select that space too
-               inc(CurrIndex);
-//           writeln('TEditBoxForm.FindEndSentence 2 CI=', CurrIndex, ' SL=', KMemo1.Blocks.SelectableLength);
-           exit(CurrIndex);
-       end;
-       inc(CurrIndex);
-   end;
-//   writeln('TEditBoxForm.FindEndSentence Overrun');    // don't get here ?
-   Result := CurrIndex+1;          // The while failed, CurrIndex is end of content. Para ?
-end;
-
-function TEditBoxForm.FindStartSentence(TheIndex: integer): integer;
-var Buff : string;
-    CurrIndex : integer;             // CurrIndex is a SelectionIndex, from start of doc.
-begin
-    CurrIndex := TheIndex;
-    while CurrIndex >= 0 do begin
-        if CurrIndex = 0 then exit(0);           // Title
-        KMemo1.Select(CurrIndex, 1);             // Faster than individual setting !
-        Buff := KMemo1.Blocks.SelText;           // One Char, possibly UTF8, newline etc ?
-        if Buff = LineEnding then                // ToDo : check this on Windows
-            exit(CurrIndex+1);                   // We are not removing leading spaces after a newline
-        if CurrIndex = TheIndex then
-            if Buff = '.' then exit(-1);         // Does not make sense to triple click on '.'
-        if Buff = '.' then begin                 // don't count spaces after that.
-            inc(CurrIndex);                      // mv one char to right
-            KMemo1.Select(CurrIndex, 1);         // grab that char
-            if KMemo1.Blocks.SelText = ' ' then
-                inc(CurrIndex);
-            exit(CurrIndex);
-        end;
-        if Buff = LineEnding then                // ToDo : check this on Windows
-            exit(CurrIndex);
-        dec(CurrIndex);                          // Still searching ....
-    end;
-    Result := CurrIndex;
-
-end;
-
-procedure TEditBoxForm.KMemoOnTripleClick(Sender: TObject);
-begin
-    TimerTripleClick.Interval := 10;            // Hmm, setting this in OI is not enogh ?
-    TimerTripleClick.Enabled := True;
-end;
-{$endif TRIPLECLICK}
 
 function TEditBoxForm.UnlinkBlock(StartBlock : integer) : integer;    // WRONG - ??  MUST NOT MERGE A HYPERLINK BLOCK ?????
 var
@@ -3919,7 +3832,95 @@ begin
 	SearchForm.OpenNote(TKMemoHyperlink(Sender).Text);
 end;
 
+// ----------------  T R I P L E    C L I C K  ---------------------------------
 
+{$ifdef TRIPLECLICK}
+procedure TEditBoxForm.TimerTripleClickTimer(Sender: TObject);
+var
+    TripleStart, TripleEnd : integer;
+begin
+//    writeln('procedure TEditBoxForm.TimerTripleClickTimer BS=', BeforeSingle);
+    TimerTripleClick.Enabled := False;
+    TripleStart := FindStartSentence(BeforeSingle);
+//    writeln('procedure TEditBoxForm.TimerTripleClickTimer TS=', TripleStart);
+    TripleEnd := FindEndSentence(BeforeSingle);
+//    writeln('procedure TEditBoxForm.TimerTripleClickTimer TE=', TripleEnd);
+    if (TripleStart = -1) or (TripleEnd = -1) then
+        exit;                                      // invalid, on '.' or newline
+    KMemo1.Select(TripleStart, TripleEnd - TripleStart);
+end;
+
+
+function TEditBoxForm.FindEndSentence(TheIndex: integer): integer;
+var Buff : string;                 // used as a utf8 char
+   CurrIndex : integer;            // CurrIndex is a SelectionIndex, from start of doc.
+begin
+   CurrIndex := TheIndex;
+//   writeln('TEditBoxForm.FindEndSentence SL=', KMemo1.Blocks.SelectableLength);
+//   writeln('TEditBoxForm.FindEndSentence TL=', length(KMemo1.blocks.Text));
+   while CurrIndex < (KMemo1.Blocks.SelectableLength-1) do begin
+       KMemo1.Select(CurrIndex, 1);
+       Buff := KMemo1.Blocks.SelText;          // One Char, possibly UTF8, newline etc ?
+//writeln('Scaning for end [', Buff, '] ', ord(Buff[1]));
+       if (CurrIndex = TheIndex)
+           and (Buff = LineEnding) then        // ToDo : check this on Windows
+               exit(-1);                       // Cursor on NewLine, do nothing
+       if Buff = LineEnding then begin         // ToDo : check this on Windows
+           if CurrIndex = KMemo1.Blocks.SelectableLength then begin
+                dec(CurrIndex);
+//                writeln(' At end of doc')
+           end;
+//           writeln('TEditBoxForm.FindEndSentence 1 CI=', CurrIndex, ' SL=', KMemo1.Blocks.SelectableLength);
+           exit(CurrIndex);                    // That needs a -1 on last char of note, ie no newine at the end. !!!!!!!!
+       end;
+       if Buff = '.' then begin
+           inc(CurrIndex);                     // Mv over that '.'
+           KMemo1.Select(CurrIndex, 1);
+           if KMemo1.SelText = ' ' then        // we will select that space too
+               inc(CurrIndex);
+//           writeln('TEditBoxForm.FindEndSentence 2 CI=', CurrIndex, ' SL=', KMemo1.Blocks.SelectableLength);
+           exit(CurrIndex);
+       end;
+       inc(CurrIndex);
+   end;
+//   writeln('TEditBoxForm.FindEndSentence Overrun');    // don't get here ?
+   Result := CurrIndex+1;          // The while failed, CurrIndex is end of content. Para ?
+end;
+
+function TEditBoxForm.FindStartSentence(TheIndex: integer): integer;
+var Buff : string;
+    CurrIndex : integer;             // CurrIndex is a SelectionIndex, from start of doc.
+begin
+    CurrIndex := TheIndex;
+    while CurrIndex >= 0 do begin
+        if CurrIndex = 0 then exit(0);           // Title
+        KMemo1.Select(CurrIndex, 1);             // Faster than individual setting !
+        Buff := KMemo1.Blocks.SelText;           // One Char, possibly UTF8, newline etc ?
+        if Buff = LineEnding then                // ToDo : check this on Windows
+            exit(CurrIndex+1);                   // We are not removing leading spaces after a newline
+        if CurrIndex = TheIndex then
+            if Buff = '.' then exit(-1);         // Does not make sense to triple click on '.'
+        if Buff = '.' then begin                 // don't count spaces after that.
+            inc(CurrIndex);                      // mv one char to right
+            KMemo1.Select(CurrIndex, 1);         // grab that char
+            if KMemo1.Blocks.SelText = ' ' then
+                inc(CurrIndex);
+            exit(CurrIndex);
+        end;
+        if Buff = LineEnding then                // ToDo : check this on Windows
+            exit(CurrIndex);
+        dec(CurrIndex);                          // Still searching ....
+    end;
+    Result := CurrIndex;
+
+end;
+
+procedure TEditBoxForm.KMemoOnTripleClick(Sender: TObject);
+begin
+    TimerTripleClick.Interval := 10;            // Hmm, setting this in OI is not enogh ?
+    TimerTripleClick.Enabled := True;
+end;
+{$endif TRIPLECLICK}
 
 procedure TEditBoxForm.DoHousekeeping();
 var
@@ -4284,6 +4285,21 @@ begin
     {$endif}
 end;
 
+procedure TEditBoxForm.RemoveWordLeft();
+begin
+    KMemo1.ExecuteCommand(ecSelWordLeft);
+    KMemo1.ExecuteCommand(ecClearSelection);
+    // if we have a space both to left and right, delete one.
+    // user may have started on either side of a space.
+    KMemo1.Select(KMemo1.CaretPos, 1);
+    if KMemo1.Blocks.SelText = ' ' then begin
+         KMemo1.ExecuteCommand(ecLeft);
+         KMemo1.Select(KMemo1.CaretPos, 1);
+         if KMemo1.Blocks.SelText = ' ' then
+             KMemo1.ExecuteCommand(ecClearSelection);
+    end;
+    KMemo1.SelEnd := KMemo1.SelStart;
+end;
 
 procedure TEditBoxForm.KMemo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 var
@@ -4405,6 +4421,10 @@ begin
                 Key := 0;
                 exit();
             end;                                 // continue with no changes if something to remove
+        if [ssCtrl] = Shift then begin           // Ctrl-Backspace means reove word to left
+            RemoveWordLeft();
+            Key := 0;
+        end;
     end;
 
     // don't let any ctrl char get through the kmemo on mac
