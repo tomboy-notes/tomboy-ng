@@ -946,9 +946,10 @@ begin
         end;
     end;
     ComboSyncType.Items.Clear;
-    for i := 0 to ord(high(TSyncTransport)) do
+    for i := 0 to ord(high(TSyncTransport))-1 do                     // -1 to disable MISTY
         ComboSyncType.Items.Add(SyncInfo[i].DisplayHeading);
     ComboSyncType.ItemHeight := 0;
+    ComboSyncType.ReadOnly := True;
 //    ComboSyncType.Items.Add(rsSyncTypeFile);
 //    ComboSyncType.Items.Add(rsSyncTypeGithub);
 //    {$ifdef DOMISTY}
@@ -958,6 +959,7 @@ begin
     for i := 0 to MaxDateStampIndex do
         ComboDateFormat.Items.add(TB_DateStamp(i));
     ComboDateFormat.ItemIndex := 0;
+    ComboDateFormat.ReadOnly := True;
 
     DefaultFixedFont := GetFixedFont();     // Tests a list of likely suspects.
     PageControl1.ActivePage := TabBasic;
@@ -1386,8 +1388,8 @@ begin
 {Misty}     if  SyncInfo[ord(SyncMisty)].RemoteAddress <> '' then begin
             ConfigFile.WriteString('SyncSettings', 'SyncTimingMisty',  SyncTimingStates[SyncInfo[ord(SyncMisty)].SyncTimingIndex]);
             ConfigFile.writestring('SyncSettings', 'SyncRepoMisty',    SyncInfo[ord(SyncMisty)].RemoteAddress);
-            ConfigFile.writestring('SyncSettings', 'MistyPassword',       EncodeStringBase64(SyncInfo[ord(SyncMisty)].PW));
-            ConfigFile.writestring('SyncSettings', 'MistyUserName',       SyncInfo[ord(SyncMisty)].User);
+            ConfigFile.writestring('SyncSettings', 'MistyPassword',    EncodeStringBase64(SyncInfo[ord(SyncMisty)].PW));
+            ConfigFile.writestring('SyncSettings', 'MistyUserName',    SyncInfo[ord(SyncMisty)].User);
             end;
 	        if RadioAlwaysAsk.Checked then
                 ConfigFile.writestring('SyncSettings', 'SyncOption', 'AlwaysAsk')
@@ -2069,8 +2071,9 @@ end;
 procedure TSett.MenuItemPasteTokenClick(Sender: TObject);
 begin
     EditPW.Text := trim(Clipboard.AsText);
+    SyncInfo[ord(SyncGitHub)].PW := EditPW.Text;
     SaveSettings(self);
-    EditPW.Text := '';
+//    EditPW.Text := '';         // Sept 2025, I don't know why this line was here. Disabled prior to 0.42b
 end;
 
 procedure TSett.MenuItemCopyTokenClick(Sender: TObject);
