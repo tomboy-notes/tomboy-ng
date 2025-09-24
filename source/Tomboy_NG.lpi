@@ -1154,7 +1154,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="38">
+    <Units Count="37">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -1364,10 +1364,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit36>
-      <Unit37>
-        <Filename Value="mvxwindow.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit37>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

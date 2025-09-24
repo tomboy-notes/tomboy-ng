@@ -31,7 +31,7 @@ uses
     Notebook, Spelling, Mainunit, BackupView, recover, Index,
     autostart, hunspell, sync, syncutils, ResourceStr, colours,
     cli, RollBack, commonmark, notenormal, transgithub,
-    import_notes, JsonTools, kmemo2pdf, tb_symbol, mvxwindow, LazVersion
+    import_notes, JsonTools, kmemo2pdf, tb_symbol, LazVersion
     {$ifdef LCLGTK2}
     , unitywsctrls          // only safe to use in gtk2, use it if we need it or not
     {$endif};
