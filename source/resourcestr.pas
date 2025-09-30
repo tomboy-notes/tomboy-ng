@@ -144,7 +144,7 @@ RESOURCESTRING
 
     // Mainunit
 
-  rsBadNotesFound1 = 'Please go to Settings -> Recover -> Recover Notes';
+  rsBadNotesFound1 = 'Please go to Settings -> Recover -> Recover Lost Notes -> Bad Notes';
   rsBadNotesFound2 = 'You should do so to ensure your notes are safe.';
   rsFound = 'Found';
   rsNotes = 'notes';

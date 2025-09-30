@@ -23,7 +23,7 @@ unit notenormal;
     2021/09/21  Added code to convert blocks of monospace to to now have each para wrapped.
     2022/11/09  Remove any ctrl char (ie < 32) except #10 and #13, don't know its necessary but #279
     2024/12/26  Added Tab, #9 to allowed list. Should only allow at the start of line but seems OK
-
+    2025/09/28  Finish a tag before an underscore if its wants to finish immediatly after, makes MD conversion safer
 }
 
 {$mode objfpc}{$H+}
@@ -103,15 +103,24 @@ begin
     result := True;
 end;
 
-{ Will move a tag to the left if it has a space there, ret T if it moved one.}
+{ Will move a tag to the left if it has a space or underscore there, ret T if it moved one.}
 function TNoteNormaliser.MoveTagLeft(var St: string): boolean;
 var
     Index : integer;
+    Underscore : boolean = false;
 begin
     Index := Pos(' </', St);
-    if Index = 0 then exit(False);
+    if Index = 0 then begin
+        Index := Pos('_</', St);           // Also stop tag before an Underscore, makes convert to MD safer
+        if Index = 0 then
+            exit(False)
+        else Underscore := True;
+    end;
     delete(St, Index, 1);
-    insert(' ', St, St.IndexOf('>', Index)+2);          // 2 ? IndexOf rets a zero based and we want to go one past
+    if Underscore then
+        insert('_', St, St.IndexOf('>', Index)+2)
+    else
+        insert(' ', St, St.IndexOf('>', Index)+2);          // 2 ? IndexOf rets a zero based and we want to go one past
     Result := true;
 end;
 

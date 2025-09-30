@@ -1,15 +1,15 @@
 object FormRecover: TFormRecover
-  Left = 455
+  Left = 1039
   Height = 561
-  Top = 267
+  Top = 347
   Width = 758
   Caption = 'FormRecover'
   ClientHeight = 561
   ClientWidth = 758
+  LCLVersion = '4.1.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
-  LCLVersion = '3.4.0.0'
   object Label1: TLabel
     Left = 8
     Height = 20
@@ -53,9 +53,9 @@ object FormRecover: TFormRecover
     Height = 204
     Top = 44
     Width = 758
-    ActivePage = TabSheetMergeSnapshot
+    ActivePage = TabSheetBadNotes
     Anchors = [akTop, akLeft, akRight]
-    TabIndex = 3
+    TabIndex = 1
     TabOrder = 1
     object TabSheetIntro: TTabSheet
       Caption = 'Introduction'
@@ -203,8 +203,8 @@ object FormRecover: TFormRecover
       ClientHeight = 174
       ClientWidth = 754
       Enabled = False
-      OnShow = TabSheetMergeSnapshotShow
       TabVisible = False
+      OnShow = TabSheetMergeSnapshotShow
       object Label3: TLabel
         Left = 9
         Height = 20

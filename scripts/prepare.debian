@@ -377,7 +377,7 @@ if [ -f tomboy-ng-master.zip ]; then
     # Note : if not NEWORIG, we cannot possibly be here !
 	if [ "$NEWORIG" = "YES" ]; then
 	    CleanSource
-		date +\'%Y/%m/%d\' > source/SOURCE_DATE      # thats to provide a reproducable date
+		date +\'%Y/%m/%d\' > source/SOURCE_DATE.txt      # thats to provide a reproducable date
 
 		MakeOrigFile                    # create new .orig (and no longer a new change log)
 	fi

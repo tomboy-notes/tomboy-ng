@@ -380,7 +380,8 @@ uses
     LazUTF8, LazFileUtils, fpopenssl, ssockets, {ssockets,} DateUtils, fileutil,
     CommonMark, import_notes,
     Note_Lister, TB_Utils, jsontools, ResourceStr,
-    resolve;                // because I am playing with eg gethostbyname()
+    resolve,                        // because I am playing with eg gethostbyname()
+    laz2_DOM, laz2_XMLRead;         // because we need to check the xml of a downloaded note
 
 const
 //  UPLOADNOTE = 'PleaseUploadThisNote';  // Left in the local manfest item.sha when this note is still waiting to be uploaded.
@@ -400,6 +401,7 @@ const
   // see also UserName (eg davidbannon) and RemoteRepoName (eg tb_test)
 
 
+{x$define DEBUG}
 
 // ================================ TGitNoteList ===============================
 
@@ -780,9 +782,14 @@ begin
             if not FileExists(FullFileName) then
                 Result := DownloadANote(Downloads.Items[I]^.ID, FullFileName)   // OK, now download the file,
             else Result := True;                                                // we must have downloaded it to resolve clash
-            if Result and fileexists(FullFileName)  then begin                  // to be sure, to be sure
-                    deletefile(NotesDir + Downloads.Items[I]^.ID + '.note');
-                    renamefile(FullFileName, NotesDir + Downloads.Items[I]^.ID + '.note');
+            if Result  then begin                                               // if Result but file does not exist, its a XML error !
+                    if fileexists(FullFileName) then begin
+                        deletefile(NotesDir + Downloads.Items[I]^.ID + '.note');
+                        renamefile(FullFileName, NotesDir + Downloads.Items[I]^.ID + '.note');
+                    end else begin
+                        SayDebugSafe('TGithubSync.DownloadNotes - ERROR, failed to convert to XML ' + FullFileName);
+                        Downloads.Items[I]^.Action := SyError;
+                    end;
             end else begin
                 ErrorString := 'GitHub.DownloadNotes Failed to download ' + FullFileName;
                 exit(SayDebugSafe('TGithubSync.DownloadNotes - ERROR, failed to down to ' + FullFileName));
@@ -1405,6 +1412,8 @@ var
     St  : string;
     Importer : TImportNotes;
     PGit : PGitNote;
+    Doc : TXMLDocument;
+    BadXML : boolean = false;
 begin
     Importer := Nil;
     NoteSTL := Nil;
@@ -1430,15 +1439,26 @@ begin
 
                 { if length(PGit^.Notebooks) > 5 then
                     Saydebugsafe('TGithubSync.DownloadANote Using Notebook = ' + PGit^.Notebooks); }
-
                 Importer.NoteBook := PGit^.Notebooks;
-                {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote about to import');{$endif}
+                {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote about to import'); {$endif}
                 Importer.MDtoNote(NoteSTL, PGit^.LCDate, PGit^.CDate);
-                {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote imported');{$endif}
+                {$ifdef DEBUG} Saydebugsafe('TGithubSync.DownloadANote imported');       {$endif}
                 // writeln(NoteSTL.TEXT);
-                if FFName = '' then
-                    NoteSTL.SaveToFile(NotesDir + NoteID + '.note-temp')
-                else NoteSTL.SaveToFile(FFname);
+                NoteSTL.SaveToFile(NotesDir + NoteID + '.note-temp');
+                try try                                                         // OK, must now test the XML in downloaded file to ensure (eg) no overlapping tags.
+                        ReadXMLFile(Doc, NotesDir + NoteID + '.note-temp');
+                    except on E: EXMLReadError do begin
+                        debugln('TGithubSync.DownloadANote - XMLReadError ' + E.ErrorMessage);
+                        debugln('Downloaded Markdown not cannot be converted to XML ' + NotesDir + NoteID + '.note-temp');
+                        BadXML := True;
+                    end; end;
+                finally
+                        Doc.Free;
+                end;
+                if BadXML then                                                  // Note - we still return True, otherwise whle sync aborts
+                    renamefile(NotesDir + NoteID + '.note-temp', NotesDir + NoteID + '.note-temp-bad')   // caller wil not find it, will understand
+                else if FFName <> '' then
+                    renamefile(NotesDir + NoteID + '.note-temp', FFname);
                 {$ifdef DEBUG}Saydebugsafe('TGithubSync.DownloadANote file saved');{$endif}
         end else Result := false;
     finally

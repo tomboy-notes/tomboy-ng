@@ -42,6 +42,18 @@ unit commonmark;
     2022/10/17  Remove underline tags around Title when exporting, confuses Importer.
 }
 
+
+{   20250928   When exporting text that has underscore mixed with italics, bad things happen
+               So, we will escape the real underscores (I don't export with underscore meaning italics).
+
+    **QT**\_***QPA***\_**PLATFORM=xcd**   - is acceptable escaping
+    **QT**\_***QPA*****\_PLATFORM=xcd**   - is NOT acceptable to at least github
+    <bold>QT</bold>_<italic><bold>QPA</bold></italic>_<bold>PLATFORM=xcd</bold>
+    In the above, underscores are at the top, no tags applied. We esc it '\', and will
+    have to detect an escaped underscore in the importer.
+
+
+}
 interface
 
 uses
@@ -364,6 +376,8 @@ begin
 {        while FindToken(TempSt, Where, Token) do begin
             writeln('Line contains token [' + token + ']');
         end;  }
+
+        TempSt := TempSt.Replace('_', '\_', [rfReplaceAll]);   // Escape the underscore. Consider the other MD tags ?
 
         DeleteNext := ConvertMono(TempSt);
         TempSt := TempSt.Replace('<bold>', '**', [rfReplaceAll]);

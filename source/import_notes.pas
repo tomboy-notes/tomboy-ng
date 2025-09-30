@@ -54,6 +54,8 @@ type
         function ChangeTag(var St: string; const ChangeFrom, ChangeToLead, ChangeToTrail: string): boolean;
         procedure ConvertList(var St: string);
         procedure DoLineHeadings(const STL: TStringList);
+        function FindFlanks(const Tag: string; const I: integer; St: string;
+            var RightFlank: integer): boolean;
                             { Ret True if it finds a matching pair of tags that obay the Flanking rules. If
                             so, sets the out vars to start of each tag. Else rets false. Call until it does
                             ret false. https://spec.commonmark.org/0.30/#left-flanking-delimiter-run }
@@ -65,6 +67,7 @@ type
                             // header and footer on.
         function ProcessPlain(Cont: TStringList; const Title: string; LCD : string = '';
                     CDate: string = ''): boolean;
+        procedure MDTag2XMLTag(const Tag, StartXML, EndXML: string; var St: string);
 
     public
         ErrorMsg : string;              // '' if everything OK, content means something bad happened
@@ -253,6 +256,7 @@ end;
 
 // ToDo : the flanking rules are grossly incomplete. We must ignore intermediate tags and test for real content.
 // ToDo : when we decide its a pair of MD Tags, we should ensure there are no unmatched xml tags between.
+// Must handle the situation where a tag is proceeded by a backslash. ie \_ needs to become _ not italics
 
 function TImportNotes.FindMDTags(const St, Tag : string; out LeftFlank, RightFlank : integer) : boolean;
 begin
@@ -309,7 +313,8 @@ end;
 
 
 
-
+         // called repeatedly until it return false. Always starts at stat if string
+         // and calls FindMDTags that also always starts at start if string.
 function TImportNotes.ChangeTag(var St : string; const ChangeFrom, ChangeToLead, ChangeToTrail :  string)  : boolean;
 var
     LFlank, RFlank : integer;
@@ -359,14 +364,62 @@ end;
 
 //  <size:huge><bold>huge heading</bold></size:huge><size:small>
 
+// A Tag must have valid char to its right and another, similar but not
+// backspaced tag further down the St. But any intermediate xml tags are a problem !!!!
+
+function TImportNotes.FindFlanks(const Tag : string; const I : integer; St : string; var RightFlank: integer) : boolean;
+begin
+    Result := False;
+    RightFlank := 0;
+    if (St.Length < I + Tag.Length)             // I points to first char of tag, +length is first char after tag
+        OR (St[I+Tag.Length] = ' ') then        //    ""
+            exit;
+    RightFlank := St.IndexOf(Tag, I+1+RightFlank);
+    while RightFlank > -1 do begin
+        if (St[RightFlank] = '\')
+            or (St[RightFlank] = ' ')  then begin
+                RightFlank := St.IndexOf(Tag, I+1+RightFlank);
+                continue;
+            end;
+        inc(RightFlank);
+        Result := True;
+        break;
+    end;
+end;
+
+        // One call per tag, process whole string
+procedure TImportNotes.MDTag2XMLTag(const Tag, StartXML, EndXML : string; var St : string);
+var
+    I : integer = 1;
+    RightFlank : integer = 0;
+begin
+    While I <= length(St) do begin               // we might change that length
+        if St[I] = Tag then begin                    // might be a tag, might be one real char if proceeded by \
+            if (I > 1) and (St[I-1] = '\') then begin
+                delete(St, I-1, 1);             // remove the \ and keep searching
+                continue;                       // no inc, we have shortened St by one char
+            end
+            else begin                          // Maybe its a tag then ?
+                if FindFlanks(Tag, I, St, RightFlank) then begin
+                    delete(St, RightFlank, Tag.Length);
+                    insert(EndXML, St, RightFlank);
+                    delete(St, I, Tag.Length);
+                    insert(StartXML, St, I);
+                end;
+            end;
+        end;
+        inc(I);
+    end;
+end;
+
 function TImportNotes.MarkUpMarkDown(Cont : TStringList) : boolean;
 var
     Index : integer = 0;
     St : string;
+    StIndex : integer = 1;
     DropNewLine : boolean = True;
 begin
     Result := True;
-    //debugln('TImportNotes.MarkUpMarkDown - importing [' + Cont[0] + ']');
     while Index < Cont.Count do begin
         St := Cont.Strings[Index];
         if (St = '') then begin
@@ -401,7 +454,8 @@ begin
         while ChangeTag(St, '**', '<bold>', '</bold>') do;
         while ChangeTag(St, '__', '<bold>', '</bold>') do;
         while ChangeTag(St, '*', '<italic>', '</italic>') do;
-        while ChangeTag(St, '_', '<italic>', '</italic>') do;
+//        while ChangeTag(St, '_', '<italic>', '</italic>') do;
+        MDTag2XMLTag('_', '<italic>', '</italic>', St);
         while ChangeTag(St, '`', '<monospace>', '</monospace>') do;
         while ChangeTag(St, '~~', '<strikeout>', '</strikeout>') do;
         if copy(St, 1, 4) = '    ' then begin                          // Ah, thats leading space mono
