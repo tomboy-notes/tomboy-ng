@@ -38,7 +38,7 @@ uses
 
 {$R *.res}
 
-{$if defined(LCLGTK2) and (laz_major = 3) }        // defined in LazVersion unit
+{$if defined(LCLGTK2) and (laz_major >= 3) }        // defined in LazVersion unit
 {$define APPINDPATCH}                              // Note: CodeTools greys incorrectly, miss reading (laz_major = 3)
 {$endif}
 

@@ -184,9 +184,6 @@ end;
 
 procedure TFormSync.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-
-    debugln('TFormSync.FormClose called');
-
 	FreeandNil(ASync);
     Busy := False;
 end;

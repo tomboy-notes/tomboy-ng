@@ -941,8 +941,8 @@ begin
         // This is about Debian's quest for repeatability, may contain eg '2024/10/25' or ''
         // The file MUST exist and contain either a date stamp or just two single inverted commas
         // $> date +\'%Y/%m/%d\' > SOURCE_DATE.txt   or  $> echo "''" > SOURCE_DATE.txt
-        // The '' one exists in git, gets overwritten when making Deb SRC package.
-        TheDate := {$i SOURCE_DATE.txt};                                            // use source date
+        // The '' one exists in git, gets overwritten when making Deb SRC package by prepare script.
+        TheDate := {$i SOURCE_DATE.txt};                                        // use source date
         if TheDate = '' then TheDate := {$i %DATE%};                            // use compile date
         // https://wiki.freepascal.org/$include - note %XXX% is only env var, XXX is file or envvar.
         Stg := rsAbout + #10 + rsAboutVer + ' ' + Version_String;                    // version is in cli unit.
