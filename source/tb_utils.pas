@@ -127,7 +127,7 @@ function ReplaceNoteBookTags(const FullFileName : string) : boolean;
                         { Returns the name of the config directory (with trailing seperator)  }
 function TB_GetDefaultConfigDir : string;
 
-procedure MyLog(content : string; InitFile : boolean = false);    // a temp method to debug actions at OS shutdown
+// procedure MyLog(content : string; InitFile : boolean = false);    // a temp method to debug actions at OS shutdown
 
 // These are constants that refer to Bullet Levels, we map the KMemo names here.
 // Using them requires that we 'use' kmemo here. If not use'd, will still compile.
@@ -164,7 +164,7 @@ uses dateutils, {$IFDEF LCL}LazLogger, {$ENDIF} {$ifdef LINUX} Unix, {$endif}   
 
 const ValueMicroSecond=0.000000000011574074;            // ie double(1) / double(24*60*60*1000*1000);
 
-
+{
 procedure MyLog(content : string; InitFile : boolean = false);    // a temp method to debug actions at OS shutdown
 var T : TextFile;
 begin
@@ -180,6 +180,7 @@ begin
     flush(T);
     closeFile(T);
 end;
+}
 
   // At present, v0.41, tokens only work with markdown export, could work with other exports ?
   // A token is a piece of text sourounded by $$..$$ that contains ONLY upper case Latin

@@ -1308,7 +1308,6 @@ var
         if DebugMode then
             debugln('TGithubSync.ScanRemoteRepo requesting ' + ContentsURL(True) + '/' + Dir);
         // Aug 2025, below line has not had the '/' since sept 2021 ??  How has it been working ?
-        if DownloaderSafe(ContentsURL(True) + '/' + Dir, ST) then begin  // St now contains a full dir listing as JSON array
             Node := TJsonNode.Create;
             try
                 if Node.TryParse(St) then begin

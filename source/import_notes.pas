@@ -416,7 +416,7 @@ function TImportNotes.MarkUpMarkDown(Cont : TStringList) : boolean;
 var
     Index : integer = 0;
     St : string;
-    StIndex : integer = 1;
+    // StIndex : integer = 1;
     DropNewLine : boolean = True;
 begin
     Result := True;

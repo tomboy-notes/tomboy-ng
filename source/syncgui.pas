@@ -401,7 +401,7 @@ begin
             end;
         end;
 
-{        if Async.SetTransport(TransPort) = SyncOpenSSLError then begin         // NOOOO - after TestConnection  !!!!!!!!!!
+            {if Async.SetTransport(TransPort) = SyncOpenSSLError then begin         // NOOOO - after TestConnection  !!!!!!!!!!
             if not Visible then begin
                 SearchForm.UpdateStatusBar(1, rsAutoSyncNotPossible);
                 if Sett.CheckNotifications.checked then begin
@@ -415,7 +415,7 @@ begin
             end;
         end;     }
 
-//debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Testing Connection.');
+        //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Testing Connection.');
         SyncAvail := ASync.TestConnection();
         if SyncAvail <> SyncReady then begin
             debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : '
@@ -434,9 +434,9 @@ begin
                 if SyncAvail = SyncOpenSSLError then
                     showmessage('Your OpenSSL libraries are unavailable or unsuitable');
                 //Screen.Cursor := crHourGlass;
-//                if AnotherSync then
+              //  if AnotherSync then
                     FormSync.ModalResult := mrAbort;
-{                else begin
+              {  else begin
                     Label2.Caption := rsPressClose;
                     ButtonClose.Enabled := True;
                 end;  }
@@ -444,7 +444,7 @@ begin
             end;
             exit(false);        //redundant ?
         end;
-//debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Transport good, about to run.');
+        //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : ', 'Transport good, about to run.');
         Label1.Caption :=  Transport.ToString + ' ' + rsRunningSync;
         Application.ProcessMessages;
         ASync.TestRun := False;
@@ -460,7 +460,7 @@ begin
         Label1.Caption :=  Transport.ToString + ' ' + rsAllDone;
         Label2.Caption := rsPressClose;
         ButtonClose.Enabled := True;
-(*        if AnotherSync then begin
+        (*        if AnotherSync then begin
             ButtonClose.Hint := 'proceed to next sync';
             ButtonClose.ShowHint := True;
         end else                                 *)

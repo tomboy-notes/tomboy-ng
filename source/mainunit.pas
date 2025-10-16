@@ -320,13 +320,15 @@ end;
 // -----------------------------------------------------------------
 
 // This is used to handle SigTERM and SigHUP sent from, eg, kill command
-// It does not come ino play during a PowerDown event for LCL apps
+// It does not come into play during a PowerDown event for LCL apps
 procedure HandleSigTERM(aSignal: LongInt); cdecl;
 begin
-    if not Sett.AreClosing then begin
+    if not Sett.AreClosing then
+        MainForm.Close;
+ {   begin
         MyLog('Signal received #' + inttostr(aSignal));
         MainForm.Close;                                 // Sufficent if user activated
-    end else MyLog('Signal ignored #' + inttostr(aSignal));
+    end else MyLog('Signal ignored #' + inttostr(aSignal));     }
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -348,7 +350,7 @@ begin
 //        TrayIcon.Show;                            // Gnome does not like showing it before menu is populated, so, call from SearchForm.create
     end;
     LabelBadNoteAdvice.Caption := '';
-    MyLog('Start of log', True);                    // ToDo : remove this
+    // MyLog('Start of log', True);                    // ToDo : remove this
     Application.OnQueryEndSession := @QueryEndSession;       // Thats to handle a PowerDown situation
     {$ifdef UNIX}
     FpSignal(SigTERM, @HandleSigTERM);                       // Thats to handle SigTERM from, eg the kill command
@@ -373,7 +375,7 @@ begin
         AForm := TheMainNoteLister.FindFirstOpenNote(NoteIndex);
         while AForm <> Nil do begin                              // AForm may become nil at any time
             inc(NotesSavedAtClose);                              // ToDo : do we need this now ?
-            MyLog(Requester + ' About to save ' + AForm.Caption);
+            // MyLog(Requester + ' About to save ' + AForm.Caption);
             aPNote := TheMainNoteLister.GetNote(NoteIndex);
             while (aPNote^.OpenNote <> Nil)                              // the realtest is BusySaving, check for nil first thu
                     and (TEditBoxForm(aPNote^.OpenNote).BusySaving) do   // possible an auto save is happening.
@@ -398,9 +400,9 @@ end;
 procedure TMainForm.QueryEndSession(var cancel:Boolean);
 begin
     Sett.AreClosing:=True;      // This is a PowerDown Close
-    MyLog('TMainForm.QueryEndSession - PowerDown.');
+//    MyLog('TMainForm.QueryEndSession - PowerDown.');
     CloseOpenNotes('QES');
-    MyLog('TMainForm.QueryEndSession - PowerDown close permitted.');
+//    MyLog('TMainForm.QueryEndSession - PowerDown close permitted.');
     Cancel := False;
 end;
 
