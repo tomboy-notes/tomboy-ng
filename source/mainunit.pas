@@ -199,7 +199,7 @@ type
         CommsServer : TSimpleIPCServer;
         // Start SimpleIPC server listening for some other second instance.
 
-        // Used to save allope notes at any of the possible close down situations.
+        // Used to save all open notes at any of the possible close down situations.
         function CloseOpenNotes(requester: string): boolean;
         // This is actually a TApplication call back, triggered ONLY during a PowerDown
         procedure QueryEndSession(var cancel: Boolean);
@@ -360,11 +360,12 @@ end;
 
 { -------------- Close process -----------------
     First, FormCloseQuery is called, it can but rarely should prevent closure.
-    Next, FormClose is called.
+    Next, FormClose is called. Note Windows (and most others) are non-modal.
     Finally, when any pending work, perhaps setup by above, FormDestroy is called
 }
+    // ToDo : investigate calling Release instead.
 
-function TMainForm.CloseOpenNotes(requester : string) : boolean;
+function TMainForm.CloseOpenNotes(requester : string) : boolean;    // ToDo : Requestor is a debug artifact, remove at some time
 var
      AForm : TForm;
      NoteIndex : integer;
@@ -382,7 +383,7 @@ begin
                 sleep(5);
             sleep(2);                                            // allow time to close after saving
             if (aPNote^.OpenNote <> Nil) then begin
-                AForm.close;
+                AForm.close;                                     // Is Release a better option ?
                 Application.ProcessMessages;                     // flush each closure as we go.
                 // Wait here until the form becomes nil
                 while (aPNote^.OpenNote <> Nil) do
@@ -491,7 +492,7 @@ var
     MayBeNotGnome : boolean = false;
     PlugInName : string = '';           // holds name if CheckPlugIn found it.
 
-
+    // returns True if plugin found. If EnabledOnly, must be enabled to get True
     function CheckPlugIn(EnabledOnly : boolean) : boolean;
     var
         AProcess: TProcess;
@@ -624,7 +625,7 @@ begin
     // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !
     {$ifdef LCLGTK2}XDisplay := gdk_display; {$endif}
     {$if defined(LCLQT5) OR defined(LCLQT6)}
-        // If using Gnome and QT5, cannot safely test for a SysTray, we'll guess....
+        // If using Gnome and QT5 or Qt6, cannot safely test for a SysTray, we'll guess....
         if pos('GNOME', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 then
             exit(CheckGnomeExtras());
         // XDisplay := QX11Info_display;           // thats Qt5 only

@@ -16,6 +16,13 @@ Still need to address highlight (any color, we will disable that.
 we must tune up tool bar to limit formats to ones we agree on.
 
 Expects to find the original note in ~/home, needs to get header and footer.
+
+Refs -
+https://quilljs.com/
+https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Forms/Sending_forms_through_JavaScript
+https://dev.to/davidking/a-guide-to-http-post-requests-in-javascript-no7
+https://www.w3schools.com/js
+https://www.w3schools.com/jsref/tryit.asp?filename=tryjsref_api_fetch_easy
 }
 
 {$mode ObjFPC}{$H+}

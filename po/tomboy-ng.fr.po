@@ -72,8 +72,10 @@ msgid "You have %d bad notes in Notes Directory"
 msgstr "Le répertoire contient %d notes vérolées"
 
 #: resourcestr.rsbadnotesfound1
+#, fuzzy
+#| msgid "Please go to Settings -> Recover -> Recover Notes"
 msgctxt "resourcestr.rsbadnotesfound1"
-msgid "Please go to Settings -> Recover -> Recover Notes"
+msgid "Please go to Settings -> Recover -> Recover Lost Notes -> Bad Notes"
 msgstr "SVP utiliser Réglages -> Récup -> Récup des notes"
 
 #: resourcestr.rsbadnotesfound2

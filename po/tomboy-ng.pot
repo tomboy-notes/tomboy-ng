@@ -63,7 +63,7 @@ msgstr ""
 
 #: resourcestr.rsbadnotesfound1
 msgctxt "resourcestr.rsbadnotesfound1"
-msgid "Please go to Settings -> Recover -> Recover Notes"
+msgid "Please go to Settings -> Recover -> Recover Lost Notes -> Bad Notes"
 msgstr ""
 
 #: resourcestr.rsbadnotesfound2

@@ -73,8 +73,10 @@ msgid "You have %d bad notes in Notes Directory"
 msgstr "Ви маєте %d поганих нотаток у каталозі з нотатками"
 
 #: resourcestr.rsbadnotesfound1
+#, fuzzy
+#| msgid "Please go to Settings -> Recover -> Recover Notes"
 msgctxt "resourcestr.rsbadnotesfound1"
-msgid "Please go to Settings -> Recover -> Recover Notes"
+msgid "Please go to Settings -> Recover -> Recover Lost Notes -> Bad Notes"
 msgstr "Будь ласка, перейдіть у Налаштувати -> Відновлення -> Відновлення нотаток"
 
 #: resourcestr.rsbadnotesfound2
