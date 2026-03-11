@@ -8,7 +8,7 @@ object EditBoxForm: TEditBoxForm
   ClientWidth = 784
   Constraints.MinHeight = 200
   Constraints.MinWidth = 200
-  LCLVersion = '4.1.0.0'
+  LCLVersion = '4.4.0.0'
   OnActivate = FormActivate
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
@@ -1522,7 +1522,6 @@ object EditBoxForm: TEditBoxForm
   object TimerTripleClick: TTimer
     Enabled = False
     Interval = 10
-    OnTimer = TimerTripleClickTimer
     Left = 408
     Top = 472
   end

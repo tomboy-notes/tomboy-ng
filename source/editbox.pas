@@ -252,7 +252,8 @@ unit EditBox;
     2024/10/05  Made DeletingThisNote public so SearchForm can delete an Open note.
     2024/10/16  Fixed the way that Save on Quit works, no contention !
     2024/12/24  Altered Indent to work (a little) like Tomboy, embedded Tab #9 char at start line
-    2025/09/20  Changed format of new note title so the new triple click can select it all.
+    2025/09/20  Changed format of new note title so the tripleclick can select it all.
+    2026/03/11  Revised triple click model
 }
 
 
@@ -289,12 +290,15 @@ type TiLActionRec = record                     // a record used to describe how 
 
 {$define TRIPLECLICK}
 {$ifdef TRIPLECLICK}
-// Auxiliary class, just to access OnTripleClick
-type
-  TAuxKMemo = class(TKMemo)
-end;
+type                              // To re-introduce triple click to the kmemo
+  TKMemo = class(KMemo.TKMemo)
+  public
+    property OnTripleClick;
+  end;
+  // TKMemo is a new one, its the old TMemo plus OnTripleClick.
+  // https://forum.lazarus.freepascal.org/index.php/topic,69872.msg543642.htm
+  // Here we use AVK's model.
 {$endif}
-
 
 type
     { TEditBoxForm }
@@ -383,7 +387,7 @@ type
         SpeedButtonText: TSpeedButton;
         SpeedButtonTools: TSpeedButton;
         SpeedRollBack: TSpeedButton;
-        TimerTripleClick: TTimer;
+//        TimerTripleClick: TTimer;                // ToDo : reove this
 //		TaskDialogDelete: TTaskDialog;           just why was this here ?  Messes with Windows
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
@@ -458,7 +462,6 @@ type
         procedure SpeedButtonToolsClick(Sender: TObject);
 		procedure TimerSaveTimer(Sender: TObject);
         procedure TimerHousekeepingTimer(Sender: TObject);
-        procedure TimerTripleClickTimer(Sender: TObject);
 
     private
         {$ifdef LDEBUG}TG1, TG2, TG3, TG4 : qword;{$endif}
@@ -467,6 +470,7 @@ type
         TitleHasChanged : boolean;
                                 // a record of the cursor position before last click, used by shift click to select
         MouseDownPos : integer;
+        TripleSelStart, TripleSelLen : integer;             // we need to restore sel when triple clicking
         CreateDate : string;	// Will be '' if new note
         Ready : boolean;
                                 { To save us checking the title if user is well beyond it }
@@ -631,7 +635,7 @@ type
         function CanInsertFileLink(out SoP, OnPara, InLink: boolean): boolean;
 
     public
-        {$ifdef TRIPLECLICK}
+        {$ifdef TRIPLECLICK}        // ToDo : Check this is still needed
         BeforeSingle : integer;     // Selection Index just before click, used for triple click.
         {$endif}
         SingleNoteFileName : string;    // Set by the calling process. FFN inc path, carefull, cli has a real global version
@@ -1443,14 +1447,22 @@ begin
         PrimaryPaste(KMemo1.PointToIndex(Point, true, true, LinePos));
         exit();
     end;
+    if TripleSelStart <> -1 then begin           // This because 'something' in tripleclick alters them.
+        KMemo1.SelStart := TripleSelStart;
+        KMemo1.SelLength := TripleSelLen;
+        TripleSelStart := -1;
+        TripleSelLen := -1;
+    end;
     if KMemo1.SelAvail and                     // if not paste, better update primary
-        (Kmemo1.Blocks.SelLength <> 0) then
+        (Kmemo1.Blocks.SelLength <> 0) then begin
             SetPrimarySelection()
-        else
+        end
+        else begin
             UnsetPrimarySelection();
+         end;
     {$endif}
+
     if (Button = mbLeft) and ([ssShift] = Shift) then begin  // select from existing pos to clicked pos
-        //debugln('Start ' + dbgs(MouseDownPos) + ' to ' + dbgs(KMemo1.CaretPos));
         KMemo1.SelStart := MouseDownPos;
         KMemo1.SelEnd := KMemo1.CaretPos;
     end;
@@ -2366,10 +2378,12 @@ end;
 procedure TEditBoxForm.FormCreate(Sender: TObject);
 begin
     {$ifdef TRIPLECLICK}
-    // Enable OnTripleClick in KMemo.
+    TripleSelStart := -1;
+    TripleSelLen := -1;
+    // Enable OnTripleClick in KMemo. TKMemo is a new one, its old TMemo plus OnTripleClick.
+    // https://forum.lazarus.freepascal.org/index.php/topic,69872.msg543642.htm
     KMemo1.ControlStyle := KMemo1.ControlStyle + [csTripleClicks];
-    // cast to TAuxKMemo, and you can use protected members!
-    TAuxKMemo(KMemo1).OnTripleClick := @KMemoOnTripleClick;
+    KMemo1.OnTripleClick := @KMemoOnTripleClick;
     {$endif}
     MenuItemInsertDirLink.Caption := rsInsertDirLink;           // This to stop duplicates in .po files
     MenuItemInsertFileLink.Caption := rsInsertFileLink;
@@ -2377,6 +2391,7 @@ begin
     MenuItemToolsInsertFileLink.Caption := rsInsertFileLink;
 
     PopulateSymbolMenu(PopupMenuSymbols);
+    Undoer := nil;
     Use_Undoer := Sett.CheckUseUndo.checked;    // Note, user must close and repen if they change this setting
     if Use_Undoer then
         Undoer := TUndo_Redo.Create(KMemo1)
@@ -3835,21 +3850,6 @@ end;
 // ----------------  T R I P L E    C L I C K  ---------------------------------
 
 {$ifdef TRIPLECLICK}
-procedure TEditBoxForm.TimerTripleClickTimer(Sender: TObject);
-var
-    TripleStart, TripleEnd : integer;
-begin
-//    writeln('procedure TEditBoxForm.TimerTripleClickTimer BS=', BeforeSingle);
-    TimerTripleClick.Enabled := False;
-    TripleStart := FindStartSentence(BeforeSingle);
-//    writeln('procedure TEditBoxForm.TimerTripleClickTimer TS=', TripleStart);
-    TripleEnd := FindEndSentence(BeforeSingle);
-//    writeln('procedure TEditBoxForm.TimerTripleClickTimer TE=', TripleEnd);
-    if (TripleStart = -1) or (TripleEnd = -1) then
-        exit;                                      // invalid, on '.' or newline
-    KMemo1.Select(TripleStart, TripleEnd - TripleStart);
-end;
-
 
 function TEditBoxForm.FindEndSentence(TheIndex: integer): integer;
 var Buff : string;                 // used as a utf8 char
@@ -3916,9 +3916,16 @@ begin
 end;
 
 procedure TEditBoxForm.KMemoOnTripleClick(Sender: TObject);
+var
+    TripleStart, TripleEnd : integer;
 begin
-    TimerTripleClick.Interval := 10;            // Hmm, setting this in OI is not enogh ?
-    TimerTripleClick.Enabled := True;
+    TripleStart := FindStartSentence(BeforeSingle);
+    TripleEnd := FindEndSentence(BeforeSingle);
+    if (TripleStart = -1) or (TripleEnd = -1) then
+        exit;   // invalid, on '.' or newline
+    KMemo1.Select(TripleStart, TripleEnd - TripleStart);
+    TripleSelStart := TripleStart;
+    TripleSelLen := TripleEnd - TripleStart;
 end;
 {$endif TRIPLECLICK}
 
@@ -4237,7 +4244,6 @@ procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
     function GetClickedIndex() : integer;     // A selection index for clicked position, only used for right click
     var P : TPoint; LinePos : TKmemoLinePosition;
     begin
-        //P := ClientToScreen(Point(X, Y));
         P := Point(x, y);
         LinePos := eolEnd;
         while P.X > 0 do begin                   // we might be right of the eol marker.
@@ -4246,18 +4252,14 @@ procedure TEditBoxForm.KMemo1MouseDown(Sender: TObject; Button: TMouseButton;
               dec(P.X);                        // move P.x to left until we are inside a line (or zero)
         end;
         Result := KMemo1.PointToIndex(P, true, true, LinePos);
-//        debugln('KMemo1Mousedown GetClickedIndex returning ' + dbgs(Result) + ' x=' + dbgs(X)
-//                + ' y=' + dbgs(y) + ' xs=' + dbgs(P.x) + ' ys=' + dbgs(P.y));
     end;
 
 begin
     MouseDownPos := KMemo1.CaretPos;    // regional record in case we are doing shift click, KMemo1.MouseUp()
     if (ssCtrl in Shift) or (Button = mbRight) then begin
         if KMemo1.SelLength = 0 then begin
-            //GetClickedIndex();
             KMemo1.SelStart := GetClickedIndex();
             KMemo1.SelLength := 0;
-            //debugln('Mousedown ' + dbgs(KMemo1.CaretPos) + ' New Position=' + inttostr(KMemo1.SelStart));
         end;
         DoRightClickMenu();
     end;
