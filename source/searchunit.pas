@@ -881,8 +881,7 @@ begin
     //T2 := gettickcount64();
 
     // We must iterate over the NoteLister's DateSortList getting the ten most
-    // recent notes.
-
+    // recent notes.  Gets called 4 times during startup, 4 menus to prepare !
     for i := 0 to 9 do begin
 //        P := TheMainNoteLister.GetNote(i, smAllRecentUp);
         P := TheMainNoteLister.GetNote(i, smAllRecentUp);
@@ -1293,7 +1292,7 @@ begin
     CreateMenus();                                // We must build an initial menu BEFORE indexing notes...
     IndexNotes();                                 // Messy but IndexNotes calls Refresh Menu and thats necessary
     ListViewNotes.Items.clear;
-    ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch();        // Builds NoteLister's Index files.
+    ListViewNotes.Items.Count := TheMainNoteLister.ClearSearch();        // Builds NoteLister's Index files, triggers loading the ListView
     TheMainNoteLister.LoadListNotebooks(ListBoxNotebooks.Items, ButtonClearFilters.Enabled);
     EditSearch.Hint:=rsSearchHint;
     EditSearch.TextHint := rsMenuSearch;
@@ -1696,7 +1695,7 @@ end;
 procedure TSearchForm.ListViewNotesMouseDown(Sender: TObject;
     Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 var
-          // rules for what menu items to show
+    // rules for what menu items to show
     Val : array of boolean;
     Itm : TListItem;
 //    Tick, Tock : qword;
@@ -1715,36 +1714,34 @@ var
     end;
 
 begin
-    // ToDo : This is unfair to Windows (with lots of notes). TListVew.GetNextItem is very fast
-    // in Windows, slow, iterates over whole dataset, on Linux and MacOS.
-    // If https://gitlab.com/freepascal.org/lazarus/lazarus/-/issues/41798 is accepted, use it instead.
+(*  https://gitlab.com/freepascal.org/lazarus/lazarus/-/issues/41797 has a patch by Anton
+    41797 - Gtk3 only, Ownerdata. Expect in Laz 5.0, Cannot do a Gtk3 tomboy-ng < Laz5
+    41798 - TListView.GetNextItem for linux. Is in, at least, Laz 4.4            *)
     if Button = mbRight then begin
         NoteListRightClickSel := [];                // clear it
 //        Tick := gettickcount64();
-
-(*        Itm := ListViewNotes.GetNextSelected();        // this requires the unapproved  GetNextSelected(), much faster
-        while Itm <> nil do begin
-            insert(Itm.SubItems[1], NoteListRightClickSel, 0);
-            Itm := ListViewNotes.GetNextSelected(Itm.Index);
-        end; *)
-
-        // shortcut here ? If SelCount = 0 skip next, if = 1 then insert Selected.
         case ListViewNotes.SelCount of
-            0 : ;
-            1 : insert(ListViewNotes.Selected.SubItems[1], NoteListRightClickSel, 0);
-        otherwise
-              for Itm in ListViewNotes.Items do      // 2000 notes, 20mS - 50mS
+            0 : Val := [false, false, false, true, false];
+            1 : begin
+                    insert(ListViewNotes.Selected.SubItems[1], NoteListRightClickSel, 0);
+                    Val := [true, true, true, true, true];
+			    end;
+		otherwise
+            Val := [true, true, false, true, true];
+            ListViewNotes.GetNextSelected(-1, Itm{%H-});        // this requires GetNextSelected(), much faster
+            while Itm <> nil do begin
+                insert(Itm.SubItems[1], NoteListRightClickSel, 0);
+                ListViewNotes.GetNextSelected(Itm.Index, Itm);
+                // above is insert into array, despite what Codetools thinks.
+            end;                                                 // Note : requires Laz4.4 or later
+{            for Itm in ListViewNotes.Items do      // 2000 notes, 20mS - 50mS
                   if Itm.Selected then
-                      insert(Itm.SubItems[1], NoteListRightClickSel, 0);     // save the selected ID.note
-                      // above is insert into array, despite what Codetools thinks.
+                      insert(Itm.SubItems[1], NoteListRightClickSel, 0);     // save the selected ID.note }
         end;
 
-
-//        Tock := gettickcount64();
-//debugln('TSearchForm.ListViewNotesMouseDown checked for selected ' + inttostr(Tock - Tick) + 'mS');
-        if ListViewNotes.SelCount = 0 then Val := [false, false, false, true, false]
+{        if ListViewNotes.SelCount = 0 then Val := [false, false, false, true, false]
         else if ListViewNotes.SelCount = 1 then Val := [true, true, true, true, true]
-        else Val := [true, true, false, true, true];        // more than one selected
+        else Val := [true, true, false, true, true];        // more than one selected  }
         SetupRightClickMenu;
         PopupMenuListOptions.PopUp;
     end;

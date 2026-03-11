@@ -242,7 +242,7 @@ type
 
 
 
-                                // Inserts a new item into the ViewList, always Title, DateSt, FileName
+                                // Inserts a new item into the ViewList, always Title, DateSt, FileName, Gtk3 only ?
 //    function NewLVItem(const LView: TListView; const Title, DateSt, FileName: string): TListItem;
 
                                 { A Early ver of -ng wrote a bad date stamp, here we try to fix any we find. First
@@ -292,8 +292,6 @@ type
     function GetNote(Index: integer): PNote;
                                         { Returns a pointer to PNote record, zero based index is adjusted for current search }
     function GetNote(Index: integer; mode : TLVSortMode): PNote;
-                                        { Loads a TListView with note title, LCD and ID}
-    //procedure LoadListView(const LView: TListView; const SearchMode: boolean);
 
     // ----------------- N O T E   B O O K   M E T H O D S ---------------------
 
@@ -1885,7 +1883,11 @@ begin
     if NoteList.Count <= Index then exit;
     case Mode of
         smRecentDown  : result := NoteList[DateSearchIndex[Index]];
-        smRecentUp    : result := NoteList[DateSearchIndex[DateSearchIndex.Count - Index -1]];
+        smRecentUp    : begin
+                        if (DateSearchIndex.Count -Index -1) < 0 then
+                            exit;
+                        result := NoteList[DateSearchIndex[DateSearchIndex.Count - Index -1]];    // 4 -4 -1
+                        end;
         smAATitleUp   : result := NoteList[TitleSearchIndex[Index]];
         smAATitleDown : result := NoteList[TitleSearchIndex[TitleSearchIndex.Count - Index -1]];
         smAllRecentUp :
@@ -2016,44 +2018,6 @@ begin
     // T3 := gettickcount64();
     // debugln('Note_Lister - LoadStGrid ' + inttostr(T2 - T1) + ' ' + inttostr(T3 - T2));
 end;
-(*
-function TNoteLister.NewLVItem(const LView : TListView; const Title, DateSt, FileName: string): TListItem;
-var
-    TheItem : TListItem;
-    DT : TDateTime;
-begin
-   TheItem := LView.Items.Add;
-   TheItem.Caption := Title;
-   if MyTryISO8601ToDate(DateSt, DT) then
-        TheItem.SubItems.Add(MyFormatDateTime(DT, True) + ' ')
-   else TheItem.SubItems.Add('ERROR bad date string ');
-   TheItem.SubItems.Add(FileName);
-   Result := TheItem;
-end;
-
-procedure TNoteLister.LoadListView(const LView : TListView; const SearchMode : boolean);
-var
-    Index : integer;
-    TheList : TNoteList;
-    //LCDst : string;
-    //T1, T2, T3 : qword;
-    // Full list mode, 2000 notes, Dell 7mS to clear, 20-40mS to load.
-begin
-    //T1 := gettickcount64();
-    LView.Clear;
-    if SearchMode then
-        TheList := SearchNoteList
-    else TheList := NoteList;
-    //T2 := gettickcount64();
-    Index := TheList.Count;
-    while Index > 0 do begin
-        dec(Index);
-        NewLVItem(LView, TheList.Items[Index]^.Title, TheList.Items[Index]^.LastChange, TheList.Items[Index]^.ID);
-    end;
-    //T3 := gettickcount64();
-    //debugln('TNoteLister.LoadListView Clear=' + dbgs(T2 - T1) + ' Fill=' + dbgs(T3 - T2));
-end;
-*)
 
 procedure TNoteLister.LoadStrings(const TheStrings: TStrings);
 var
