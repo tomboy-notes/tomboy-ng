@@ -129,6 +129,8 @@ unit Mainunit;
 
 interface
 
+
+
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
     StdCtrls, LCLTranslator, DefaultTranslator, Buttons, simpleipc,
@@ -151,7 +153,6 @@ type
     { TMainForm }
 
     TMainForm = class(TForm)
-//        ApplicationProperties1: TApplicationProperties;      commented out 2023/12/03,no idea why its here, removed from form too
 		ButtSysTrayHelp: TBitBtn;
 		BitBtnHide: TBitBtn;
 		BitBtnQuit: TBitBtn;
@@ -200,7 +201,7 @@ type
         // Start SimpleIPC server listening for some other second instance.
 
         // Used to save all open notes at any of the possible close down situations.
-        function CloseOpenNotes(requester: string): boolean;
+        function CloseOpenNotes(): boolean;
         // This is actually a TApplication call back, triggered ONLY during a PowerDown
         procedure QueryEndSession(var cancel: Boolean);
         procedure StartIPCServer();
@@ -219,6 +220,7 @@ type
         PopupMenuSearch : TPopupMenu;       // we create these dynamically
         PopupMenuTray : TPopupMenu;
         MainTBMenu : TPopupMenu;
+
                                 // Cross Platform, Linux libnotify, others TrayIcon Balloon
         procedure ShowNotification(const Message: string; ShowTime: integer = 3000);
                                 // Called by the Sett unit when it knows the true config path.
@@ -320,15 +322,13 @@ end;
 // -----------------------------------------------------------------
 
 // This is used to handle SigTERM and SigHUP sent from, eg, kill command
-// It does not come into play during a PowerDown event for LCL apps
+// It does not come into play during a PowerDown event for LCL apps except for gtk2
+// Note that Gnome desktops don't trigger this at PowerDown
 procedure HandleSigTERM(aSignal: LongInt); cdecl;
 begin
-    if not Sett.AreClosing then
+    if not Sett.AreClosing then begin
         MainForm.Close;
- {   begin
-        MyLog('Signal received #' + inttostr(aSignal));
-        MainForm.Close;                                 // Sufficent if user activated
-    end else MyLog('Signal ignored #' + inttostr(aSignal));     }
+    end;
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -350,8 +350,9 @@ begin
 //        TrayIcon.Show;                            // Gnome does not like showing it before menu is populated, so, call from SearchForm.create
     end;
     LabelBadNoteAdvice.Caption := '';
-    // MyLog('Start of log', True);                    // ToDo : remove this
+    {$ifndef LCLGTK2}
     Application.OnQueryEndSession := @QueryEndSession;       // Thats to handle a PowerDown situation
+    {$endif}
     {$ifdef UNIX}
     FpSignal(SigTERM, @HandleSigTERM);                       // Thats to handle SigTERM from, eg the kill command
     FpSignal(SigHUP, @HandleSigTERM);                        // HUP, as above
@@ -365,18 +366,19 @@ end;
 }
     // ToDo : investigate calling Release instead.
 
-function TMainForm.CloseOpenNotes(requester : string) : boolean;    // ToDo : Requestor is a debug artifact, remove at some time
+function TMainForm.CloseOpenNotes() : boolean;
 var
      AForm : TForm;
      NoteIndex : integer;
      aPNote : PNote;
+     // Tick : qword;
 begin
     result := False;
+    //Tick := getTickCount64();
     if assigned(TheMainNoteLister) then begin
         AForm := TheMainNoteLister.FindFirstOpenNote(NoteIndex);
         while AForm <> Nil do begin                              // AForm may become nil at any time
             inc(NotesSavedAtClose);                              // ToDo : do we need this now ?
-            // MyLog(Requester + ' About to save ' + AForm.Caption);
             aPNote := TheMainNoteLister.GetNote(NoteIndex);
             while (aPNote^.OpenNote <> Nil)                              // the realtest is BusySaving, check for nil first thu
                     and (TEditBoxForm(aPNote^.OpenNote).BusySaving) do   // possible an auto save is happening.
@@ -384,6 +386,7 @@ begin
             sleep(2);                                            // allow time to close after saving
             if (aPNote^.OpenNote <> Nil) then begin
                 AForm.close;                                     // Is Release a better option ?
+                AForm.Free;
                 Application.ProcessMessages;                     // flush each closure as we go.
                 // Wait here until the form becomes nil
                 while (aPNote^.OpenNote <> Nil) do
@@ -392,26 +395,27 @@ begin
            end;
 //           AForm := TheMainNoteLister.FindNextOpenNote(NoteIndex);
            AForm := TheMainNoteLister.FindFirstOpenNote(NoteIndex);       // starting from top is more reliable. why ??
+
        end;
        AForm := TheMainNoteLister.FindFirstOpenNote(NoteIndex);
        Result := (AForm <> Nil);
     end;                               // if assigned notelister
+    //writeln('TMainForm.CloseOpenNotes took ', inttostr(gettickCount64() - Tick));   // 6 medium sized notes, VM 100mS
 end;
 
 procedure TMainForm.QueryEndSession(var cancel:Boolean);
 begin
     Sett.AreClosing:=True;      // This is a PowerDown Close
-//    MyLog('TMainForm.QueryEndSession - PowerDown.');
-    CloseOpenNotes('QES');
-//    MyLog('TMainForm.QueryEndSession - PowerDown close permitted.');
+    CloseOpenNotes();
+    Close;
     Cancel := False;
 end;
 
 
 procedure TMainForm.FormCloseQuery(Sender : TObject; var CanClose : Boolean);
 begin
+    CanClose := False;
     Sett.AreClosing:=True;
-    CloseOpenNotes('FCQ');
     CanClose := True;
 end;
 
@@ -421,8 +425,9 @@ var
     c: PGtkClipboard;
     t: string;
     {$endif}
-    QuitDelay : integer = 0;
+    //QuitDelay : integer = 0;
 begin
+    // closing any open notes aready triggered n FormCloseQuery.
     Application.ProcessMessages;                  // seems necessary to ensure we count all closed notes.
     {$ifdef LCLGTK2}
     c := gtk_clipboard_get(GDK_SELECTION_CLIPBOARD);
@@ -430,6 +435,9 @@ begin
     gtk_clipboard_set_text(c, PChar(t), Length(t));
     gtk_clipboard_store(c);
     {$endif}
+    CloseOpenNotes();
+
+ (*
 
 //  Abandon this model, now save open notes sequentially, something unstable in thread at app close !
 //  ToDo : consider removing this and associated code. Unnecessarily complicated now we save sequentially at app close
@@ -442,7 +450,7 @@ begin
         end;
     end;
     if QuitDelay > 0 then
-        debugln('TMainForm.FormClose Warning saving delay ' + inttostr(QuitDelay*20) + 'mS');
+        debugln('TMainForm.FormClose Warning saving delay ' + inttostr(QuitDelay*20) + 'mS');        *)
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -650,6 +658,7 @@ begin
             // Thats libappindicator3 and an installed and enabled gnome-shell-extension-appindicator
      else Result := True;        // Now, that is a hope for the best, GTK3 but non Gnome
 end;
+
 {$endif}                            // hides CheckForSystemTray() and CheckGnomeExtras() from non Linux
 
 
