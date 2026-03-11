@@ -749,9 +749,6 @@ const
         FileLinkTokenLen = 7;
 
 
-{$ifdef LDEBUG}var
-  MyLogFile: TextFile;{$endif}
-
 { =============  T   S A V E   T H R E A D   ================== }
 
 
@@ -3570,7 +3567,6 @@ begin
         {$ifdef TDEBUG}T3 := gettickcount64();{$endif}
         if Sett.ShowIntLinks and (not SingleNoteMode) then begin             // draw internal links
             for i := 0 to TheMainNoteLister.NoteList.Count-1 do begin        // For each note title in the main list.
-                  {$ifdef LDEBUG}writeln(MyLogFile, 'BV ' + TheMainNoteLister.NoteList[i]^.TitleLow);{$endif}
                 if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then
                     MakeAllLinks(Content, TheMainNoteLister.NoteList[i]^.TitleLow, BuffOffset);
             end;
@@ -3585,7 +3581,6 @@ begin
         {$endif}
     end;
     //{$undef TDEBUG}
-    {$ifdef LDEBUG}CloseFile(MyLogFile);{$endif}
 end;
 
 

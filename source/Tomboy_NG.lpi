@@ -115,7 +115,7 @@
         <Item80 Value="ComboSyncTiming"/>
       </ExcludedOriginals>
     </i18n>
-    <BuildModes Count="24">
+    <BuildModes Count="25">
       <Item1 Name="Default" Default="True"/>
       <Item2 Name="Debug">
         <CompilerOptions>
@@ -127,11 +127,6 @@
             <IncludeFiles Value="$(ProjOutDir)"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
-          <Parsing>
-            <SyntaxOptions>
-              <IncludeAssertionCode Value="True"/>
-            </SyntaxOptions>
-          </Parsing>
           <CodeGeneration>
             <Checks>
               <IOChecks Value="True"/>
@@ -987,17 +982,12 @@
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
-            <Checks>
-              <IOChecks Value="True"/>
-              <RangeChecks Value="True"/>
-              <OverflowChecks Value="True"/>
-              <StackChecks Value="True"/>
-            </Checks>
           </CodeGeneration>
           <Linking>
             <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
               <DebugInfoType Value="dsDwarf3"/>
-              <UseHeaptrc Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>
@@ -1021,7 +1011,60 @@
           </Other>
         </CompilerOptions>
       </Item22>
-      <Item23 Name="CarbonDebug">
+      <Item23 Name="GTK3Debug">
+        <MacroValues Count="1">
+          <Macro3 Name="LCLWidgetType" Value="gtk3"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseLineInfoUnit Value="False"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dDisableLCLGIF
+-dDisableLCLJPEG
+-dDisableLCLPNM
+-dDisableLCLTIFF
+-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item23>
+      <Item24 Name="CarbonDebug">
         <MacroValues Count="1">
           <Macro6 Name="LCLWidgetType" Value="carbon"/>
         </MacroValues>
@@ -1069,8 +1112,8 @@
             <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
-      </Item23>
-      <Item24 Name="ReleaseRasPi64Qt5">
+      </Item24>
+      <Item25 Name="ReleaseRasPi64Qt5">
         <MacroValues Count="1">
           <Macro4 Name="LCLWidgetType" Value="qt5"/>
         </MacroValues>
@@ -1109,11 +1152,11 @@
             <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
-      </Item24>
+      </Item25>
       <SharedMatrixOptions Count="7">
         <Item1 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64,LeakCheckWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
         <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseLin64,ReleaseLin32,ReleaseRasPi64" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
-        <Item3 ID="429153174386" Modes="GTK3" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
+        <Item3 ID="429153174386" Modes="GTK3,GTK3Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
         <Item4 ID="950048283013" Modes="QT5Debug,ReleaseQT5,ReleaseRasPi,ReleaseLin32Qt5,ReleaseRasPi64Qt5" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
         <Item5 ID="341789512381" Modes="CocoaDebug,CocoaRelease,CocoaArmRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
         <Item6 ID="231441956052" Modes="CarbonRelease,CarbonDebug" Type="IDEMacro" MacroName="LCLWidgetType" Value="carbon"/>
@@ -1377,6 +1420,7 @@
     </SearchPaths>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
+      <VerifyObjMethodCallValidity Value="True"/>
       <Optimizations>
         <OptimizationLevel Value="0"/>
       </Optimizations>
