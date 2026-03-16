@@ -1329,6 +1329,11 @@ procedure TSearchForm.FormShow(Sender: TObject);
 var
     Butt : TButton;
 begin
+    {$ifdef LCLGtk3}         // see  https://forum.lazarus.freepascal.org/index.php/topic,73658.msg578545/topicseen.html#new
+    width := 794;            // ToDo : temp measure ....
+    height := 401;
+    {$endif}
+
     Left := Placement + random(Placement*2);
     Top := Placement + random(Placement * 2);
     if Sett.DarkThemeSwitch then begin                    // We are not relying on OS to set dark theme, it was --dark-theme

@@ -1036,11 +1036,8 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <GenerateDebugInfo Value="False"/>
               <DebugInfoType Value="dsDwarf3"/>
-              <UseLineInfoUnit Value="False"/>
               <UseHeaptrc Value="True"/>
-              <TrashVariables Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>
@@ -1197,7 +1194,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="37">
+    <Units Count="39">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -1407,6 +1404,14 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit36>
+      <Unit37>
+        <Filename Value="mvxwindow.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit37>
+      <Unit38>
+        <Filename Value="transmisty.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit38>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

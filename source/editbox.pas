@@ -264,13 +264,14 @@ unit EditBox;
 interface
 
 uses
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, Menus,LazLogger,
     StdCtrls, Buttons, kmemo, clipbrd, lcltype,
     ComCtrls,           // required up here for copy on selection stuff.
     fpexprpars,         // for calc stuff ;
     SaveNote,      		// Knows how to save a Note to disk in Tomboy's XML
     PrintersDlgs,
-    TBUndo, LazLogger;
+    TBUndo;
+//    ,LCLProc;           // DebuglnThreadLog()
 
 type FontLimitedAttrib = record      // Used to save and restore attributes when
     Styles : TFontStyles;            // a hyperlink is created or unlinked.
@@ -295,7 +296,7 @@ type                              // To re-introduce triple click to the kmemo
   public
     property OnTripleClick;
   end;
-  // TKMemo is a new one, its the old TMemo plus OnTripleClick.
+  // TKMemo is a new one, its the old TKMemo plus OnTripleClick.
   // https://forum.lazarus.freepascal.org/index.php/topic,69872.msg543642.htm
   // Here we use AVK's model.
 {$endif}
@@ -635,7 +636,7 @@ type
         function CanInsertFileLink(out SoP, OnPara, InLink: boolean): boolean;
 
     public
-        {$ifdef TRIPLECLICK}        // ToDo : Check this is still needed
+        {$ifdef TRIPLECLICK}
         BeforeSingle : integer;     // Selection Index just before click, used for triple click.
         {$endif}
         SingleNoteFileName : string;    // Set by the calling process. FFN inc path, carefull, cli has a real global version
@@ -792,14 +793,15 @@ begin
                             debugln('TSaveThread.Execute --- ERROR ---, failed to save : ' , TheForm.Caption) ;
                             debugln('            FileName : '+ TheLoc.FFName + ' - ', E.Message);
                             {$endif}
-                             WBufStream.Free;
-                             FileStream.Free;
-                             TheSL.Free;
+                   //          WBufStream.Free;
+                   //          FileStream.Free;
+                   //          TheSL.Free;
                              PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEERROR, 0);   // Will release Lock
                              exit;
                           end;
         end;
     finally
+//        DebuglnThreadLog('procedure TSaveThread.Execute - doing finalise block');
         WBufStream.Free;
         FileStream.Free;
         TheSL.Free;
@@ -807,7 +809,16 @@ begin
             TheForm.BusySaving := False;       // Only necessary if not closing, maybe dangerous if closing.
 //        debugln('TSaveThread.Execute Finished ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + TheForm.Caption); // ToDo : remove me
     end;
-    PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEFINISHED, 0);             // Hmm, no error reporting happening here ?
+
+//    DebuglnThreadLog('--------- TSaveThread.Execute Finished Saving');
+//    PostMessage(sett.Handle, WM_SYNCMESSAGES+3000,  WM_SAVEFINISHED, 0);        // Testing
+//    DebuglnThreadLog('--------- TSaveThread.Execute Test Post OK');
+//    debuglnThreadLog('TSaveThread.Execute PostMessage ret '
+//        + booltostr(PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEFINISHED, 0), True));
+      PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEFINISHED, 0);
+//    DebuglnThreadLog('----------TSaveThread.Execute Real Post OK');              // no show if crash
+    // That (more often than not) triggers a crash with Gtk3, when happens, does not get to HandlePostMessage()
+
 end;
 
 constructor TSaveThread.Create(CreateSuspended: boolean);
@@ -1744,7 +1755,6 @@ begin
     // writeln('TEditBoxForm.FormActivate AlreadyCalled is ', booltostr(HaveSeenOnActivate, True));
     if not HaveSeenOnActivate then begin;
         Ready := False;
-        {$ifdef LCLGTK3}debugln('TEditBoxForm.FormActivate');{$endif}
         {$ifdef TDEBUG}Tick := gettickcount64();{$endif}
         if Sett.ShowIntLinks then CheckForLinks(True);
         {$ifdef TDEBUG}
@@ -1762,7 +1772,6 @@ begin
         end;
         HaveSeenOnActivate := True;
         Ready := True;
-        {$ifdef LCLGTK3}debugln('TEditBoxForm.FormActivate finished');{$endif}
     end;
 end;
 
@@ -2477,7 +2486,6 @@ var
     ItsANewNote : boolean = false;
 //    Tick, Tock, Tuck : qword;
 begin
-     {$ifdef LCLGTK3}debugln('TEditBoxForm.FormShow started');{$endif}
     if Ready then exit;                         // its a "re-show" event. Already have a note loaded.
     // Ready := False;                             // But it must be false aready, it was created FALSE
 //    Tick := GetTickCount64();
@@ -2533,7 +2541,6 @@ begin
     Ready := true;
     Dirty := False;
     PanelBackLinks.Visible := false;
-    {$ifdef LCLGTK3}debugln('TEditBoxForm.FormShow finished');{$endif}
 //    writeln('TEditBoxForm.FormShow 4 SelIndex = ', Kmemo1.SelStart);
 
 //    Tuck := GetTickCount64();
@@ -2541,36 +2548,35 @@ begin
 end;
 
 
-    { called when user manually closes this form. }
+    { called when user manually closes this form or App closes down. }
 procedure TEditBoxForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-//    debugln('TEditBoxForm.FormClose called ' + DateTimeToStr(Now) + ' form=' + Caption); // ToDo : remove me
-    Release;
-end;
+    CloseAction := caFree;
+//    Release;                 // March 2026, this was release, it caused form size issues in Gtk3
+ end;
 
 procedure TEditBoxForm.FormCloseQuery(Sender: TObject; var CanClose: boolean);
 begin
-//    debugln('TEditBoxForm.FormCloseQuery called ' + DateTimeToStr(Now) + ' form=' + Caption); // ToDo : remove me
     CanClose := True;
 end;
 
 procedure TEditBoxForm.FormDestroy(Sender: TObject);
 begin
-//    debugln('TEditBoxForm.FormDestroy called ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + Caption); // ToDo : remove me
-    if Undoer <> Nil then Undoer.free;
+    if Undoer <> Nil then begin
+        Undoer.free;
+        Undoer := nil;
+    end;
     UnsetPrimarySelection;                                      // tidy up copy on selection.
     if (length(NoteFileName) = 0) and (not Dirty) then exit;    // A new, unchanged note, no need to save.
     if not Kmemo1.ReadOnly then
         if not DeletingThisNote then
             if (not SingleNoteMode) or Dirty then       // We always save, except in SingleNoteMode (where we save only if dirty)
                 SaveTheNote(Sett.AreClosing);           // Jan 2020, just call SaveTheNote, it knows how to record the notebook state
-//    debugln('TEditBoxForm.FormDestroy marking Nil ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + Caption); // ToDo : remove me
     SearchForm.NoteClosing(NoteFileName);
     // In single note mode, form is modal, don't call Application.ProcessMessage at this stage
-    if not SingleNoteMode then
-        Application.ProcessMessages;
-//    debugln('TEditBoxForm.FormDestroy finished ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + Caption); // ToDo : remove me
-end;
+ //   if not SingleNoteMode then
+ //       Application.ProcessMessages;              // OK, why was this here ? It triggers a double Destroy for some reason.
+end;                                                // March, 2026 I disabled it
 
 // Make sure position and size is appropriate.
 procedure TEditBoxForm.AdjustFormPosition();
@@ -3535,12 +3541,6 @@ begin
         while BlockNo > 0 do begin
             BlockNo := GetPrevPara(BlockNo-1);
             // At this point, BlockNo points to Par marker before our text.
-//          if BlockNo >= 0 then
-            // ToDo : above suspect line, part of a debug sys ???? Has been active and accidently
-            // acting on the "BuffOffSet := " line below since I reversed the direction of scanning
-            // for links. I am reasonably sure it should NOT be active.
-//          debugln('Char index=' + inttostr(KMemo1.Blocks.BlockToIndex(KMemo1.Blocks[BlockNo+1])));
-
             BuffOffSet := KMemo1.Blocks.BlockToIndex(KMemo1.Blocks[BlockNo+1]);
             for i := 0 to TheMainNoteLister.NoteList.Count-1 do                 // for each title in main list
                 if TheMainNoteLister.NoteList[i]^.Title <> NoteTitle then begin // don't link to self
@@ -3930,7 +3930,6 @@ var
     TempTitle : ANSIString;
     {$ifdef LDEBUG}TS1, TS2  : qword;{$endif}
 begin
-    {$ifdef LCLGTK3}debugln('TEditBoxForm.DoHousekeeping');{$endif}
     if KMemo1.ReadOnly then exit();
     Ready := False;
     CurserPos := KMemo1.RealSelStart;
@@ -3957,7 +3956,7 @@ begin
     if (not SingleNoteMode) {and (Sett.ShowIntLinks or Sett.CheckShowExtLinks.Checked)} then begin
         {$ifdef LDEBUG}TS1 := gettickcount64();{$endif}
         CheckForLinks(False);                   // does its own locking
-        TimerHouseKeeping.Enabled := False;                                     // ToDo : why don't we disable in every run through ??
+        TimerHouseKeeping.Enabled := False;
         {$ifdef LDEBUG}TS2 := gettickcount64();
         debugln('------------- DoHousekeeping Update Links ' + inttostr(TS2-TS1) + 'ms');{$endif}
     end;
@@ -3969,7 +3968,6 @@ end;
 
 procedure TEditBoxForm.TimerHousekeepingTimer(Sender: TObject);
 begin
-    {$ifdef LCLGTK3}debugln('TEditBoxForm.TimeHousekeeping');{$endif}
     TimerHouseKeeping.Enabled := False;
     DoHouseKeeping();
 end;
@@ -4398,11 +4396,10 @@ var
                          ABlock.ParaStyle.FirstIndent := 0;                    // clear any possible bullet residue - is this necessary elsewhere ?
                 end;
                 Result := True;
-            end else debugln('DeleteAtEOL() ABlock is not Para');
+            end else debugln('TEditBoxForm.KMemo1KeyDown - ERROR DeleteAtEOL() ABlock is not Para');
     end;
 
 begin
-    {$ifdef LCLGTK3}debugln('TEditBoxForm.KMemo1KeyDown Key = ' + inttostr(Key));{$endif}
     if not Ready then begin       // Will this help with issue #279  ?
         if [ssCtrl] = shift then
             Key := 0;
@@ -4729,14 +4726,15 @@ begin
     BusySaving := True;
     Result := True;
     // {$ifdef SAVETHREAD}
-    if not WeAreClosing then begin
+    {$ifdef LCLGTK3} if false then begin            // ToDo : Gtk3 has problems with PostMessage in thread.
+    {$else}if not WeAreClosing then begin {$endif}  // This means Gtk3 will be noticabe slower when saving
         TheSaveThread := TSaveThread.Create(true);
         TheSaveThread.TheLoc := Loc;
         TheSaveThread.TheSL := Sl;
         //TheSaveThread.Title := Caption;        // better to use TheForm (as long as its still exists??)
         TheSaveThread.TheForm := self;
-        TheSaveThread.Start;
-        // It will clean up after itself.
+        TheSaveThread.Start;                     // It will clean up after itself.
+//        sleep(300);                            // ToDo : remove this, just here so not caught by crash on thread post bug while I fix other things
     end else begin                               // When app is closing, we don't save in a thread, seems unreliable !
         // {$else}
         Normaliser := TNoteNormaliser.Create;
@@ -4782,6 +4780,7 @@ var
     //T1, T2, T3, T4, T5, T6, T7 : qword;            // Timing shown is for One Large Note.
 
 begin
+    debugln('TEditBoxForm.SaveTheNote Width=' + inttostr(Width) + '  Height=' + inttostr(Height));     // ToDo : remove me !
 
     //TheMainNoteLister.DumpNoteNoteList('TEditBoxForm.SaveTheNote ' + NoteTitle);
     if BusySaving then begin

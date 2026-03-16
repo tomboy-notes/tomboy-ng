@@ -7,7 +7,7 @@ object SearchForm: TSearchForm
   Caption = 'Search'
   ClientHeight = 401
   ClientWidth = 794
-  LCLVersion = '4.4.0.0'
+  LCLVersion = '4.99.0.0'
   OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -43,13 +43,13 @@ object SearchForm: TSearchForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = StatusBar1
     Left = 0
-    Height = 344
+    Height = 346
     Top = 33
     Width = 794
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 1
     Caption = 'Panel1'
-    ClientHeight = 344
+    ClientHeight = 346
     ClientWidth = 794
     TabOrder = 0
     object Splitter1: TSplitter
@@ -57,7 +57,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 224
-      Height = 342
+      Height = 344
       Top = 1
       Width = 5
       Align = alNone
@@ -86,7 +86,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 1
-      Height = 279
+      Height = 281
       Hint = 'Right Click to manage Notebooks'
       Top = 64
       Width = 223
@@ -126,7 +126,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 232
-      Height = 342
+      Height = 344
       Top = 1
       Width = 561
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -163,8 +163,8 @@ object SearchForm: TSearchForm
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Height = 24
-    Top = 377
+    Height = 22
+    Top = 379
     Width = 794
     AutoHint = True
     Panels = <    

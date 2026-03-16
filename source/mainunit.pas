@@ -378,7 +378,6 @@ begin
     if assigned(TheMainNoteLister) then begin
         AForm := TheMainNoteLister.FindFirstOpenNote(NoteIndex);
         while AForm <> Nil do begin                              // AForm may become nil at any time
-            inc(NotesSavedAtClose);                              // ToDo : do we need this now ?
             aPNote := TheMainNoteLister.GetNote(NoteIndex);
             while (aPNote^.OpenNote <> Nil)                              // the realtest is BusySaving, check for nil first thu
                     and (TEditBoxForm(aPNote^.OpenNote).BusySaving) do   // possible an auto save is happening.
@@ -420,8 +419,7 @@ begin
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
-var
-    {$ifdef LCLGTK2}
+{$ifdef LCLGTK2}var
     c: PGtkClipboard;
     t: string;
     {$endif}

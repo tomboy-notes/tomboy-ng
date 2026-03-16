@@ -1,7 +1,7 @@
 object FormRecover: TFormRecover
-  Left = 1401
+  Left = 1160
   Height = 561
-  Top = 631
+  Top = 462
   Width = 758
   Caption = 'FormRecover'
   ClientHeight = 561

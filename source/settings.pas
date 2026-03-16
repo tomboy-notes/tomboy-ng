@@ -514,8 +514,7 @@ var
                         // and SyncingLockNow set in TSyncThread.Execute and unset in HandlePostMessage()
     LockSyncingNow : boolean;
     LockSavingNow : boolean;                    // Set by EditBox SaveThread, unset by TSett.HandlePostMessage
-    NotesSavedAtClose : integer;                // A count of concurrent notes being saved at close
-
+    // ToDo : better locking maybe ?
 
 const
     Placement = 45;				// where we position an opening window. Its, on average, 1.5 time Placement;
@@ -866,6 +865,10 @@ end;
 
 procedure TSett.FormShow(Sender: TObject);
 begin
+    {$ifdef LCLGtk3}         // see  https://forum.lazarus.freepascal.org/index.php/topic,73658.msg578545/topicseen.html#new
+    width := 726;            // ToDo : temp measure ....
+    height := 530;
+    {$endif}
     if not assigned(Spell) then
         Spell := THunspell.Create(Application.HasOption('debug-spell'), LabelLibrary.Caption);
         // user user has 'closed' (ie hide) then Spell was freed.
@@ -919,7 +922,6 @@ begin
     DebugSync := Application.HasOption('s', 'debug-sync');
     // gTTFontCache.ReadStandardFonts;         // we do this in Kmemo2PDR now.
     fSearchTitleOnly := False;
-    NotesSavedAtClose := 0;                    // Inc'ed in Main FormClose, dec'ed when a note save finshes (at close time)
     Caption := 'tomboy-ng Settings';
     ButtonSetNotePath.Enabled := False;
     AreClosing := false;
@@ -2196,10 +2198,8 @@ begin
                 WriteConfigFile(false, True);                                 // WriteConfigFile is called from all over the place, only this call should update last sync times.
         end;
         WM_SAVEERROR, WM_SAVETIMEOUT, WM_SAVEFINISHED : begin                 // The Save Group
-//            debugln('TSett.HandlePostMessage SAVE-POST-MESSAGE ' + FormatDateTime('hh:nn:ss.zzz', Now())); // ToDo : remove me
             LockSavingNow := false;
             if AreClosing then
-                dec(NotesSavedAtClose);
             if (Msg.wParam <> WM_SAVEFINISHED)  then begin                    // No notification necessary for good save
                 if CheckNotifications.Checked  then
                     MainForm.ShowNotification(St, 2000);
