@@ -99,7 +99,7 @@ function FindInStringArray(const AnArray : array of string; const FindMe : strin
                         // Passed  FFN, thats <path><ID><.note> and returns the Title, munge indicates
                         // make it suitable for use as a file name, an empty ret string indicates error
 function GetTitleFromFFN(FFN: string; Munge : boolean{; out LenTitle : integer}): string;
-
+                        // Opens (and closes) an existing note to get its height and width.
 procedure GetHeightWidthOfNote(FFN : string; out NHeight, NWidth : integer);
 
                         // Remove all content up to and including <note-content ...> and all content
@@ -279,6 +279,9 @@ end;
 { Next function assumes that Last Change Dates are on single lines each and that
   Notebook tags, if present, follow the </y> tag. Possibly risky.  }
 
+           // Changes content in a disk based note. Changes -
+           // last-change-date, last-metadata-change-date to current date/time
+           // Apparently removes all tags except the last one ? WTF ?
 function ReplaceNoteBookTags(const FullFileName : string) : boolean;
 var
     InFile, OutFile: TextFile;
@@ -614,6 +617,7 @@ begin
     {$ifdef LCL}Debugln{$else}writeln{$endif}(St);
     result := false;
 end;
+
 
 procedure GetHeightWidthOfNote(FFN : string; out NHeight, NWidth : integer);
 var

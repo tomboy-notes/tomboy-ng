@@ -19,7 +19,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = LabelNotesFound
     Left = 24
     Height = 18
-    Top = 73
+    Top = 74
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869631E02000089504E47
@@ -46,7 +46,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = LabelNotesFound
     Left = 8
     Height = 18
-    Top = 73
+    Top = 74
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963F402000089504E47
@@ -80,9 +80,9 @@ object MainForm: TMainForm
     AnchorSideTop.Control = LabelNotesFound
     AnchorSideTop.Side = asrBottom
     Left = 56
-    Height = 20
-    Top = 99
-    Width = 195
+    Height = 24
+    Top = 104
+    Width = 234
     BorderSpacing.Top = 6
     Caption = 'Dictionary Config (optional)'
   end
@@ -90,9 +90,9 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label3
     AnchorSideTop.Side = asrBottom
     Left = 56
-    Height = 20
-    Top = 125
-    Width = 156
+    Height = 24
+    Top = 134
+    Width = 186
     BorderSpacing.Top = 6
     Caption = 'Sync Config (optional)'
   end
@@ -100,7 +100,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label3
     Left = 24
     Height = 18
-    Top = 99
+    Top = 104
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869631E02000089504E47
@@ -127,7 +127,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label3
     Left = 8
     Height = 18
-    Top = 99
+    Top = 104
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963F402000089504E47
@@ -161,7 +161,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label4
     Left = 24
     Height = 18
-    Top = 125
+    Top = 134
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869631E02000089504E47
@@ -188,7 +188,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label4
     Left = 8
     Height = 18
-    Top = 125
+    Top = 134
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963F402000089504E47
@@ -220,9 +220,9 @@ object MainForm: TMainForm
   end
   object Label5: TLabel
     Left = 24
-    Height = 25
+    Height = 26
     Top = 43
-    Width = 207
+    Width = 208
     Caption = 'Welcome to tomboy-ng !'
     Font.Height = -18
     Font.Name = 'Lucida Grande'
@@ -232,9 +232,9 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label5
     AnchorSideTop.Side = asrBottom
     Left = 56
-    Height = 20
-    Top = 73
-    Width = 10
+    Height = 24
+    Top = 74
+    Width = 11
     BorderSpacing.Top = 5
     Caption = 'X'
   end
@@ -243,8 +243,8 @@ object MainForm: TMainForm
     Left = 24
     Height = 20
     Hint = 'Launch from commandline to see errors or see Config->SnapShot->Recover ...'
-    Top = 160
-    Width = 11
+    Top = 169
+    Width = 10
     BorderSpacing.Top = 35
     Caption = 'X'
     Font.Height = -16
@@ -260,10 +260,10 @@ object MainForm: TMainForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 16
-    Height = 26
+    Height = 29
     Hint = 'You can reverse this from Settings'
-    Top = 253
-    Width = 241
+    Top = 250
+    Width = 278
     Anchors = [akLeft, akBottom]
     BorderSpacing.Top = 14
     BorderSpacing.Bottom = 15
@@ -364,9 +364,9 @@ object MainForm: TMainForm
     AnchorSideTop.Control = LabelError
     AnchorSideTop.Side = asrBottom
     Left = 24
-    Height = 20
-    Top = 192
-    Width = 148
+    Height = 24
+    Top = 201
+    Width = 176
     BorderSpacing.Top = 12
     Caption = 'LabelBadNoteAdvice'
   end
@@ -410,7 +410,7 @@ object MainForm: TMainForm
     AnchorSideRight.Side = asrBottom
     Left = 360
     Height = 28
-    Top = 125
+    Top = 134
     Width = 219
     Anchors = [akTop]
     Caption = 'SysTray Help'

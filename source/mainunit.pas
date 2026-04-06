@@ -363,8 +363,8 @@ end;
     First, FormCloseQuery is called, it can but rarely should prevent closure.
     Next, FormClose is called. Note Windows (and most others) are non-modal.
     Finally, when any pending work, perhaps setup by above, FormDestroy is called
+    investigate calling Release instead ??
 }
-    // ToDo : investigate calling Release instead.
 
 function TMainForm.CloseOpenNotes() : boolean;
 var

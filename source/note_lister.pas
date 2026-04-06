@@ -273,8 +273,7 @@ type
     procedure DumpNoteNoteList(WhereFrom: string);
                                         // Puts name of any note that contains (case insensitive) the passed string into
                                         // the passed stringlist. Does nothing to do with sorting, order etc.
-                                        // Used to get backlinks.
-                                        // ToDo : At present, assumes all content loaded.
+                                        // Used to get backlinks. At present, assumes all content loaded ?
     procedure SearchContent(const St: string; Stl: TstringList);
     procedure DumpNoteBookList(WhereFrom: String);
 
@@ -593,8 +592,6 @@ begin
 end;
 
 { ================ I N D E X  T H R E A D  ======================= }
-
-// ToDo : much of the work here is done in GetNoteDetails, maybe it belongs in this Type ?
 
 constructor TIndexThread.Create(CreateSuspended : boolean);
 begin
@@ -1870,7 +1867,7 @@ begin
     Result := PNote(NoteList.get(Index))^.Title;
 end;
 
-function TNoteLister.GetNote(Index : integer) : PNote;          // ToDo : Used by sync, might be faster to just give it access to NoteList
+function TNoteLister.GetNote(Index : integer) : PNote;
 begin
     Result := nil;
     if (Index > -1) and (Index < NoteList.Count) then
@@ -1951,7 +1948,7 @@ begin
         IndexThread.start();
         dec(Cnt);
     end;
-    while FinishedThreads < 4 do sleep(1);       // ToDo : some sort of 'its taken too long ..."
+    while FinishedThreads < 4 do sleep(1);       // ToDo : some sort of 'its taken too long' - apparently no need.
     DoneCriticalSection(CriticalSection);                  // ++++++++++++
     if ErrorNotes.Count > 0 then begin
         debugln('TNoteLister.IndexNotes One or more notes have error.');

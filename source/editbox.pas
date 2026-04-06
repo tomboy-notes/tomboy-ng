@@ -2519,6 +2519,9 @@ begin
     if ItsANewNote then begin
         left := (screen.Width div 2) - (width div 2);
         top := (screen.Height div 2) - (height div 2);
+        {$ifdef LCLGTK3}
+        Width := 600;
+        {$endif}
         CreateDate := '';
         Caption := NoteTitle;
     	KMemo1.Blocks.AddParagraph();
@@ -2601,9 +2604,7 @@ end;
 
 procedure TEditBoxForm.TimerSaveTimer(Sender: TObject);
 begin
-    {$ifdef LCLGTK3}debugln('TEditBoxForm.timerSaveTimer');{$endif}
     TimerSave.Enabled:=False;
-	// showmessage('Time is up');
     SaveTheNote();
 end;
 
@@ -3963,7 +3964,6 @@ begin
     KMemo1.SelStart := CurserPos;
     KMemo1.SelLength := SelLen;
     Ready := True;
-    {$ifdef LCLGTK3}debugln('TEditBoxForm.DoHousekeeping done');{$endif}
 end;
 
 procedure TEditBoxForm.TimerHousekeepingTimer(Sender: TObject);
@@ -4710,24 +4710,20 @@ That list is passed to SaveStringList, it makes a new thread that normalises
 content of string list and then writes it to disk.
 }
 
-{$define SAVETHREAD}
 
 function TEditBoxForm.SaveStringList(const SL: TStringList; Loc : TNoteUpdateRec; WeAreClosing : boolean) : boolean;
 var
-//    {$ifdef SAVETHREAD}
     TheSaveThread : TSaveThread;
-//    {$else}
     Normaliser : TNoteNormaliser;
     WBufStream : TWriteBufStream;
     FileStream : TFileStream;
-//    {$ENDIF}
 begin
     if BusySaving then exit(False);
     BusySaving := True;
     Result := True;
-    // {$ifdef SAVETHREAD}
-    {$ifdef LCLGTK3} if false then begin            // ToDo : Gtk3 has problems with PostMessage in thread.
-    {$else}if not WeAreClosing then begin {$endif}  // This means Gtk3 will be noticabe slower when saving
+                                                                           // Unknown exception code 6 from Post
+     if {$ifdef LCLGTK3}false and {$endif} (not WeAreClosing) then begin   // ToDo : Gtk3 has problems with PostMessage in thread.
+                                                                           // This means Gtk3 will be noticable slower when saving
         TheSaveThread := TSaveThread.Create(true);
         TheSaveThread.TheLoc := Loc;
         TheSaveThread.TheSL := Sl;
@@ -4735,7 +4731,8 @@ begin
         TheSaveThread.TheForm := self;
         TheSaveThread.Start;                     // It will clean up after itself.
 //        sleep(300);                            // ToDo : remove this, just here so not caught by crash on thread post bug while I fix other things
-    end else begin                               // When app is closing, we don't save in a thread, seems unreliable !
+//          debugln('TEditBoxForm.SaveStringList saving in Thread');
+     end else begin                               // When app is closing, we don't save in a thread, seems unreliable !
         // {$else}
         Normaliser := TNoteNormaliser.Create;
         Normaliser.NormaliseList(SL);
@@ -4762,6 +4759,7 @@ begin
           PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEFINISHED, 0);   // Will release Lock
         end;
         BusySaving := False;
+//        debugln('TEditBoxForm.SaveStringList saving without Thread');
     end;
     // {$ENDIF}
 end;
@@ -4780,8 +4778,6 @@ var
     //T1, T2, T3, T4, T5, T6, T7 : qword;            // Timing shown is for One Large Note.
 
 begin
-    debugln('TEditBoxForm.SaveTheNote Width=' + inttostr(Width) + '  Height=' + inttostr(Height));     // ToDo : remove me !
-
     //TheMainNoteLister.DumpNoteNoteList('TEditBoxForm.SaveTheNote ' + NoteTitle);
     if BusySaving then begin
         debugln('TEditBoxForm.SaveTheNote declined because BusySaving ' + FormatDateTime('hh:nn:ss.zzz', Now()) + ' form=' + Caption);
@@ -4791,7 +4787,7 @@ begin
     //T1 := gettickcount64();
     Saver := Nil;
     if KMemo1.ReadOnly then exit();
-  	if length(NoteFileName) = 0 then begin
+    if length(NoteFileName) = 0 then begin
         NoteFileName := Sett.NoteDirectory + GetAFilename();
         ItsANewNote := True;
     end;
@@ -4876,22 +4872,8 @@ begin
         if LineNumb = -1 then debugln('TEditBoxForm.SaveTheNote did not find note in notelister to insert content into. ' + NoteTitle);
     end;
     if SaveStringList(SL, Loc, WeAreClosing) then Dirty := False;             // Note, thats not a guaranteed good save,
-
-    //debugln({$I %CURRENTROUTINE%}, '() ', {$I %FILE%}, ', ', 'line:', {$I %LINE%}, ' : ', 'At end, dirty=' + booltostr(Dirty, true));
-    //T6 := GetTickCount64();
-
-    //debugln('Save Note Initial=' + inttostr(T2-T1) + ' Saver=' + inttostr(T3-T2)
-    //            + ' BuildContent=' + Inttostr(T4-T3) + ' ContentToNoteLister=' + inttostr(T5-T4) + ' SendToSaveStringList=' + (T6-T5).tostring);
-    // Save Note Initial=0 Saver=4 BuildContent=4 ContentToNoteLister=0 SendToSaveStringList=0  with locking disabled
     // ToDo : Building search content is pretty slow ??
     // Move into SaveThread would require passing kmemo there too but thats probably the answer
-    // maybe review the lines approach ? Saver is doing a lot more ....
-    (*
-    {$ifdef SAVETHREAD}
-    debugln('Total time to save threaded is ' + inttostr(T5-T1));
-    {$else}
-    debugln('Total time to save UN-threaded is ' + inttostr(T5-T1));
-    {$endif}      *)
 end;
 
 function TEditBoxForm.NewNoteTitle(): ANSIString;

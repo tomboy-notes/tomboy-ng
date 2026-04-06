@@ -114,7 +114,7 @@ type
                 procedure SetupForNewSelect();
 		public
                 TheMode : NoteBookMode;         // Just what are we doing here ?
-        	    FullFileName : ANSIString;      // The filename of the Note that invoked self. So, apply to this note oonly.
+        	    FullFileName : ANSIString;      // The filename of the Note that invoked self. So, apply to this note only.
                 Title  : ANSIString;            // Title of note that invoked self.
                 NBName : string;                // Notebook Name, means we are working with just this notebook.
                 ChangeMode : boolean;           // Indicates we wish to rename  existing notebook.

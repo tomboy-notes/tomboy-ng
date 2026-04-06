@@ -2,10 +2,10 @@ object EditBoxForm: TEditBoxForm
   Left = 408
   Height = 505
   Top = 252
-  Width = 784
+  Width = 200
   Caption = 'EditBoxForm'
   ClientHeight = 505
-  ClientWidth = 784
+  ClientWidth = 200
   Constraints.MinHeight = 200
   Constraints.MinWidth = 200
   LCLVersion = '4.99.0.0'
@@ -25,10 +25,10 @@ object EditBoxForm: TEditBoxForm
     Left = 0
     Height = 60
     Top = 406
-    Width = 784
+    Width = 200
     Anchors = [akLeft, akRight, akBottom]
     ClientHeight = 60
-    ClientWidth = 784
+    ClientWidth = 200
     Color = clYellow
     ParentBackground = False
     ParentColor = False
@@ -46,16 +46,16 @@ object EditBoxForm: TEditBoxForm
     end
     object Label3: TLabel
       Left = 120
-      Height = 20
+      Height = 24
       Top = 8
-      Width = 336
+      Width = 405
       Caption = 'This note has been changed by the Sync Process'
     end
     object Label4: TLabel
       Left = 120
-      Height = 20
+      Height = 24
       Top = 32
-      Width = 342
+      Width = 411
       Caption = 'Please close it (and re-open if it was a download)'
     end
   end
@@ -68,16 +68,16 @@ object EditBoxForm: TEditBoxForm
     Left = 0
     Height = 39
     Top = 466
-    Width = 784
+    Width = 200
     Anchors = [akLeft, akRight, akBottom]
     BevelInner = bvLowered
     ClientHeight = 39
-    ClientWidth = 784
+    ClientWidth = 200
     TabOrder = 2
     OnEnter = PanelFindEnter
     object EditFind: TEdit
       Left = 8
-      Height = 32
+      Height = 36
       Top = 5
       Width = 136
       ParentShowHint = False
@@ -95,10 +95,10 @@ object EditBoxForm: TEditBoxForm
       AnchorSideTop.Control = EditFind
       AnchorSideBottom.Control = EditFind
       AnchorSideBottom.Side = asrCenter
-      Left = 221
-      Height = 20
+      Left = 222
+      Height = 24
       Top = 11
-      Width = 95
+      Width = 116
       Anchors = [akLeft, akBottom]
       BorderSpacing.Left = 5
       Caption = 'LabelFindInfo'
@@ -111,7 +111,7 @@ object EditBoxForm: TEditBoxForm
       Left = 206
       Height = 28
       Top = 9
-      Width = 10
+      Width = 11
       Anchors = [akTop, akLeft, akBottom]
       BorderSpacing.Left = 6
       Caption = 'X'
@@ -123,7 +123,7 @@ object EditBoxForm: TEditBoxForm
       AnchorSideBottom.Control = EditFind
       AnchorSideBottom.Side = asrBottom
       Left = 144
-      Height = 32
+      Height = 36
       Top = 5
       Width = 28
       Anchors = [akTop, akLeft, akBottom]
@@ -214,7 +214,7 @@ object EditBoxForm: TEditBoxForm
       AnchorSideBottom.Control = EditFind
       AnchorSideBottom.Side = asrBottom
       Left = 172
-      Height = 32
+      Height = 36
       Top = 5
       Width = 28
       Anchors = [akTop, akLeft, akBottom]
@@ -302,7 +302,7 @@ object EditBoxForm: TEditBoxForm
       AnchorSideTop.Control = PanelFind
       AnchorSideRight.Control = PanelFind
       AnchorSideRight.Side = asrBottom
-      Left = 760
+      Left = 176
       Height = 22
       Top = 2
       Width = 22
@@ -355,10 +355,10 @@ object EditBoxForm: TEditBoxForm
     Left = 0
     Height = 40
     Top = 0
-    Width = 784
+    Width = 200
     Anchors = [akTop, akLeft, akRight]
     ClientHeight = 40
-    ClientWidth = 784
+    ClientWidth = 200
     TabOrder = 3
     object SpeedButtonNotebook: TSpeedButton
       AnchorSideLeft.Control = SpeedButtonDelete
@@ -1081,10 +1081,10 @@ object EditBoxForm: TEditBoxForm
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = PanelButtons
       AnchorSideBottom.Side = asrBottom
-      Left = 735
+      Left = 142
       Height = 38
       Top = 1
-      Width = 48
+      Width = 57
       Anchors = [akTop, akRight, akBottom]
       AutoSize = True
       Caption = 'Close'
@@ -1193,7 +1193,7 @@ object EditBoxForm: TEditBoxForm
     Left = 0
     Height = 366
     Top = 40
-    Width = 784
+    Width = 200
     Anchors = [akTop, akLeft, akRight, akBottom]
     ContentPadding.Left = 5
     ContentPadding.Top = 5
@@ -1269,8 +1269,8 @@ object EditBoxForm: TEditBoxForm
       AnchorSideRight.Side = asrBottom
       AnchorSideBottom.Control = BitBtnBackLinks
       Left = 11
-      Height = 20
-      Top = 4
+      Height = 24
+      Top = 2
       Width = 241
       Anchors = [akLeft, akRight]
       BorderSpacing.Left = 10

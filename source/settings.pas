@@ -986,6 +986,10 @@ begin
 //    WantGitHubSync := False;
     LockSyncingNow := False;
     LockSavingNow := False;
+    {$ifdef LCLGTK3}
+    SpinMaxSnapshots.Width:= SpinMaxSnapshots.Width + 24;
+    SpinDaysPerSnapshot.Width := SpinDaysPerSnapshot.Width + 24;
+    {$endif}
 end;
 
 procedure TSett.FormDestroy(Sender: TObject);
