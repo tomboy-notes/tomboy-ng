@@ -793,11 +793,8 @@ begin
                             debugln('TSaveThread.Execute --- ERROR ---, failed to save : ' , TheForm.Caption) ;
                             debugln('            FileName : '+ TheLoc.FFName + ' - ', E.Message);
                             {$endif}
-                   //          WBufStream.Free;
-                   //          FileStream.Free;
-                   //          TheSL.Free;
-                             PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEERROR, 0);   // Will release Lock
-                             exit;
+                            PostMessage(sett.Handle, WM_SYNCMESSAGES,  WM_SAVEERROR, 0);   // Will release Lock
+                            exit;
                           end;
         end;
     finally
@@ -1078,25 +1075,14 @@ begin
          // debugln('TEditBoxForm.BackSpaceBullet - reduce indent level');
          exit(True);
     end;
-
     // If previous para is already a bullet or Indent and current one is not, we set current one to  same
     // level as previous and allow BS to do the rest. BlockNo would have been set above
     // and we know we are on the first char of the paragraph.
     if (BlockNo > 0) and (not IsBulletPara) then begin                                // Cursor is on first char of a non-bullet para.
         if kmemo1.Blocks.Items[BlockNo-1].ClassNameIs('TkMemoParagraph')             // previous block is a para ......
                 and (TKMemoParagraph(KMemo1.Blocks[BlockNo-1]).ParaStyle.LeftPadding > 0) then begin    // ie above line is bullet or indent
-
-
-//             and (TKMemoParagraph(KMemo1.Blocks[BlockNo-1]).Numbering <> pnuNone)     // and previous block is bullet !
-//                    or (TKMemoParagraph(KMemo1.Blocks[BlockNo-1]).ParaStyle.LeftPadding > 0) then begin     // both tests unnecessary, we probably just need leftpadding ...
-
-
             TKMemoParagraph(KMemo1.Blocks[ParaBlockNo]).Numbering := TKMemoParagraph(KMemo1.Blocks[BlockNo-1]).Numbering;
             TKMemoParagraph(KMemo1.Blocks[ParaBlockNo]).ParaStyle.LeftPadding := TKMemoParagraph(KMemo1.Blocks[BlockNo-1]).ParaStyle.LeftPadding;
-
-//            writeln(TKMemoParagraph(KMemo1.Blocks[ParaBlockNo]).ParaStyle.LeftPadding);
-
-            // SetBullet(TKMemoParagraph(KMemo1.Blocks[ParaBlockNo]), True, TKMemoParagraph(KMemo1.Blocks[BlockNo-1]).Numbering);
             debugln('TEditBoxForm.BackSpaceBullet - cp upper bullet level to current line, leftpadding=' + inttostr(TKMemoParagraph(KMemo1.Blocks[ParaBlockNo]).ParaStyle.LeftPadding));
             exit(False);                                                             // lets BS go through to KMemo.
          end;
@@ -1752,7 +1738,6 @@ procedure TEditBoxForm.FormActivate(Sender: TObject);
     Tick, Tock : integer; {$endif}
 // const AlreadyCalled: boolean = False;           // Typed Constant, remembered but shared with all instances !
 begin
-    // writeln('TEditBoxForm.FormActivate AlreadyCalled is ', booltostr(HaveSeenOnActivate, True));
     if not HaveSeenOnActivate then begin;
         Ready := False;
         {$ifdef TDEBUG}Tick := gettickcount64();{$endif}
@@ -2135,15 +2120,12 @@ var
         Result := false;
         TokIndex := 0;
         while FindToken(St, TokIndex, AToken) do begin
-//           WRITELN('DoToken found possible token : ' + AToken);
            NewText := Tokens.Values[AToken];
            if NewText = '' then begin
                debugln('Note : TEditBoxForm.QuestionToken did not match token : ' + AToken);
            end else  begin
-//               WRITELN('TEditBoxForm.QuestionToken replacing ', AToken, ' with ', NewText);
                St := St.Replace(AToken, NewText, []);
                Result := True;
-//               debugln('Now looks like ' + St);
            end;
         end;
     end;
@@ -2544,8 +2526,6 @@ begin
     Ready := true;
     Dirty := False;
     PanelBackLinks.Visible := false;
-//    writeln('TEditBoxForm.FormShow 4 SelIndex = ', Kmemo1.SelStart);
-
 //    Tuck := GetTickCount64();
 //    debugln('TEditBoxForm.FormShow ' + inttostr(Tock - Tick) + '  ' + inttostr(Tuck - Tock) + ' Total=' + inttostr(Tuck - Tick));
 end;
@@ -3409,31 +3389,6 @@ begin
         inc(FileLink);
     until Len < 1;
 end;
-
-// ============================================================================================================
-(* procedure TestMyFunction();
-var Buff : string; FileLink, Len, Res : integer;
-begin
-
-  FileLink := 2;
-  Buff := 'file://';
-  Res := FindNextFileLink(buff,  FileLink, Len);
-  writeln('Link=[', copy(Buff, Res+1, Len), '] Res=', Res, ' FL=', FileLink, ' Len=', Len);
-
-  Buff := 'file://myfile  file://another ';
-  Res := FindNextFileLink(buff,  FileLink, Len);
-  writeln('Link=[', copy(Buff, Res+1, Len), '] Res=', Res, ' FL=', FileLink, ' Len=', Len);
-
-  FileLink := 0;
-  Buff := 'file://"some silly space"  '#10;
-  Res := FindNextFileLink(buff,  FileLink, Len);
-  writeln('Link=[', copy(Buff, Res+1, Len), '] Res=', Res, ' FL=', FileLink, ' Len=', Len);
-
-  Buff := 'file://"some silly space  ';
-  Res := FindNextFileLink(buff,  FileLink, Len);
-  writeln('Link=[', copy(Buff, Res+1, Len), '] Res=', Res, ' FL=', FileLink, ' Len=', Len);
-end;         *)
-// ======================================================================================================================
 
 procedure TEditBoxForm.CheckForLinks(const FullBody : boolean);
 //{$define TDEBUG}

@@ -43,7 +43,7 @@ TNoteNormaliser = class
 	    procedure MoveTagDown(const StL: TStringList; const StIndex, TagSize: integer);
 		function MoveTagLeft(var St: string): boolean;
 		function MoveTagRight(var St: string): boolean;
-        procedure MoveTagUp(const StL: TStringList; const StIndex: integer; var TagSize: integer);
+        procedure MoveTagUp(const StL: TStringList; var StIndex: integer; var TagSize: integer);
 		function OffTagAtStart(St: string): integer;
 		function OnTagAtEnd(St: string): integer;
 		function RemoveRedundentTag(var St: string): boolean;
@@ -64,9 +64,19 @@ uses lazlogger;
 // ----------------------  N O R M A L I S I N G ------------------------------------
 
 // Deals with 'off' tags that need to be moved up to the para they apply to.
-procedure TNoteNormaliser.MoveTagUp(const StL : TStringList; const StIndex : integer; var TagSize : integer);
+procedure TNoteNormaliser.MoveTagUp(const StL : TStringList; var StIndex : integer; var TagSize : integer);
 var
-    Tag : string;
+        Tag : string;
+        Buff : string;
+
+    procedure showAdebug(Mes : string);    // just a debug method, delete it at some stage, April 2026
+    var i : integer;
+    begin
+        writeln(' ---- ', Mes);
+        for i := 2 to Stl.count - 1 do
+            writeln('Line ', i, '[', Stl[i], ']');
+    end;
+
 begin
     // we have to detect when our line starts with  </note-content> or </text> and
     // terminate processing of this string, they are not text markup.
@@ -75,11 +85,42 @@ begin
         TagSize := 0;
         exit;
     end;
-    StL.Insert(StIndex, copy(StL.Strings[StIndex], TagSize+1, length(StL.Strings[StIndex])));
-    StL.Delete(StIndex+1);
-    StL.Insert(StIndex-1, StL.strings[StIndex-1]+Tag);
-    StL.Delete(StIndex);
+    // There is a trailing tag (ie off) on line StIndex. Move it up to line above
+    // and if StIndex line is now empty, delete it.
+    Buff := Stl[StIndex-1];
+    StL.Delete(StIndex-1);
+    StL.Insert(StIndex-1, Buff + Tag);
+    if Stl[StIndex] = Tag then begin
+        Stl.Delete(StIndex);
+        dec(StIndex);
+    end;
 end;
+
+{   0, 1 - tomboy header, 2 - title line when final line is small
+    When we call MoveTagUp, we have -        (StLndex=3)
+    2 - <size:small>line 34aa
+    3 - </size:small>
+
+Ins 2 - <size:small>line 34aa  one        makes a new line 3 containing text after our tag (maybe m/t)
+    3 -
+    4 - </size:small>
+
+del 2 - <size:small>line 34aa   Two       delete line 4
+    3 -
+
+Ins 2 - <size:small>line 34aa</size:small>    Three   makes a new line 2 containing line 2 + tag
+    3 - <size:small>line 34aa
+    4 -
+
+del 2 - </size:small>           end          Deletes line 3
+    3 - empty
+
+
+
+
+
+
+}
 
 function TNoteNormaliser.MoveTagRight(var St: string): boolean;
 var
@@ -196,10 +237,6 @@ var
 	end;
 
 begin
-
-//if pos('Column Mode', St) > 0 then
-//writeln('---- ' + St);
-
     while(true) do begin
         OffTag := st.IndexOf('</', OffTag);
         if OffTag >= 0 then begin
