@@ -119,9 +119,9 @@ function EscapeJSON(St : string) : string;
                         // Removes a NoteBook tag from a note
 function RemoveNoteBookTag(const FullFileName, NB : string) : boolean;
 
-                        { Rewrites a (not open) note file so Note_Lister's view of it's Notebook
-                          membership is applied. Takes a FullFileName, path, ID and extension.
-                          Updates metadate and last change date too.}
+                        { Rewrites a (not open) note file updating LCD and LMDCD and then
+                          the Notebook tags to agree with Note_Lister's view.
+                          Takes a FullFileName, path, ID and extension.}
 function ReplaceNoteBookTags(const FullFileName : string) : boolean;
 
                         { Returns the name of the config directory (with trailing seperator)  }
@@ -183,7 +183,7 @@ end;
 
 
   // At present, v0.41, tokens only work with markdown export, could work with other exports ?
-  // A token is a piece of text sourounded by $$..$$ that contains ONLY upper case Latin
+  // A token is a piece of text surrounded by $$..$$ that contains ONLY upper case Latin
   // characters or numerals. No spaces, puncation marks, no UTF8, no newlines.
   // The file format, plain text, is <token>=<replacement>.  Lines with out an '='
   // have no effect and, could, concievably be comments.
@@ -279,14 +279,12 @@ end;
 { Next function assumes that Last Change Dates are on single lines each and that
   Notebook tags, if present, follow the </y> tag. Possibly risky.  }
 
-           // Changes content in a disk based note. Changes -
-           // last-change-date, last-metadata-change-date to current date/time
-           // Apparently removes all tags except the last one ? WTF ?
 function ReplaceNoteBookTags(const FullFileName : string) : boolean;
 var
     InFile, OutFile: TextFile;
     InString : string;
 begin
+    writeln('FFN='  + FullFileName);
     AssignFile(InFile, FullFileName);
     AssignFile(OutFile, FullFileName + '-temp');
     Reset(InFile);
@@ -301,7 +299,7 @@ begin
                          + TB_GetLocalTime() + '</last-metadata-change-date>';
          writeln(OutFile, InString);
          if pos('</y>', InString) > 0 then begin                                // Last tag before Notebook, get new tags
-            {$ifndef TESTRIG}
+            {$ifndef TESTRIG}                                                   // Insert the NoteBook tags
             write(OutFile, TheMainNoteLister.NoteBookTags(ExtractFileNameOnly(FullFileName)+'.note'));    // func already has #10 at end
             {$endif}
             readln(InFile, InString);                                           // discard tags from InFile

@@ -1,20 +1,20 @@
 object FormRecover: TFormRecover
-  Left = 484
+  Left = 506
   Height = 561
-  Top = 212
+  Top = 181
   Width = 640
   Caption = 'FormRecover'
   ClientHeight = 561
   ClientWidth = 640
-  LCLVersion = '4.99.0.0'
+  LCLVersion = '4.6.0.0'
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnShow = FormShow
   object Label1: TLabel
     Left = 8
-    Height = 20
+    Height = 24
     Top = 360
-    Width = 44
+    Width = 53
     Caption = 'Label1'
   end
   object ListBoxSnapshots: TListBox
@@ -59,28 +59,28 @@ object FormRecover: TFormRecover
     TabOrder = 1
     object TabSheetIntro: TTabSheet
       Caption = 'Introduction'
-      ClientHeight = 171
-      ClientWidth = 637
+      ClientHeight = 170
+      ClientWidth = 636
       OnShow = TabSheetIntroShow
       object Label6: TLabel
         Left = 8
-        Height = 20
+        Height = 24
         Top = 8
-        Width = 392
+        Width = 470
         Caption = 'This tool might help you recover lost or damaged notes.'
       end
       object Label7: TLabel
         Left = 8
-        Height = 20
+        Height = 24
         Top = 64
-        Width = 401
+        Width = 476
         Caption = 'Before you start, take a Snapshot of your notes directory.'
       end
       object Label10: TLabel
         Left = 8
-        Height = 20
+        Height = 24
         Top = 36
-        Width = 299
+        Width = 359
         Caption = 'Please close any notes you may have open.'
       end
       object ButtonMakeSafetySnap: TButton
@@ -88,11 +88,11 @@ object FormRecover: TFormRecover
         AnchorSideRight.Control = ButtonSnapHelp
         AnchorSideBottom.Control = TabSheetIntro
         AnchorSideBottom.Side = asrBottom
-        Left = 335
-        Height = 32
+        Left = 284
+        Height = 34
         Hint = 'Take a snapshot of your notes and config. Overwritten each time.'
-        Top = 139
-        Width = 183
+        Top = 136
+        Width = 215
         Anchors = [akTop, akRight, akBottom]
         AutoSize = True
         BorderSpacing.Right = 2
@@ -108,10 +108,10 @@ object FormRecover: TFormRecover
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabSheetIntro
         AnchorSideBottom.Side = asrBottom
-        Left = 520
-        Height = 32
-        Top = 139
-        Width = 115
+        Left = 501
+        Height = 34
+        Top = 136
+        Width = 133
         Anchors = [akRight, akBottom]
         AutoSize = True
         BorderSpacing.Top = 2
@@ -123,14 +123,14 @@ object FormRecover: TFormRecover
     end
     object TabSheetBadNotes: TTabSheet
       Caption = 'Bad Notes'
-      ClientHeight = 171
-      ClientWidth = 637
+      ClientHeight = 170
+      ClientWidth = 636
       OnShow = TabSheetBadNotesShow
       object Label5: TLabel
         Left = 8
-        Height = 20
+        Height = 24
         Top = 8
-        Width = 264
+        Width = 313
         Caption = 'Looking for notes with damaged XML'
       end
       object ButtonDeleteBadNotes: TButton
@@ -138,10 +138,10 @@ object FormRecover: TFormRecover
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabSheetBadNotes
         AnchorSideBottom.Side = asrBottom
-        Left = 501
-        Height = 35
+        Left = 477
+        Height = 34
         Top = 136
-        Width = 134
+        Width = 157
         Anchors = [akTop, akRight, akBottom]
         AutoSize = True
         BorderSpacing.Right = 2
@@ -151,78 +151,78 @@ object FormRecover: TFormRecover
       end
       object LabelNoteErrors: TLabel
         Left = 8
-        Height = 20
+        Height = 24
         Top = 36
-        Width = 115
+        Width = 139
         Caption = 'LabelNoteErrors'
       end
       object LabelExistingAdvice: TLabel
         Left = 10
-        Height = 20
+        Height = 24
         Top = 64
-        Width = 139
+        Width = 169
         Caption = 'LabelExistingAdvice'
       end
       object LabelExistingAdvice2: TLabel
         Left = 11
-        Height = 20
+        Height = 24
         Top = 92
-        Width = 147
+        Width = 179
         Caption = 'LabelExistingAdvice2'
       end
     end
     object TabSheetRecoverNotes: TTabSheet
       Caption = 'Recover Notes'
-      ClientHeight = 171
-      ClientWidth = 637
+      ClientHeight = 170
+      ClientWidth = 636
       OnShow = TabSheetRecoverNotesShow
       object Label9: TLabel
         Left = 10
-        Height = 20
+        Height = 24
         Top = 8
-        Width = 368
+        Width = 440
         Caption = 'From here you can view snapshot notes, one by one.'
       end
       object Label14: TLabel
         Left = 10
-        Height = 20
+        Height = 24
         Top = 36
-        Width = 323
+        Width = 391
         Caption = 'Click an available snapshot to see its contents.'
       end
       object Label16: TLabel
         Left = 11
-        Height = 20
+        Height = 24
         Top = 64
-        Width = 392
+        Width = 467
         Caption = 'You may chose to view, copy and paste into a new note.'
       end
     end
     object TabSheetMergeSnapshot: TTabSheet
       Caption = 'Merge Snapshot'
-      ClientHeight = 171
-      ClientWidth = 637
+      ClientHeight = 170
+      ClientWidth = 636
       Enabled = False
       TabVisible = False
       OnShow = TabSheetMergeSnapshotShow
       object Label3: TLabel
         Left = 9
-        Height = 20
+        Height = 24
         Top = 8
-        Width = 542
+        Width = 650
         Caption = 'Restore any notes in the snapshot that are not in the existing notes directory.'
       end
     end
     object TabSheetRecoverSnapshot: TTabSheet
       Caption = 'Recover Snapshot'
-      ClientHeight = 171
-      ClientWidth = 637
+      ClientHeight = 170
+      ClientWidth = 636
       OnShow = TabSheetRecoverSnapshotShow
       object Label4: TLabel
         Left = 8
-        Height = 20
+        Height = 24
         Top = 8
-        Width = 419
+        Width = 503
         Caption = 'Remove all existing notes and use the ones in the Snapshot.'
       end
       object ButtonRecoverSnap: TButton
@@ -231,9 +231,9 @@ object FormRecover: TFormRecover
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Control = TabSheetRecoverSnapshot
         AnchorSideBottom.Side = asrBottom
-        Left = 488
+        Left = 487
         Height = 33
-        Top = 138
+        Top = 137
         Width = 147
         Anchors = [akRight, akBottom]
         BorderSpacing.Top = 2
@@ -244,16 +244,16 @@ object FormRecover: TFormRecover
       end
       object Label12: TLabel
         Left = 8
-        Height = 20
+        Height = 24
         Top = 36
-        Width = 496
+        Width = 593
         Caption = 'Don''t even consider this unless you have a backup Snapshot, Intro Tab.'
       end
       object Label15: TLabel
         Left = 8
-        Height = 20
+        Height = 24
         Top = 64
-        Width = 285
+        Width = 345
         Caption = 'Click an available snapshot, click Recover'
       end
     end

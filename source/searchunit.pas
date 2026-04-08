@@ -1782,8 +1782,11 @@ var
 begin
     // we assume that if the user has seen the menuitem, there must one or more selections
     ListViewNotes.BeginUpdate;
-    for St in NoteListRightClickSel do
+    for St in NoteListRightClickSel do begin
             OpenNote(TheMainNoteLister.GetTitle(St), Sett.NoteDirectory + St);
+            // debugln('TSearchForm.MenuItemOpenSelectedClick ' + St);
+            // ToDo : possible to reselect items selected when user right clicked ?? gtk3 ....
+    end;
     ListViewNotes.EndUpdate;
 end;
 
@@ -1804,7 +1807,7 @@ begin
         if TheMainNoteLister.IsThisNoteOpen(NoteListRightClickSel[0], AForm) then
             TEditBoxForm(AForm).MarkDirty
         else
-            ReplaceNoteBookTags(Sett.NoteDirectory + NoteListRightClickSel[0]);
+            ReplaceNoteBookTags(Sett.NoteDirectory + NoteListRightClickSel[0]);   // tb_utils (it does not put tags in ???)
     end;
     NotebookPick.Free;
 end;
@@ -2101,6 +2104,7 @@ begin
      finally
         NotebookPick.Free;
     end;
+    RefreshNotebooks();
 end;
 
 procedure TSearchForm.MenuDeleteNotebookClick(Sender: TObject);

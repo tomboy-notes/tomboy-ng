@@ -331,7 +331,7 @@ begin
     while StIndex > 0 do begin         // we don't care about the first line.
         repeat
             TagSize := OffTagAtStart(StL.strings[StIndex]);
-            if TagSize > 0 then MoveTagUp(StL, StIndex, TagSize);
+            if TagSize > 0 then MoveTagUp(StL, StIndex, TagSize);   // this might dec StIndex if it deleted a blank line
 		until TagSize < 1;
         dec(StIndex);
 	end;

@@ -974,7 +974,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="tomboy-ng"/>
+            <Filename Value="tomboy-ng-gtk3"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>

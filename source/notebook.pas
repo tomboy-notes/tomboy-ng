@@ -104,9 +104,11 @@ type
                 function ChangeNoteBookName(NewName: string): boolean;
                 procedure InsertNoteBookTag(const FullFileName, NB: string);
                 function MakeNewNoteBook: boolean;
-                function RewriteTempate(const FileName, NewName: string
-                    ): boolean;
-                function RewriteWithNewNotebookName(FileName: string): boolean;
+                function RewriteTempate(const FileName, NewName: string): boolean;
+
+                // ToDo : This declaration is redundant, replaced by one in tb_utils, delete after testing rename notebook
+                // function RewriteWithNewNotebookName(FileName: string): boolean;
+
                 procedure SetNoteBooks;
                                     { User wants to change the name of a Notebook, Title is name of Notebook }
                 procedure SetupForChange();
@@ -269,6 +271,8 @@ begin
     ButtonOK.Click;
 end;
 
+// ToDo : This function is redundant, replaced by one in tb_utils, delete after testing rename notebook
+(*
 function TNoteBookPick.RewriteWithNewNotebookName(FileName : string) : boolean; // ToDo : replace this fun with tb_utils.ReplaceNoteBookTags()
 var
     InFile, OutFile: TextFile;
@@ -333,7 +337,7 @@ begin
   end;
   {$endif}
   result := CopyFile(TempName, Sett.NoteDirectory + FileName);
-end;
+end;    *)
 
 function TNoteBookPick.RewriteTempate(const FileName, NewName : string) : boolean;
 var
@@ -441,11 +445,13 @@ begin
     for IDstr in NBIDList do begin
         if TheMainNoteLister.IsThisNoteOpen(IDStr, OpenForm) then
             TEditBoxForm(OpenForm).MarkDirty
-        else RewriteWithNewNotebookName(IDstr);
+        // else RewriteWithNewNotebookName(IDstr);
+        else ReplaceNoteBookTags(Sett.NoteDirectory + IDstr);
     end;
     // OK, now change template ......
     // debugln('template is ' + SearchForm.notelister.NotebookTemplateID(Title));
     RewriteTempate(TemplateID, RemoveBadXMLCharacters(NewName));
+
     ModalResult := mrOK;
     close;
 end;
