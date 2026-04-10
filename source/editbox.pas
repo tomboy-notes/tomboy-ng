@@ -4676,8 +4676,7 @@ begin
     if BusySaving then exit(False);
     BusySaving := True;
     Result := True;
-                                                                           // Unknown exception code 6 from Post
-     if {$ifdef LCLGTK3}false and {$endif} (not WeAreClosing) then begin   // ToDo : Gtk3 has problems with PostMessage in thread.
+    if {$ifdef LCLGTK3}false and {$endif} (not WeAreClosing) then begin   // ToDo : Gtk3 has problems with PostMessage in thread.
                                                                            // This means Gtk3 will be noticable slower when saving
         TheSaveThread := TSaveThread.Create(true);
         TheSaveThread.TheLoc := Loc;

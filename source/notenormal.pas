@@ -9,7 +9,7 @@ unit notenormal;
 }
 
 { A unit to 'normalise' a Tomboy Note, that is ensure tags remain with the para they
-  relate to. Makes the xml a lot prettier and, more importantly, heaps easier t parse when exporting.
+  relate to. Makes the xml a lot prettier and, more importantly, heaps easier to parse when exporting.
   Now incorporated into the tomboy-ng saving engine.  Needed by the POT and
   CommonMark exporters.
 
@@ -18,19 +18,30 @@ unit notenormal;
 
   Remember, this code all runs in a thread, don't go sprinkling debugln()s, triggers memory leaks
 
+ var Normaliser : TNoteNormaliser;
+     SL : TStringList;
+ ... (create and fill SL with block by block data from KMemo)
+ Normaliser := TNoteNormaliser.Create;
+ Normaliser.NormaliseList(SL);
+ Normaliser.Free;
+
+
+
   HISTORY :
     2021/08/19  Bug in RemoveRedundentTags that sometimes ate character after tag pair
     2021/09/21  Added code to convert blocks of monospace to to now have each para wrapped.
     2022/11/09  Remove any ctrl char (ie < 32) except #10 and #13, don't know its necessary but #279
     2024/12/26  Added Tab, #9 to allowed list. Should only allow at the start of line but seems OK
     2025/09/28  Finish a tag before an underscore if its wants to finish immediatly after, makes MD conversion safer
+    2026/04/05  Bug in MoveTagUp (adding newline) fixed but prompts need for testing.
 }
 
 {$mode objfpc}{$H+}
-
+{$WARN 5066 off : Symbol "$1" is deprecated: "$2"}
 interface
 
-uses Classes, SysUtils;
+uses Classes, SysUtils,
+        LCLProc;       // debugging
 
 type
 { TNoteNormaliser }
@@ -40,12 +51,19 @@ type
 // Open a note into a string list, create NoteNormaliser and pass the string list to NormaliseList.
 TNoteNormaliser = class
     private
+                            // Deals with 'on' tags that need to be moved down to the paras that they apply to
 	    procedure MoveTagDown(const StL: TStringList; const StIndex, TagSize: integer);
+                            // Will move an 'off' tag to the left if it has a space or underscore there, ret T if it moved one.
 		function MoveTagLeft(var St: string): boolean;
+                            // Moves a 'on' tag with a space to right, to the right, returns 0 if nothing to move
 		function MoveTagRight(var St: string): boolean;
+                            // Deals with 'off' tags that need to be moved up to the para they apply to.
         procedure MoveTagUp(const StL: TStringList; var StIndex: integer; var TagSize: integer);
+                            // Returns size of 'of' tag at start of line, 0 if none found
 		function OffTagAtStart(St: string): integer;
+                           // returns the size of a tag at the end of a line or 0 if not there
 		function OnTagAtEnd(St: string): integer;
+
 		function RemoveRedundentTag(var St: string): boolean;
                             { Re-align monospaced lines.  Acts on blocks only, does not alter in line mono.
                              Looks for blocks wrapped in a single set of monospace tags, converts to a
@@ -59,18 +77,18 @@ end;
 implementation
 
 
-uses lazlogger;
+// uses lazlogger;
 
 // ----------------------  N O R M A L I S I N G ------------------------------------
 
-// Deals with 'off' tags that need to be moved up to the para they apply to.
+
 procedure TNoteNormaliser.MoveTagUp(const StL : TStringList; var StIndex : integer; var TagSize : integer);
 var
         Tag : string;
         Buff : string;
 
     procedure showAdebug(Mes : string);    // just a debug method, delete it at some stage, April 2026
-    var i : integer;
+    var i : integer;                       // but do your debugging in the non-threaded test tool.
     begin
         writeln(' ---- ', Mes);
         for i := 2 to Stl.count - 1 do
@@ -93,58 +111,40 @@ begin
     if Stl[StIndex] = Tag then begin
         Stl.Delete(StIndex);
         dec(StIndex);
+    end else begin          // we must remove the tag, leave trailing content there
+        Buff := Stl[StIndex];
+        delete(Buff, 1, TagSize);
+        StL.Delete(StIndex);
+        StL.Insert(StIndex, Buff);
     end;
+    // debuglnThreadLog('TNoteNormaliser.MoveTagUp - Target [' + Stl[StIndex] + '] Minus [' + Stl[StIndex-1] + ']');
+    // debuglnThreadLog('TNoteNormaliser.MoveTagUp  - end [' + Buff + '] StI=' + inttostr(StIndex));
 end;
-
-{   0, 1 - tomboy header, 2 - title line when final line is small
-    When we call MoveTagUp, we have -        (StLndex=3)
-    2 - <size:small>line 34aa
-    3 - </size:small>
-
-Ins 2 - <size:small>line 34aa  one        makes a new line 3 containing text after our tag (maybe m/t)
-    3 -
-    4 - </size:small>
-
-del 2 - <size:small>line 34aa   Two       delete line 4
-    3 -
-
-Ins 2 - <size:small>line 34aa</size:small>    Three   makes a new line 2 containing line 2 + tag
-    3 - <size:small>line 34aa
-    4 -
-
-del 2 - </size:small>           end          Deletes line 3
-    3 - empty
-
-
-
-
-
-
-}
 
 function TNoteNormaliser.MoveTagRight(var St: string): boolean;
 var
     Index, TagStart, StartAt : integer;
 begin
+
     Index := Pos('> ', St);
-    if Index = 0 then exit(False);
+    if Index = 0 then exit(False);      // No tags present
     StartAt := 1;
     repeat
-        Index := St.IndexOf('> ', StartAt);
-        if Index < 0 then exit(False);
+        Index := St.IndexOf('> ', StartAt);         // note space after >, we want to move it
+        if Index < 0 then exit(False);              // no tag found, redundant ?
         TagStart := Index;
-        while St[TagStart] <> '<' do dec(TagStart);
+        while St[TagStart] <> '<' do dec(TagStart); // go back looking for corresponding <
         if St[TagStart+1] = '/' then begin          // Not interested, an 'off' tag
             StartAt := Index+1;
             continue;
         end else break;
     until false;
-    delete(St, Index+2, 1);
-    insert(' ', St, TagStart);
+    delete(St, Index+2, 1);                         // delete space after tag
+    insert(' ', St, TagStart);                      // insert a space before tag.
     result := True;
 end;
 
-{ Will move a tag to the left if it has a space or underscore there, ret T if it moved one.}
+
 function TNoteNormaliser.MoveTagLeft(var St: string): boolean;
 var
     Index : integer;
@@ -165,13 +165,14 @@ begin
     Result := true;
 end;
 
+
 function TNoteNormaliser.OnTagAtEnd(St : string) : integer;
 var
     I, L : integer;
 begin
     if St = '' then exit(0);
     L := length(st);
-    if St[L] <> '>' then exit(0);
+    if St[L] <> '>' then exit(0);       // does not have a valid at end.
     i := 1;
     while St[L-i] <> '<' do begin       // march backwards until we find start of tag
         inc(i);
@@ -180,7 +181,7 @@ begin
             exit(-1);
 		end;
 	end;
-    if  St[L-i+1] = '/' then exit(0);   // not our problems, tags at the end should be 'off' tags.
+    if  St[L-i+1] = '/' then exit(0);   // not our problems, off tags at the end are OK.
     result := i+1;
 end;
 
@@ -203,7 +204,7 @@ begin
     result := i;
 end;
 
-// Deals with 'on' tags that need to be moved down to the paras that they apply to
+
 procedure TNoteNormaliser.MoveTagDown(const StL : TStringList; const StIndex, TagSize : integer);
 var
     Tag : string;
@@ -311,13 +312,13 @@ var
     ChangedLine : Boolean = false;
     //Tick, Tock : qword;
 begin
-    StIndex := 0;
     //Tick := gettickcount64();
+    StIndex := 1;                      // dont play with the first line, header !
     while StIndex < StL.Count do begin
         repeat
             TagSize := OnTagAtEnd(StL.Strings[StIndex]);
             if TagSize > 0 then MoveTagDown(StL, StIndex, TagSize);
-		until TagSize < 1;          // WARNING, that includes error code, -1
+		until TagSize < 1;             // WARNING, that includes error code, -1
         TempSt := StL.Strings[StIndex];
         while MoveTagLeft(TempSt) do;
         while MoveTagRight(TempSt) do;
@@ -354,7 +355,7 @@ begin
             Stl[StIndex] := TempSt.TrimRight;
         dec(StIndex);
 	end;
-    StIndex := 0;                      // Redundent, sequencial tags.
+    StIndex := 0;                      // Redundant, sequencial tags.
     while StIndex < StL.Count do begin
         TempSt := STL[StIndex];
         if RemoveRedundentTag(TempSt) then begin
@@ -365,8 +366,11 @@ begin
 		inc(StIndex);
 	end;
     TidyMonospace(StL);
+
+// STL.SaveToFile('test.xml');
+    //  debuglnThreadLog('TNoteNormaliser.NormaliseList - end');
     //Tock := gettickcount64();
-    //debugln('TNoteNormaliser.NormaliseList  took ' + inttostr(Tock-Tick) + 'mS');  // triggers memory leaks
+    // debugln('TNoteNormaliser.NormaliseList  took ' + inttostr(Tock-Tick) + 'mS');  // triggers memory leaks
 end;
 
 

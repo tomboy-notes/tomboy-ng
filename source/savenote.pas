@@ -147,10 +147,8 @@ type
             // Title : ANSIString;
             // set to orig createdate if available, if blank, we'll use now()
             CreateDate : ANSIString;
-         	procedure ReadKMemo(FileName: ANSIString; Title: string; KM1: TKMemo;
-					STL: TStringList = nil);
-            function WriteToDisk(const FileName: ANSIString; var NoteLoc: TNoteUpdateRec
-                ): boolean;
+         	procedure ReadKMemo(FileName: ANSIString; Title: string; KM1: TKMemo; STL: TStringList = nil);
+            function WriteToDisk(const FileName: ANSIString; var NoteLoc: TNoteUpdateRec): boolean;
             constructor Create;
             destructor Destroy;  override;
     end;
@@ -598,6 +596,7 @@ var
    BlockNo : integer = 0;
    Block : TKMemoBlock;
    NextBlock : integer;
+   First : boolean = true;
    //ExistingUnderline : boolean = false;
  begin
     KM := KM1;
@@ -623,6 +622,9 @@ var
     else STL.Add(Buff);
     Buff := '';
     try
+            // Now put note title in as part of header (so its on same line
+            // as the note-content tag. And then, here, skip the first line which is,
+            // of course, the Title. Ensures Title appears in same line as <note-content,,,>
             repeat
                 CopyLastFontAttr();
                 repeat
@@ -674,6 +676,13 @@ var
                         break;
                     end else inc(NextBlock);
                 end;
+                if First then begin             // drop first line, Title, on floor. Its in the header.
+                    First := False;
+                    Buff := '';
+                    inc(BlockNo);
+                    if BlockNo >= KM1.Blocks.Count then break;
+                    continue;
+                end;
                 if STL = Nil then begin
                     Buff := Buff + LineEnding;
                     OutStream.Write(Buff[1], length(Buff))
@@ -712,9 +721,6 @@ var
          Except
             on EListError do begin
                 debugln('ERROR - EListError while writing note to stream.');
-                { we now do footer in the WriteToDisk()
-            	Buff := Footer();
-            	OutStream.Write(Buff[1], length(Buff)); }
             end;
         end;
 { 	finally
@@ -786,7 +792,8 @@ begin  // Add a BOM at the start, not essencial, Tomboy did it, makes the note n
   S2 := 'http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size"';
   S3 := ' xmlns="http://beatniksoftware.com/tomboy">'#10'  <title>';
   S4 := '</title>'#10'  <text xml:space="preserve"><note-content version="0.1">';
-  Result := S1 + S2 + S3 + RemoveBadXMLCharacters(Title) + S4;
+  Result := S1 + S2 + S3 + RemoveBadXMLCharacters(Title) + S4 + RemoveBadXMLCharacters(Title);
+//  Result := S1 + S2 + S3 + RemoveBadXMLCharacters(Title) + S4;
 end;
 
 {   Sets TimeStamp, a public SaveNote var that is later used by EditBox to set the value

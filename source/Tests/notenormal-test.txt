@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>App Image for Wiki</title>
+  <text xml:space="preserve"><note-content version="0.1"><underline>App Image for Wiki</underline>
+
+normal <italic>Italics both</italic> _bold_<size:huge>
+</size:huge><size:huge>
+AppImage</size:huge>
+
+$&gt; make
+$&gt; make &lt;redirect to AppDir&gt; install
+$&gt; linuxdeploy --appdir &lt;same local dir&gt; --output appimage
+
+<size:large>
+</size:large><size:large>
+<bold>Complications</bold></size:large>
+
+Firstly, what if you <bold>don't have a Makefile</bold> ? That's OK, run -
+
+$&gt; linuxdeploy --appdir &lt;some AppDir&gt;
+
+<bold>Using Qt5 or Qt6 ?</bold>
+
+$&gt; linuxdeploy --appdir AppDir --plugin qt --output appimage
+
+<italic>Another</italic> Qt issue is that you probably setup your desktop file on your end users <italic><bold>machine</bold></italic> to set an environment variable, <bold>QT</bold>_<italic><bold>QPA</bold></italic>_<bold>PLATFORM=xcd</bold> so it works with <italic>Wayland</italic>. For example, in tomboy-ng, the desktop file contains a line like -
+<italic>and another</italic>
+_not italics_
+Exec=env QT_QPA_PLATFORM=xcb <italic>tomboy-ng</italic> %f
+
+sed "s/env QT_<italic>QPA</italic>_PLATFORM=xcb //" "$APPDIR"/usr/share/applications/tomboy-ng.desktop &gt; "$APPDIR"/usr/share/applications/tomboy-ng.desktop-new
+and copy it back over the original. See example script below.
+
+<bold>End user wants to run on Ubuntu 24.04</bold>
+
+$&gt; sudo apt install libfuser2<size:large>
+</size:large><size:large>
+Getting the Tools
+</size:large>https://github.com/linuxdeploy/linuxdeploy
+
+<size:small>OK ?</size:small>
