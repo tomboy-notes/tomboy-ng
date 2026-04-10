@@ -7,7 +7,7 @@ object SearchForm: TSearchForm
   Caption = 'Search'
   ClientHeight = 401
   ClientWidth = 794
-  LCLVersion = '4.6.0.0'
+  LCLVersion = '4.99.0.0'
   OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -301,10 +301,10 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = ButtonSearchOptions
     AnchorSideBottom.Control = ButtonSearchOptions
     AnchorSideBottom.Side = asrCenter
-    Left = 477
-    Height = 24
+    Left = 476
+    Height = 23
     Top = 4
-    Width = 161
+    Width = 162
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 10
     Caption = 'Search on title only'

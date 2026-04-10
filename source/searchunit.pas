@@ -202,17 +202,13 @@ type        { TSearchForm }
         procedure FormResize(Sender: TObject);
 		procedure FormShow(Sender: TObject);
         procedure ListBoxNotebooksClick(Sender: TObject);
-        procedure ListBoxNotebooksMouseUp(Sender: TObject;
-            ButtonSMenu: TMouseButton; Shift: TShiftState; X, Y: Integer);
+        procedure ListBoxNotebooksMouseUp(Sender: TObject; ButtonSMenu: TMouseButton; Shift: TShiftState; X, Y: Integer);
         procedure ListViewNotesColumnClick(Sender: TObject; Column: TListColumn);
         procedure ListViewNotesData(Sender: TObject; Item: TListItem);
         procedure ListViewNotesDblClick(Sender: TObject);
-		procedure ListViewNotesDrawItem(Sender: TCustomListView;
-				AItem: TListItem; ARect: TRect; AState: TOwnerDrawState);
-
+		procedure ListViewNotesDrawItem(Sender: TCustomListView; AItem: TListItem; ARect: TRect; AState: TOwnerDrawState);
         procedure ListViewNotesKeyPress(Sender: TObject; var Key: char);
-        procedure ListViewNotesMouseDown(Sender: TObject; Button: TMouseButton;
-            Shift: TShiftState; X, Y: Integer);
+        procedure ListViewNotesMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 		procedure MenuDeleteNotebookClick(Sender: TObject);
 		procedure MenuEditNotebookTemplateClick(Sender: TObject);
         procedure MenuCreateNoteBookClick(Sender: TObject);

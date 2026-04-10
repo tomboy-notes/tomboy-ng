@@ -622,7 +622,7 @@ var
     else STL.Add(Buff);
     Buff := '';
     try
-            // Now put note title in as part of header (so its on same line
+            // Now we put note title in as part of header so its on same line
             // as the note-content tag. And then, here, skip the first line which is,
             // of course, the Title. Ensures Title appears in same line as <note-content,,,>
             repeat

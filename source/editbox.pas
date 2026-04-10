@@ -1746,8 +1746,10 @@ begin
         Tock := gettickcount64();
         debugln('+++++++++++ OnActivate CheckForLinks() ' + inttostr(Tock - Tick) + 'mS' + ' HaveSeen=' + booltostr(HaveSeenOnActivate, true));
         {$endif}
-        if SearchedTerm <> '' then               // We must do search after CheckForLinks
-            NewFind(SearchedTerm);
+        if SearchedTerm <> '' then begin           // We must do search after CheckForLinks
+            while (pos('"', SearchedTerm) > 0) do delete(SearchedTerm, pos('"', SearchedTerm), 1);
+            NewFind(SearchedTerm);                 // if the term arrived wrapped in iverted commas, delete them
+        end;
         TimerHouseKeeping.Enabled := False;
         if SingleNoteMode then begin
             SpeedbuttonSearch.Enabled := False;
