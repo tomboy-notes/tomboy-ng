@@ -140,6 +140,7 @@ RESOURCESTRING
     rsSelectColors =      'Select desired color set, see wiki';                  // Qt5/6 only
     rsAllowLeftClick =    'If Wayland, allow leftclick in SysTray';            // Linux only
     rsParticularSysTray = 'Force particular TrayIcon';                      // gtk2 only
+    rsMistySwitch =       'EXPERIMENTAl Misty Sync, danger !';
 
 
     // Mainunit

@@ -122,6 +122,7 @@ begin
        debugln('   -platform xcb                 ' + rsBypassWayland);
        debugln('   -platformtheme gnome|gtk2|qt5ct|qt6ct  ' + rsSelectColors);
        {$endif}
+       debugln('   --playmisty                    ' + rsMistySwitch);
        result := true;
     end;
 end;
@@ -331,6 +332,7 @@ initialization
         'strict-theme',                                // Strict-theme applies to only Qt versions
         'allow-leftclick',                             // overrule wayland decision to use only right click
         'create-note',                                 // create a new note (-ng open or not), added post 0.41
-        'disableaccurateframe');                       // possible read by LCL to stop an annoying little window in RasPiOS
+        'disableaccurateframe',                        // possible read by LCL to stop an annoying little window in RasPiOS
+        'playmisty');                                  // experimental
 end.
 
