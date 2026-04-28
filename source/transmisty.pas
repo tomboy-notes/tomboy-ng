@@ -46,7 +46,9 @@ type
         function PreResolve(URL: string): string;
                     // Used only if DNS cannot help, seems reliable with mDNS, IPv4 only.
                     // Ents are slow to move but very knowledgeable.
+        {$ifdef LINUX}
         function AskGetEnt(HostName: string; out IPAdd: string): boolean;
+        {$endif}
                     // Private - Downloads the remote server Manifest for synced note details. It gets ID, RevNo
                     // and the LastChangeDate. Returns False if error OR manifest does not exist (ie new repo)
         function ReadRemoteManifest: boolean;
@@ -127,7 +129,7 @@ begin
         // ToDo : This should raise an exception.
 end;
 
-
+{$ifdef LINUX}
 function TMistySync.AskGetEnt(HostName : string; out IPAdd : string) : boolean;
 var
     AProcess: TProcess;
@@ -154,7 +156,7 @@ begin
         AProcess.Free;
     end;
 end;
-
+{$endif}
 
 function TMistySync.PreResolve(URL : string) : string;
 var
@@ -183,12 +185,13 @@ begin
       if Resolv.NameLookup(URL.Substring(i, j-i)) then
             Result := Result + Resolv.AddressAsString + URL.Substring(j, 999)
       else begin
-          if AskGetEnt(URL.Substring(i, j-i), Result) then
+          {$ifdef LINUX}
+          if AskGetEnt(URL.Substring(i, j-i), Result) then                      // try to resolve mDNS too
               Result := URL.Substring(0, i) + Result + URL.Substring(j, 999)
-          else begin
+          else begin  {$endif}
               Result := URL;            // for reporting, we assume cannot continue
               ErrorString := 'Failed to resolve Sync Server Address ' + URL;
-          end;
+          {$ifdef Linux}end; {$endif}
       end;
       Resolv.free;
 end;

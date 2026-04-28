@@ -50,3 +50,9 @@ po/tomboy-ng.fr.po-old
 source/ppas.sh
 po/tomboy-ng-qt6.pot
 source/tomboy-ng-qt6
+source/tomboy-ng-gtk3
+experimental/Misty-Small/LazFiles
+experimental/Misty-Small/domain.*
+experimental/LazFiles.tgz
+
+
