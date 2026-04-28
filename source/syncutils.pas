@@ -86,6 +86,7 @@ type TSyncAvailable=(SyncNotYet,        // Initial state.
                     SyncXMLError,       // Housten, we have an XML error in a manifest !
                     SyncBadError,       // Some other error, must NOT proceed.
                     SyncNetworkError,
+                    SyncDNSError,       // Only for Misty as of April 2026
                     SyncOpenSSLError,   // Either OpenSSL is unavailable or too old
 		            SyncCredentialError);       // Unsuitable user:password
 
@@ -122,7 +123,7 @@ type
 
    { TNoteInfoList }
 
-   TNoteInfoList = class(TList)
+   TNoteInfoList = class(TFPList)
     private
      	function Get(Index: integer): PNoteInfo;
     public

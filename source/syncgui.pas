@@ -400,22 +400,7 @@ begin
                 exit(false);                                                    // busy unset in finally clause
             end;
         end;
-
-            {if Async.SetTransport(TransPort) = SyncOpenSSLError then begin         // NOOOO - after TestConnection  !!!!!!!!!!
-            if not Visible then begin
-                SearchForm.UpdateStatusBar(1, rsAutoSyncNotPossible);
-                if Sett.CheckNotifications.checked then begin
-                    MainForm.ShowNotification(rsAutoSyncNotPossible);
-                end;
-                exit(false);
-            end else begin                                                      // busy unset in finally clause
-                showmessage('Unable to sync because OpenSSL unavailable, ' + ASync.ErrorString);
-                FormSync.ModalResult := mrAbort;
-                exit(false);                                                    // busy unset in finally clause
-            end;
-        end;     }
-
-        //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Testing Connection.');
+         //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Testing Connection.');
         SyncAvail := ASync.TestConnection();
         if SyncAvail <> SyncReady then begin
             debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : '

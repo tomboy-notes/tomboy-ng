@@ -495,41 +495,6 @@ begin
     result := True;
 end;
 
-
-(*        if not DeleteFromThisManifest(FullFileName, ID) then begin
-           debugln('ERROR - failed to delete ' + ID + ' from ' + FullFileName);
-            // Note - not finding the manifest file is not an error, just unsynced.
-            exit(False);
-        end
-    else if DebugMode then
-       debugln('DeleteFromLocalManifest - cannot find ' + FullFileName + ' not in use ?');
-
-    FullFileName := ConfigDir + SyncTransportName(SyncGithub) + PathDelim + 'manifest.xml';
-    if FileExists(FullFileName) then
-        if not DeleteFromThisManifest(FullFileName, ID) then begin
-           debugln('ERROR - failed to delete ' + ID + ' from ' + FullFileName);
-           exit(False);
-        end
-    else if DebugMode then
-       debugln('DeleteFromLocalManifest - cannot find ' + FullFileName + ' not in use ?');
-
-    if DirectoryExists(ConfigDir + 'android') then begin
-        if FindFirst(ConfigDir + 'android' + pathdelim + '*.xml', faAnyFile, Info)=0 then
-           try
-               repeat
-                   // Info.Name is just the file name, no path prepended.
-                   // debugln('DeleteFromLocalManifest-------- Found xml file ' + Info.Name);
-                   DeleteFromThisManifest(ConfigDir + 'android' + pathdelim + Info.Name, ID);
-               until FindNext(Info) <> 0;
-           finally
-               FindClose(Info);
-           end;
-    end else if DebugMode then
-       debugln('DeleteFromLocalManifest - cannot find ' + ConfigDir + 'android');
-    exit(True);
-end;              *)
-
-
 function TSync.LocalNoteExists(const ID : string; out CDate : string; GetDate : boolean = false) : Boolean;
 var
 	Doc : TXMLDocument;
@@ -1142,20 +1107,19 @@ begin
         LocalLastSyncDate := 0;
         LocalLastSyncDateSt := '';
     end;
-    if TransMode = SyncMisty then
+    if TransMode = SyncMisty then                             // do not free/create RMetaData, just clear ....
        TMistySync(Transport).RMetaData := RemoteMetaData;     // Misty needs access to this mid TestTransport
-    Result := Transport.TestTransport(not TestRun);                                   // In Misty, this will also do ReadRemoteManifest
+    Result := Transport.TestTransport(not TestRun);           // In Misty, this will also do ReadRemoteManifest
 
-    if Result <> SyncReady then begin
-      ErrorString := Transport.ErrorString;
-      // We get the next line every time we start a new sync repo because we always try a join first.  Not helpful.
-      // debugln('TSync.TestConnection() : failed Transport.TestTransport, maybe a new connection ? ' + SyncAvailableString(Result));
-      exit;
+    if Result <> SyncReady then begin                         //  maybe a new connection ?
+        ErrorString := Transport.ErrorString;
+        exit;
     end;
     if DebugMode then begin
-        debugln('CurrRev=' + inttostr(CurrRev) + '   Last Sync=' + LocalLastSyncDateSt
+        debugln('TSync.TestConnection - CurrRev=' + inttostr(CurrRev) + '   Last Sync=' + LocalLastSyncDateSt
                         + '   Local Entries=' + inttostr(LocalMetaData.Count));
         debugln('Config=' + ConfigDir + ' NotesDir=' + NotesDir);
+        if TransMode = SyncMisty then debugln('TSync.TestConnection RemoteMetaData C=' + RemoteMetaData.Count.ToString);
     end;
     if RepoAction = RepoUse then
 	    if Transport.ServerID <> LocalServerID then begin
@@ -1183,8 +1147,7 @@ begin
     if TransportMode = SyncMisty then exit(true);         // dont need this in Misty, TestTransport does it. In Misty, always have LCD
     if ProgressProcedure <> nil then ProgressProcedure('Load Remote Repo');
     Result := True;
-    FreeAndNil(RemoteMetaData);
-    RemoteMetaData := TNoteInfoList.Create;
+    RemoteMetaData.Clear;
     if not assigned(Transport) then
        debugln('Transport is not assigned');
     if not assigned(RemoteMetaData) then
@@ -1210,7 +1173,7 @@ function TSync.GetSyncData() : boolean;
 begin
 
     // DisplayNoteInfo(RemoteMetaData, 'Remote - At start of GetSyncData');
-
+    if DebugMode then debugln('TSync.GetSyncData');
     Result := True;
     if ProgressProcedure <> nil then ProgressProcedure('Starting Sync');
     // TestRun := True;
@@ -1266,6 +1229,7 @@ function TSync.UseSyncData(DoClash : boolean=false) : boolean;
 var
     NewRev : boolean = false;
 begin
+    if DebugMode then debugln('TSync.UseSyncData');
     if DoClash then ProcessClashes();                    // When called during a Join that ran in TestOnly mode GetSyncData skps this
     if DebugMode then debugln('TSync.UseSyncData - started actual sync, is github=' + booltostr(TransPortMode=SyncGitHub, true));
     if not DoDownLoads() then exit(SayDebugSafe('TSync.StartSync - failed DoDownLoads'));
@@ -1415,19 +1379,15 @@ var
     i : integer;
     Found : boolean = false;
 begin
-    // if debugmode then debugln('DeleteFromThisManifest, searching for ' + ID);
 	if not ReadLocalManifest(FullFileName) then exit(false); 	// read a local manifest
     if debugmode then debugln('DeleteFromThisManifest lines = ' + inttostr(LocalMetaData.count));
     if LocalMetaData.count = 0 then exit(True);
-    //if debugmode then debugln('DeleteFromThisManifest searcing for ' + ID);
     for I := 0 to LocalMetaData.count -1 do  begin
-        // debugln('DeleteFrom.. Testing ' +  LocalMetaData.Items[i]^.ID);
     	if LocalMetaData.Items[i]^.ID  = ID then begin
         	LocalMetaData.Items[i]^.Deleted:= True;
             LocalMetaData.Items[i]^.Title :=
             		GetNoteTitle(ID, -1);       // -1 says don't try and download if its not local
             Found := True;
-            if debugmode then debugln('DeleteFromThisManifest deleted ' + ID + ' from ' + FullFileName);
             break;
         end;
 	end;

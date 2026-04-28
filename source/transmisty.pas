@@ -1,4 +1,3 @@
-// this is a comment
 unit transmisty;
 
 {  Copyright (C) 2017-2025 David Bannon
@@ -12,6 +11,8 @@ unit transmisty;
   A unit that does the file transfer side of Sync operation to the Misty Web Service
   HISTORY
   2025-06-23  First working version.
+  2025-05-28  Added code to get mDNS as, apparently, FPC resolver does not do so.
+
 }
 
 {$mode objfpc}{$H+}
@@ -19,7 +20,8 @@ unit transmisty;
 interface
 
 uses
-    Classes, SysUtils, trans, SyncUtils, tb_utils, ResourceStr;    // we share resources with GithubSync
+    Classes, SysUtils, trans, SyncUtils, tb_utils, process,
+    ResourceStr;    // we share resources with GithubSync
 
 type
 
@@ -27,6 +29,7 @@ type
 
   TMistySync = Class(TTomboyTrans)
     private
+
                     // This is the downloader, pass a URL such as -
                     // For a note download, http://localhost:8080/DOWNLOAD/26D6EDFD-B518-472A-985B-AEF0B266D00F.note
                     // For the manifest, http://localhost:8080/DOWNLOAD/MANIFEST
@@ -35,14 +38,19 @@ type
             const ConType: TContentType; const Header: string = ''): boolean;
 
                     // A version of DownLoader that retries
-        function DownloaderSafe(URL: string; out SomeString: String;
-            const ConType: TContentType; const Header: string = ''): boolean;
-
-            // Private - Downloads the remote server Manifest for synced note details. It gets ID, RevNo
-            // and the LastChangeDate. Returns False if error OR manifest does not exist (ie new repo)
+        function DownloaderSafe(URL: string; out SomeString: String; const ConType: TContentType;
+                                const Header: string = ''): boolean;
+                    // Pre resolve the URL, better to fail, if we must, earlier on. Returns
+                    // a URL containing IP address rather than hostname. Handles mDNS by calling
+                    // AskGetEnt(). Sets ErrorString if it cannot resolve.
+        function PreResolve(URL: string): string;
+                    // Used only if DNS cannot help, seems reliable with mDNS, IPv4 only.
+                    // Ents are slow to move but very knowledgeable.
+        function AskGetEnt(HostName: string; out IPAdd: string): boolean;
+                    // Private - Downloads the remote server Manifest for synced note details. It gets ID, RevNo
+                    // and the LastChangeDate. Returns False if error OR manifest does not exist (ie new repo)
         function ReadRemoteManifest: boolean;
         procedure SaveString(InString, OutFilePath: string);
-
                     // Will be used to upload a note or a manifest file to the server, in both cases, XML
                     // eg UpLoader(RemoteAddress, NotesDir + 'B4E48D4F-061D-420E-AC5C-6C81B1812094.note')
                     // Returns False and ErrorString wil be set if somthing goes wrong
@@ -57,8 +65,10 @@ type
 
         // ------ I n h e r i t e d   M e t h o d s  ------
 
-                    // Misty, public inherited. Establish we can talk to Server unathenticated, might
-                    // return one of SyncReady, SyncOpenSSLError, SyncNetworkError. Working server will
+                    // Misty, public inherited. Establish we can talk to Server unathenticated, start by testing
+                    // that we can resolve the hostname in the URL. If good put the IP it to URL. Then check
+                    // we can dowload server's default page, no interest in content, just result code.
+                    // Might return one of SyncReady, SyncOpenSSLError, SyncNetworkError. Working server will
                     // return a human readable error page and code 200 if no command given. }
         function SetTransport(): TSyncAvailable; override;
                     // Misty, public inherited.
@@ -85,7 +95,7 @@ type
 implementation
 
 uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger, fphttpclient,
-    ssockets, fpopenssl;
+    ssockets, fpopenssl, resolve ;
 
 { TMistySync }
 
@@ -117,10 +127,77 @@ begin
         // ToDo : This should raise an exception.
 end;
 
+
+function TMistySync.AskGetEnt(HostName : string; out IPAdd : string) : boolean;
+var
+    AProcess: TProcess;
+    AList : Tstringlist = nil;
+begin
+    result := false;
+    AProcess := TProcess.Create(nil);
+    AProcess.Executable:= 'getent';
+    AProcess.Parameters.Add('hosts');
+    AProcess.Parameters.Add(HostName);
+    AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
+    try
+        AProcess.Execute;
+        if AProcess.ExitStatus = 0 then begin
+            AList := TStringList.Create;
+            AList.LoadFromStream(AProcess.Output);
+            if AList.Count > 0 then begin
+                IPAdd  := AList[0].Substring(0, pos(' ', AList[0]) -1 );
+                Result := True;
+            end;
+        end;
+    finally
+        if AList <> nil then AList.Free;
+        AProcess.Free;
+    end;
+end;
+
+
+function TMistySync.PreResolve(URL : string) : string;
+var
+      i, j, k : integer;
+      Resolv: THostResolver;
+      IsAdd : boolean = false;
+begin
+      // here we assume that the host name starts after :// and finishes just before the first ':' or '/'
+      i := URL.IndexOf('://', 0);
+      if i = -1 then begin
+          i := 0;
+          Result := '';
+      end else begin
+          inc(i, 3);
+          Result := URL.Substring(0, i);
+      end;
+      j := URL.IndexOf(':', i);
+      if j = -1 then
+        j := URL.IndexOf('/', i);
+      if j = -1 then j := length(URL);
+      for k := i to j-1 do
+            if not (URL[k+1] in ['.', '0'..'9']) then
+              IsAdd := True;
+      if not IsAdd then exit(URL);      // already resolved IP
+      Resolv := ThostResolver.Create(nil);
+      if Resolv.NameLookup(URL.Substring(i, j-i)) then
+            Result := Result + Resolv.AddressAsString + URL.Substring(j, 999)
+      else begin
+          if AskGetEnt(URL.Substring(i, j-i), Result) then
+              Result := URL.Substring(0, i) + Result + URL.Substring(j, 999)
+          else begin
+              Result := URL;            // for reporting, we assume cannot continue
+              ErrorString := 'Failed to resolve Sync Server Address ' + URL;
+          end;
+      end;
+      Resolv.free;
+end;
+
 function TMistySync.Downloader(    URL : string; out SomeString : String; const ConType : TContentType; const Header : string = '') : boolean;
 var
     Client: TFPHTTPClient;
 begin
+    // Note that here, Misty, we check resolve, replace hostname with IP before we get here, see SetTransport
     if DebugMode then debugln('TMistySync.Downloader URL is ' + URL);
     //InitSSLInterface;
     // curl -i -u $GH_USER https://api.github.com/repos/davidbannon/libappindicator3/contents/README.note
@@ -129,7 +206,7 @@ begin
 //    Client.Password := Password; // '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';     eg a github token
     Client.AddHeader('User-Agent','Mozilla/5.0 (compatible; fpweb)');
     case ConType of
-        ctXML : Client.AddHeader('Content-Type','application/xml; charset=UTF-8');
+        ctXML :  Client.AddHeader('Content-Type','application/xml; charset=UTF-8');
         ctText : Client.AddHeader('Content-Type','application/text; charset=UTF-8');
         ctJSON : Client.AddHeader('Content-Type','application/json; charset=UTF-8');
         ctHTML : Client.AddHeader('Content-Type','application/HTML; charset=UTF-8');
@@ -139,7 +216,7 @@ begin
     Client.IOTimeout := 4000;           // mS ? was 0
     SomeString := '';
     try
-        try
+        try                                  // it appears that this fails if resolution depends on mDNS, ie *.local ??
             SomeString := Client.Get(URL);
             // SayDebugSafe('TMistySync.Downloader Code:' + inttostr(Client.ResponseStatusCode) + ' - ' + SomeString);
         except
@@ -225,11 +302,11 @@ end;
 function TMistySync.SetTransport(): TSyncAvailable;
 var SomeString : string;
 begin
-    // SetTransport();
    if DebugMode then DebugLn('TMistySync.SetTransport RemoteAddress = ' + RemoteAddress);
-   RemoteAddress := AppendSlash(RemoteAddress);
+   RemoteAddress := PreResolve(AppendSlash(RemoteAddress));  // Not sure about this ...
+   if ErrorString <> '' then exit(SyncDNSError);             // we failed to resolve the hostname
    if Downloader(RemoteAddress,  SomeString, ctHTML) then    // all we care about is the 200 status Downloader found
-        Result := SyncReady                                            // OR maybe create a repo code goes here ?
+        Result := SyncReady                                  // OR maybe create a repo code goes here ?
    else Result := SyncNetworkError;
 
 // following are some tests used during development, clean it out !
@@ -296,8 +373,10 @@ var
     j : integer;
     ManifestStream : TStringStream;
 begin
-    if RMetaData <> Nil then FreeAndNil(RMetaData);         // RMetaData is a copy, placed here during initialisation, of Sync's ReoteMetaData
-    RMetaData := TNoteInfoList.Create;
+    if DebugMode then debugln('TMistySync.ReadRemoteManifest RMetaData c=' + RMetaData.Count.ToString);
+    RMetaData.Clear;
+ //   if RMetaData <> Nil then FreeAndNil(RMetaData);         // RMetaData is a copy, placed here during initialisation, of Sync's ReoteMetaData
+ //   RMetaData := TNoteInfoList.Create;
     Result := true;
     if not Downloader(RemoteAddress + 'MANIFEST', ManifestSt, ctXML) then exit(False);       // Manifest not there, probably new repo ?
     try

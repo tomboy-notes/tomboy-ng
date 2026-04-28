@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 263
+  Left = 563
   Height = 634
-  Top = 184
+  Top = 218
   Width = 789
   BorderIcons = []
   Caption = 'Form Caption'
@@ -197,7 +197,7 @@ object Sett: TSett
           Left = 10
           Height = 26
           Top = 0
-          Width = 189
+          Width = 184
           BorderSpacing.Left = 10
           Caption = 'tomboy-ng Default'
           Checked = True
@@ -632,13 +632,16 @@ object Sett: TSett
           AnchorSideRight.Control = GroupBoxSync
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Side = asrBottom
-          Left = 575
+          Left = 512
           Height = 28
+          Hint = 'Setup or Change a Sync Repository'
           Top = 194
-          Width = 190
+          Width = 253
           Anchors = [akTop, akRight]
           BorderSpacing.Right = 10
           Caption = 'Setup'
+          ShowHint = True
+          ParentShowHint = False
           OnClick = SpeedSetupSyncClick
         end
         object LabelSyncInfo1: TLabel
@@ -701,11 +704,14 @@ object Sett: TSett
             AnchorSideRight.Side = asrBottom
             Left = 106
             Height = 34
+            Hint = 'Use Actions button to set this field'
             Top = 0
             Width = 443
             Anchors = [akTop, akLeft, akRight]
             BorderSpacing.Left = 5
             BorderSpacing.Right = 9
+            ParentShowHint = False
+            ShowHint = True
             TabOrder = 0
             Text = 'EditPW'
           end
@@ -731,10 +737,13 @@ object Sett: TSett
             AnchorSideBottom.Side = asrCenter
             Left = 5
             Height = 34
+            Hint = 'Your Github User Name'
             Top = 0
             Width = 154
             BorderSpacing.Left = 5
             BorderSpacing.Right = 10
+            ParentShowHint = False
+            ShowHint = True
             TabOrder = 0
             Text = 'EditUserName'
           end
@@ -786,6 +795,8 @@ object Sett: TSett
           Width = 688
           Anchors = [akTop, akLeft, akRight]
           BorderSpacing.Left = 5
+          ParentShowHint = False
+          ShowHint = True
           TabOrder = 3
           Text = 'EditRepo'
         end

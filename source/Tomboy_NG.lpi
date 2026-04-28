@@ -224,13 +224,11 @@
             <SmartLinkUnit Value="True"/>
             <TargetOS Value="linux"/>
             <Optimizations>
-              <OptimizationLevel Value="3"/>
+              <OptimizationLevel Value="0"/>
             </Optimizations>
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <GenerateDebugInfo Value="False"/>
-              <RunWithoutDebug Value="True"/>
               <DebugInfoType Value="dsDwarf3"/>
               <UseLineInfoUnit Value="False"/>
               <StripSymbols Value="True"/>
@@ -730,11 +728,19 @@
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
           </CodeGeneration>
           <Linking>
             <Debugging>
               <DebugInfoType Value="dsDwarf3"/>
               <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
             <Options>
@@ -1166,13 +1172,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-test --playmisty"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-test --playmisty --debug-sync"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-test --playmisty"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-test --playmisty --debug-sync"/>
           </local>
           <environment>
             <UserOverrides Count="2">

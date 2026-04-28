@@ -2000,18 +2000,25 @@ begin
     EditRepo.ReadOnly := True;
     EditPW.ReadOnly := True;
     SpeedTokenActions.Visible := False;
-    GroupBoxToken.Caption := 'Token';                                            // ToDo : resources
+    GroupBoxToken.Caption := 'Token';       // ToDo : resources
     case ComboSyncType.ItemIndex of         // remembering that the Combo contents matches TSyncTransport enumerated type !
-        0 : for Ctrl in [GroupBoxToken, GroupBoxUser, EditPW, EditUserName]
+        0 : begin
+                for Ctrl in [GroupBoxToken, GroupBoxUser, EditPW, EditUserName]
                     do Ctrl.Visible := False;
-        1 : for Ctrl in [GroupBoxToken, GroupBoxUser, EditPW, EditUserName, SpeedTokenActions]
+                EditRepo.Hint := 'Click Setup button to configure';             // ToDo : resources
+            end;
+        1 : begin
+                for Ctrl in [GroupBoxToken, GroupBoxUser, EditPW, EditUserName, SpeedTokenActions]
                     do Ctrl.Visible := True;
+                EditRepo.Hint := 'Provide User, Token and click Setup button to configure';   // ToDo : resources
+            end;
         2 : begin
                 for Ctrl in [GroupBoxToken, GroupBoxUser, EditPW, EditUserName]
-                        do Ctrl.Visible := True;
+                        do Ctrl.Visible := false;
                 EditRepo.ReadOnly := False;
                 EditPW.ReadOnly := False;
                 GroupBoxToken.Caption := 'Password';                             // ToDo : resources
+                EditRepo.Hint := 'eg http://localhost:8088';
             end;
     end;
     MaskSettingsChanged := RememberMask;
