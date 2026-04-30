@@ -397,7 +397,8 @@ type                       { ----------------- T S Y N C --------------------- }
 
                             { Selects a Trans layer, adjusts config dir,
                             TransFileAnd : checks for the expected remote dir, may return SyncNoRemoteRepo,
-                            SyncNoServerID (not an error, just not used previously) or SyncReady. }
+                            SyncNoServerID (not an error, just not used previously) or SyncReady.
+                            Misty might return one of SyncReady, SyncOpenSSLError, SyncNetworkError, SyncDNSError.}
         function SetTransport(Mode : TSyncTransport) : TSyncAvailable;
 
                 { Checks NoteMetaData for valid Actions, writes error to console.
@@ -1081,6 +1082,7 @@ function TSync.TestConnection(): TSyncAvailable;
 {var
     XServerID : string;}
 begin
+    if DebugMode then debugln('TSync.TestConnection - RepoNew=', booltostr((RepoAction=RepoNew),True));
     if ProgressProcedure <> nil then ProgressProcedure('Test Transport');
     if RepoAction = RepoNew then begin
         LocalLastSyncDate := 0;
@@ -1110,7 +1112,7 @@ begin
     if TransMode = SyncMisty then                             // do not free/create RMetaData, just clear ....
        TMistySync(Transport).RMetaData := RemoteMetaData;     // Misty needs access to this mid TestTransport
     Result := Transport.TestTransport(not TestRun);           // In Misty, this will also do ReadRemoteManifest
-
+                                                              // A new repo will set SyncReady.
     if Result <> SyncReady then begin                         //  maybe a new connection ?
         ErrorString := Transport.ErrorString;
         exit;

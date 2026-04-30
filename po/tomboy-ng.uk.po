@@ -365,6 +365,10 @@ msgstr "Синхронізувати"
 msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
 msgstr "Памʼятайте, що для забезпечення надійної синхронізації не можна змінювати файли в каталозі Meta."
 
+#: resourcestr.rsmistyswitch
+msgid "EXPERIMENTAl Misty Sync, danger !"
+msgstr ""
+
 #: resourcestr.rsmistysyncinfo1
 msgid "tomboy-ng can sync to a network server called Misty, sync and edit notes"
 msgstr ""
@@ -1772,12 +1776,20 @@ msgstr "Закрийте і перевідкрийте нотатку, щоб з
 msgid "Github or File Sync"
 msgstr ""
 
+#: tsett.editpw.hint
+msgid "Use Actions button to set this field"
+msgstr ""
+
 #: tsett.editpw.text
 msgid "EditPW"
 msgstr ""
 
 #: tsett.editrepo.text
 msgid "EditRepo"
+msgstr ""
+
+#: tsett.editusername.hint
+msgid "Your Github User Name"
 msgstr ""
 
 #: tsett.groupbox4.caption

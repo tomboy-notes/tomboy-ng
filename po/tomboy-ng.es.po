@@ -1,11 +1,11 @@
 # Spanish translation for Tomboy-ng.
 # This file is put in the public domain.
-# Roy W. Reese <waterbearer54@gmx.com>, 2018-2025.
+# Roy W. Reese <waterbearer54@gmx.com>, 2018-2026.
 msgid ""
 msgstr ""
-"Project-Id-Version: tomboy-ng v0.42\n"
+"Project-Id-Version: tomboy-ng v0.44\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2025-01-07 16:36+0100\n"
+"PO-Revision-Date: 2026-04-17 16:37+0200\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.5\n"
+"X-Generator: Poedit 3.8\n"
 
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
@@ -76,11 +76,9 @@ msgid "You have %d bad notes in Notes Directory"
 msgstr "%d notas corrompidas en el directorio de las notas"
 
 #: resourcestr.rsbadnotesfound1
-#, fuzzy
-#| msgid "Please go to Settings -> Recover -> Recover Notes"
 msgctxt "resourcestr.rsbadnotesfound1"
 msgid "Please go to Settings -> Recover -> Recover Lost Notes -> Bad Notes"
-msgstr "Por favor, vaya a Preferencias -> Recuperar -> Recuperar notas"
+msgstr "Por favor, vaya a Preferencias -> Recuperar -> Recuperar notas -> Notas corrompidas"
 
 #: resourcestr.rsbadnotesfound2
 msgctxt "resourcestr.rsbadnotesfound2"
@@ -362,13 +360,13 @@ msgstr "Recuerde que para tener una sincronización fiable, no deba cambiar arch
 
 #: resourcestr.rsmistysyncinfo1
 msgid "tomboy-ng can sync to a network server called Misty, sync and edit notes"
-msgstr ""
+msgstr "tomboy-ng puede sincronizarse al servidor llamado Misty, sincronizar y editar notas"
 
 #: resourcestr.rsmistysyncinfo2
-#, fuzzy
 msgctxt "resourcestr.rsmistysyncinfo2"
 msgid "you should read the tomboy-ng wiki page for instructions."
-msgstr "debería leer las instrucciones en la wiki de tomboy-ng."
+msgstr "\n"
+"debería leer las instrucciones en la wiki de tomboy-ng."
 
 #: resourcestr.rsmultiplenotebooks
 msgctxt "resourcestr.rsmultiplenotebooks"
@@ -572,7 +570,7 @@ msgstr "Github - cuenta gratis de Github requerida"
 
 #: resourcestr.rssynctypemisty
 msgid "Misty - Misty server required"
-msgstr ""
+msgstr "Misty - requerido el servidor Misty"
 
 #: resourcestr.rstestingcredentials
 msgid "Testing Credentials"
@@ -1732,11 +1730,11 @@ msgstr "Sincronización de Archivos o Github"
 
 #: tsett.editpw.text
 msgid "EditPW"
-msgstr ""
+msgstr "EditPW"
 
 #: tsett.editrepo.text
 msgid "EditRepo"
-msgstr ""
+msgstr "EditRepo"
 
 #: tsett.groupbox4.caption
 msgctxt "tsett.groupbox4.caption"

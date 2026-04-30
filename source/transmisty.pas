@@ -55,7 +55,7 @@ type
         procedure SaveString(InString, OutFilePath: string);
                     // Will be used to upload a note or a manifest file to the server, in both cases, XML
                     // eg UpLoader(RemoteAddress, NotesDir + 'B4E48D4F-061D-420E-AC5C-6C81B1812094.note')
-                    // Returns False and ErrorString wil be set if somthing goes wrong
+                    // Returns False and ErrorString wil be set if something goes wrong
         function Uploader(const URL, FFName: string): boolean;
 
     public
@@ -70,8 +70,8 @@ type
                     // Misty, public inherited. Establish we can talk to Server unathenticated, start by testing
                     // that we can resolve the hostname in the URL. If good put the IP it to URL. Then check
                     // we can dowload server's default page, no interest in content, just result code.
-                    // Might return one of SyncReady, SyncOpenSSLError, SyncNetworkError. Working server will
-                    // return a human readable error page and code 200 if no command given. }
+                    // Might return one of SyncReady, SyncOpenSSLError, SyncNetworkError, SyncDNSError. Working
+                    // server will return a human readable error page and code 200 if no command given. }
         function SetTransport(): TSyncAvailable; override;
                     // Misty, public inherited.
         function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
@@ -340,6 +340,7 @@ begin
         CreateGUID(GUID);
         ServerID := copy(GUIDToString(GUID), 2, 36);      // it arrives here wrapped in {}
         RemoteServerRev := -1;
+        if DebugMode then writeln('TMistySync.TestTransport - intending to make new repo');
         exit(SyncReady);
     end;
 

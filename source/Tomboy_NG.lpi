@@ -21,7 +21,7 @@
     <i18n>
       <EnableI18N Value="True"/>
       <OutDir Value="../po"/>
-      <ExcludedIdentifiers Count="9">
+      <ExcludedIdentifiers Count="10">
         <Item1 Value="LabelToken"/>
         <Item2 Value="Index out of bounds"/>
         <Item3 Value="Node is not a container"/>
@@ -31,6 +31,7 @@
         <Item7 Value="label1"/>
         <Item8 Value="LabelFindInfo"/>
         <Item9 Value="PanelBackLinks"/>
+        <Item10 Value="Form Caption"/>
       </ExcludedIdentifiers>
       <ExcludedOriginals Count="80">
         <Item1 Value="LabelToken"/>

@@ -62,7 +62,12 @@ type
 
             { May (or may not) do some early transport tests, ie, in Tomdroid sync
               it pings the remote device. Should return SyncReady or an error value
-              if something failed.}
+              if something failed.
+              Misty, public inherited. Establish we can talk to Server unathenticated, start by testing
+                that we can resolve the hostname in the URL. If good put the IP it to URL. Then check
+                we can dowload server's default page, no interest in content, just result code.
+                Might return one of SyncReady, SyncOpenSSLError, SyncNetworkError. Working server will
+                return a human readable error page and code 200 if no command given. }
         function SetTransport() : TSyncAvailable; virtual; abstract;
 
             {Request a list of all notes the server knows about. Returns with Last Change
