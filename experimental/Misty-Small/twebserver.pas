@@ -40,9 +40,12 @@ interface
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
-  {$ENDIF}{$ENDIF}
+  {$ENDIF}
+  Unix,           // used by GetHostName on Linux. What about MacOS, Windows ?
+  {$ENDIF}
   ssync_utils,    // data sync utils based on tomboy-ng code
-  sysutils, Classes, fphttpserver, fpmimetypes, httpdefs;
+  sysutils, Classes, fphttpserver, fpmimetypes, httpdefs,
+  httpprotocol, base64;   // hhAuthorization
 
   // html2note;
   // LazLogger, LazFileUtils;      // does that introduce a LCL dependency ?
@@ -58,6 +61,7 @@ Type
 
   TMistyHTTPServer = Class(TFPHTTPServer)
   private
+
     FBaseDir : String;
 //    FCount : Integer;
     FMimeLoaded : Boolean;
@@ -69,6 +73,7 @@ Type
                         // Note will be saved in ServerHome using revision based directory structure
                         // Note commented out test code to trigger uploadfrom browser.
                         // Will return to client 200 on success or 422 on fail to save (permission, disk space).
+    function AuthOK(AReq: TFPHTTPConnectionRequest): boolean;
     procedure DoCommandUpload(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
                         // Sync - This might be called to send a note - /DOWNLOAD/$ID.note
                         // or, still an xml file, the manifest - /MANIFEST back to client -ng
@@ -116,18 +121,13 @@ var
     Serv : TMistyHTTPServer;
     ExitNow : boolean;           // A semaphore set when ctrl-C received
     DebugMode : boolean;
+    ErrorSt : string = '';       // Check this before exiting with an error
+    ServerHome : string;
+    PW : string;
 
 implementation
 
 uses FileUtil, LazFileUtils;
-
-
-Var
-
-
-  ErrorSt : string = '';       // Check this before exiting with an error
-  ServerHome : string;
-  // DebugMode : boolean = True;
 
 const
 
@@ -177,6 +177,17 @@ begin
 end;
 
 { TTestHTTPServer }
+
+// True if non-SSL; True if SSL and Password Match
+// False if SSL and ((no Auth) or (Failed password))
+function TMistyHTTPServer.AuthOK(AReq  : TFPHTTPConnectionRequest) : boolean;
+var St : string;
+begin
+    if not Serv.UseSSL then exit(True);
+    if PW = '' then exit(False);
+    St := DecodeStringBase64(copy(AReq.GetHeader(hhAuthorization), 6, 99));
+    result := ('tomboy-ng:' + PW = St);
+ end;
 
 procedure TMistyHTTPServer.SetBaseDir(const AValue: String);
 begin
@@ -297,6 +308,12 @@ var
     SaveFileName : string = '/tmp/';
 begin
     if DebugMode then writeln('DoCommandUpload ' + AReq.URL);
+     if not AuthOK(AReq) then begin
+        AResp.Contents.Add('<html><body><h2>Nope</h2></p>' + 'Auth Failure' + '</p></body></html>');
+        writeln('DoCommandUpLoad ERROR Auth Failed');
+        AResp.Code := 401;
+        exit;
+    end;
     (*
     if AReq.Files.count = 0 then        // then we are not trying to upload, just get an upload prompt. Not needed in Misty
         with AResp.Contents do begin
@@ -373,8 +390,13 @@ var STL : TStringList;
 //    St  : string;
     FName : string;
     PNote : PNoteInfo = nil;
-begin                                                                           // ToDo : this should use GetFullFileName()
-
+begin                                              // ToDo : this should use GetFullFileName()
+    if not AuthOK(AReq) then begin
+        AResp.Contents.Add('<html><body><h2>Nope</h2></p>' + 'Auth Failure' + '</p></body></html>');
+        writeln('DoCommandDownLoad ERROR Auth Failed');
+        AResp.Code := 401;
+        exit;
+    end;
     // MetaData.DumpList('in DoCommandDownload');
     if DebugMode then writeln('TMistyHTTPServer.DoCommandDownload ' + AReq.URL);
     AResp.ContentType := 'application/text';                     // in case we have to return an error message
@@ -448,6 +470,8 @@ procedure TMistyHTTPServer.HandleRequest(var ARequest: TFPHTTPConnectionRequest;
 begin
     AResponse.Code := 200;          // Default, we return a HTML text error message and 200 if we cannot work out what to do.
 
+    if AuthOK(ARequest) then writeln('AuthOK') else writeln('Auth FAILED');
+
     // Here we decide just what this particular call is. We pass ctrl to a procedure
     // that handles each type of call. In  all cases, we assume that procedure all that is necessary.
     ARequest.HandleGetOnPost := True;                                           // ?
@@ -478,6 +502,8 @@ end;
 
 
 procedure TMistyHTTPServer.Startup;
+var
+	mDNSHostName : string;
 begin
     MetaData := nil;        // to be sure, to be sure
     LoadFromFile('editor_1.template', Editor_1);
@@ -486,6 +512,7 @@ begin
     try
         {$ifdef unix}
         Serv.MimeTypesFile:='/etc/mime.types';
+	mDNSHostName := GetHostName() + '.local';
         {$endif}
         Serv.Threaded:=False;
         Serv.AcceptIdleTimeout:=1000;
@@ -497,14 +524,15 @@ begin
             Serv.Revision := -1;                    // Thats OK, its a new install.
         writeln('Starting, serving from ', Serv.BaseDir, ' on port ', Serv.Port.tostring);
         if Serv.UseSSL then
-             writeln('To check, browse to https://' + Serv.HostName + ':' + Serv.Port.tostring)
-        else writeln('To check, browse to http://' + Serv.HostName + ':' + Serv.Port.tostring);
+             write('To check, browse to https://' + mDNSHostName + ':' + Serv.Port.tostring)
+        else write('To check, browse to http://' + mDNSHostName + ':' + Serv.Port.tostring);
+	writeln('   (assuming mDNS in use)');
         if MetaData <> nil then begin
-            write('ServerID=', MetaData.ServerID);        // only show after first manifest.
-            write('Revision=', Serv.Revision.tostring + ' Found notes = ', MetaData.Count.ToString);
+            writeln('ServerID=', MetaData.ServerID);        // only show after first manifest.
+            writeln(' Revision=', Serv.Revision.tostring + ' Found notes = ', MetaData.Count.ToString);
         end;
-        writeln('   Use Ctrl-C to stop server');
-        writeln(Serv.CertificateData.HostName);
+        //writeln('   Use Ctrl-C to stop server');
+        //writeln(Serv.CertificateData.HostName);
         Serv.Active:=True;                                                      // does not return until Serv is terminated
         // from time to time, an exception relating to POST is raised and apparently dealt with
         // internally in httpserver. But if running under the debugger in the IDE you get told about it.

@@ -100,7 +100,7 @@ function TMyApplication.CommandLineOK() : boolean;    // false if error .....
 var
     ErrorMsg: String;
 begin
-    ErrorMsg := CheckOptions('hsdr:p:k:c:', 'help ssl debug port: repo: key: cert:');
+    ErrorMsg := CheckOptions('hsdr:p:k:c:w::', 'help ssl debug port: repo: key: cert:');
     if ErrorMsg <> '' then begin
         writeln('ERROR - ' + ErrorMsg);
         //ShowException(Exception.Create(ErrorMsg));  // Leaks
@@ -121,6 +121,8 @@ begin
         Port := strtoint(GetOptionValue('p', 'port'));
     if HasOption('s', 'ssl') then
         UseSSL := True;
+    if HasOption('w', 'password') then
+        PW := GetOptionValue('w', 'password');
     if HasOption('r', 'repo') then begin
         HomeDir := MyAppendPathDelim(GetOptionValue('r', 'repo'));
         if not ((FPAccess(HomeDir, F_OK) = 0) and (FPAccess(HomeDir, W_OK)=0)) then begin
@@ -199,6 +201,7 @@ begin
     writeln('  -c certificate        A valid SSL certificate (maybe self signed)');
     writeln('  -k key                A valid SSL key file that matches above');
     writeln('  -d                    Debug mode');
+    writeln('  -w                    Set a new Pass Word, no spaces');
     writeln('  eg  misty-server --repo=/home/dbannon/Misty');
     writeln('If you set the port to 443 (for SSL) must run as root, it defaults to 8088');
     writeln('Check status in a browser, eg https://hostname or http://192.168.2.20:8088');
@@ -221,7 +224,7 @@ end;
 
 
 begin
-    writeln(unix.GetHostName(), '.', GetDomainName());
+//    writeln(unix.GetHostName(), '.', GetDomainName());
     if FpSignal(SigInt, @HandleSigInt) = signalhandler(SIG_ERR) then begin
         Writeln('Failed to install signal error: ', fpGetErrno);
         exit;
