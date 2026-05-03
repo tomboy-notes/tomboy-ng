@@ -30,10 +30,6 @@ unit TWebserver;
 
     We don't delete notes, just don't list them in the updated manifest.
 
-    When a note is "quill edited", the save process will same following above rule
-    and then immediatly increment Revision.
-
-
 }
 interface
 
@@ -470,7 +466,7 @@ procedure TMistyHTTPServer.HandleRequest(var ARequest: TFPHTTPConnectionRequest;
 begin
     AResponse.Code := 200;          // Default, we return a HTML text error message and 200 if we cannot work out what to do.
 
-    if AuthOK(ARequest) then writeln('AuthOK') else writeln('Auth FAILED');
+    if DebugMode then if AuthOK(ARequest) then writeln('AuthOK') else writeln('Auth FAILED');
 
     // Here we decide just what this particular call is. We pass ctrl to a procedure
     // that handles each type of call. In  all cases, we assume that procedure all that is necessary.
@@ -528,7 +524,7 @@ begin
         else write('To check, browse to http://' + mDNSHostName + ':' + Serv.Port.tostring);
 	writeln('   (assuming mDNS in use)');
         if MetaData <> nil then begin
-            writeln('ServerID=', MetaData.ServerID);        // only show after first manifest.
+            if debugmode then writeln('ServerID=', MetaData.ServerID);        // only show after first manifest.
             writeln(' Revision=', Serv.Revision.tostring + ' Found notes = ', MetaData.Count.ToString);
         end;
         //writeln('   Use Ctrl-C to stop server');

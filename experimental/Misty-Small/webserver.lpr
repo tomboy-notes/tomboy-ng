@@ -43,11 +43,10 @@ uses
     {$IFDEF UNIX}
     Unix,
     {$ENDIF}
-
-    Classes, SysUtils, CustApp,
+    Classes, SysUtils, CustApp, IniFiles,
     BaseUnix,                     // for Signal Names  Hmm, windows ?  No idea !
     TWebserver, {LazFileUtils}
-    ssync_utils//, LazFileUtils
+    ssync_utils, LazUTF8//, LazFileUtils
     { you can add units after this };
 
 type
@@ -61,6 +60,7 @@ type
         UseSSL : boolean;
         function BuildServer: boolean;
         function CommandLineOK(): boolean;
+        // function ReadConfig(): boolean;
     protected
         procedure DoRun; override;
     public
@@ -79,18 +79,26 @@ var ReqFiles : array of string = ('editor_1.template', 'editor_2.template', 'edi
 var
     Application: TMyApplication;
 
+{ function TMyApplication.ReadConfig() : boolean;
+var
+    ConfigFile : TINIFile;
+begin
+    // Record Repo dir, full path to two cert files (if '' then insecure), port, pw.
+    // eg [BasicSettings]
+    //    NotesPath=/home/dbannon/.local/share/tomboy-ng-test/
+end;    }
+
 
 function TMyApplication.BuildServer : boolean;
 begin
-    writeln('WARNING, do not use on the real internet. Only OK on a secure home network !');
+    writeln('WARNING, there are security issues, especially if not on secure home network !');
     Serv:=TMistyHTTPServer.Create(Nil);
     Serv.BaseDir := HomeDir;
     Serv.Port := Port;                 // defaults to 8088
-    // We must have either -p port OR -s
-    if HasOption('s', 'ssl') then begin   // Untested !
+    if UseSSL then begin
         Serv.UseSSL := True;
-        Serv.CertificateData.PrivateKey.FileName := 'domain.key';
-        Serv.CertificateData.Certificate.FileName := 'domain.crt';
+        Serv.CertificateData.PrivateKey.FileName := CertKey;
+        Serv.CertificateData.Certificate.FileName := Certificate;
     end;
     Serv.Startup;
     Result := True;
@@ -100,7 +108,7 @@ function TMyApplication.CommandLineOK() : boolean;    // false if error .....
 var
     ErrorMsg: String;
 begin
-    ErrorMsg := CheckOptions('hsdr:p:k:c:w::', 'help ssl debug port: repo: key: cert:');
+    ErrorMsg := CheckOptions('hdr:p:k:c:w::', 'help ssl debug port: repo: key: cert:');
     if ErrorMsg <> '' then begin
         writeln('ERROR - ' + ErrorMsg);
         //ShowException(Exception.Create(ErrorMsg));  // Leaks
@@ -118,57 +126,48 @@ begin
     if HasOption('k', 'key') then
         CertKey := GetOptionValue('k', 'key');
     if HasOption('p', 'port') then
-        Port := strtoint(GetOptionValue('p', 'port'));
-    if HasOption('s', 'ssl') then
-        UseSSL := True;
+        Port := strtoint(GetOptionValue('p', 'port'))
+    else Port := 8088;
     if HasOption('w', 'password') then
         PW := GetOptionValue('w', 'password');
-    if HasOption('r', 'repo') then begin
-        HomeDir := MyAppendPathDelim(GetOptionValue('r', 'repo'));
-        if not ((FPAccess(HomeDir, F_OK) = 0) and (FPAccess(HomeDir, W_OK)=0)) then begin
-            if DebugMode then writeln('TMyApplication.CommandLineOK - repo directory needs checking');
- //       if not  DirectoryIsWritable(HomeDir) then begin            // not present or not writable
-            if DirectoryExists(HomeDir) then begin                 // must be unwritable
-                writeln('ERROR Dir [' + HomeDir + '] cannot be written to.');
+    // ---------- Check repo location.
+    if HasOption('r', 'repo') then
+        HomeDir := GetOptionValue('r', 'repo')
+    else HomeDir := GetEnvironmentVariableUTF8('HOME') + '/Misty/';
+    HomeDir := MyAppendPathDelim(HomeDir);
+    if not ((FPAccess(HomeDir, F_OK) = 0) and (FPAccess(HomeDir, W_OK)=0)) then begin              // we have a problem
+        if DebugMode then writeln('TMyApplication.CommandLineOK - repo directory needs checking');
+        if DirectoryExists(HomeDir) then begin                   // must be unwritable
+            writeln('ERROR Dir [' + HomeDir + '] cannot be written to.');
+            WriteHelp;
+            exit(false);
+        end else begin
+            FPMkDir(HomeDir, &777);                                         // does not recurse, ret 0 if OK, pass Octal
+            if DebugMode then writeln('TMyApplication.CommandLineOK - trying to create ', HomeDir);
+            if not DirectoryExists(HomeDir) then begin
+                writeln('ERROR Dir [' + HomeDir + '] cannot be created');
+                WriteHelp;
                 exit(false);
-            end else begin
-                FPMkDir(HomeDir, &777);                                         // does not recurse, ret 0 if OK, pass Octal
-                if DebugMode then writeln('TMyApplication.CommandLineOK - trying to create ', HomeDir);
- //               ForceDirectoriesUTF8(HomeDir);
-                if not DirectoryExists(HomeDir) then begin
-                    writeln('ERROR Dir [' + HomeDir + '] cannot be created');
-                    exit(false);
-                end;
             end;
-        end else if DebugMode then writeln('TMyApplication.CommandLineOK - Repo dir OK');
-        {$ifndef MISTY-SMALL}
-        for i := 0 to high(ReqFiles) do
-            if not FileExists(HomeDir + ReqFiles[i]) then begin
-                writeln('ERROR, cannot see ' + HomeDir + ReqFiles[i]);           // ToDo : windows ?
-                Exit(false);
-            end;
-         {$endif}
-    end else begin
-        WriteHelp;
-        Exit(false);
-    end;
-    if UseSSL then begin
-        if ((Certificate = '') or (CertKey = '')) then begin
-            writeln('ERROR, you have asked for ssl but not provided a Certificate or Key');
+        end;
+    end;                         // if to here, repo is OK
+    {$ifndef MISTY-SMALL}
+    for i := 0 to high(ReqFiles) do
+        if not FileExists(HomeDir + ReqFiles[i]) then begin
+            writeln('ERROR, cannot see ' + HomeDir + ReqFiles[i]);           // ToDo : windows ?
+            Exit(false);
+        end;
+    {$endif}
+    // ---------- Check of a correct request to use SSL
+    if ((Certificate <> '') or (CertKey <> '') or (PW <> '')) then begin                     // user wants SSL
+        if ((Certificate = '') or (CertKey = '') or (PW = '')) then begin                    // but at least one is missing
+            writeln('ERROR, must provide all 3, a Certificate, Key and Password to use SSL');
             WriteHelp;
             Exit(false);
         end;
-        if not FileExists(Certificate) then begin
-            writeln('ERROR, you have asked for ssl but Certificate [' + Certificate + '] does not exist');
-            WriteHelp;
-            Exit(false);
-        end;
-        if not FileExists(CertKey) then begin
-            writeln('ERROR, you have asked for ssl but Key [' + CertKey + '] does not exist');
-            WriteHelp;
-            Exit(false);
-        end;
-    end;
+        UseSSL := True;
+    end else writeln('----- Running in insecure mode ! -----');
+    if DebugMode then writeln('TMyApplication.CommandLineOK - Repo dir OK');
     Result := True;
 end;
 
@@ -195,16 +194,15 @@ end;
 procedure TMyApplication.WriteHelp;
 begin
     writeln('tomboy-ng Sync Webserver - Options :');
-    writeln('  -r Dir | --repo=Dir   Repo Dir to store sync files. REQUIRED');
+    writeln('  -r Dir | --repo=Dir   Repo Dir to store sync files. Default ~/Misty');
     writeln('  -p PortNumber         Port to run on, default is 8088');
-    writeln('  -s                    Run with SSL, needs cert and key');
     writeln('  -c certificate        A valid SSL certificate (maybe self signed)');
     writeln('  -k key                A valid SSL key file that matches above');
     writeln('  -d                    Debug mode');
     writeln('  -w                    Set a new Pass Word, no spaces');
     writeln('  eg  misty-server --repo=/home/dbannon/Misty');
-    writeln('If you set the port to 443 (for SSL) must run as root, it defaults to 8088');
-    writeln('Check status in a browser, eg https://hostname or http://192.168.2.20:8088');
+    writeln('Do NOT use ports below 1024, requires root, app is not to that standard.');
+    writeln('If you provide one, must provide all of Cert, Key, Password');
     writeln('Maybe you want a self signed certificate for SSL ? try -');
     writeln('openssl req -newkey rsa:2048 -x509 -days 365 -keyout domain.key -out domain.crt -nodes');
     writeln('');
