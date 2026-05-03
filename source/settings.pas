@@ -399,7 +399,6 @@ type
     public
                         // Data about Sync modes, index by eg ord(SyncFile), populated by Sett.Create() and ReadConfigFile();
         SyncInfo : TSyncInfo;           // Typed in SyncUtils, holds all Sync type specific data in array of TSyncInfoRec
-        PlayMisty : Boolean;            // Experimental Misty Sync, set as command line option
         HelpNotesPath : string;         // expected path to help note directories for this OS
         HelpNotesLang : string;         // either two char code or ''
         AreClosing : boolean;           // False until set true by mainUnit FormClose or cli HandleSig
@@ -919,7 +918,6 @@ procedure TSett.FormCreate(Sender: TObject);
 var
     i : integer;
 begin
-    PlayMisty := Application.HasOption('playmisty');      // experimental Misty Sync Server
     DebugSync := Application.HasOption('s', 'debug-sync');
     // gTTFontCache.ReadStandardFonts;         // we do this in Kmemo2PDR now.
     fSearchTitleOnly := False;
@@ -949,13 +947,8 @@ begin
         end;
     end;
     ComboSyncType.Items.Clear;
-    if PlayMisty then
-        for i := 0 to ord(high(TSyncTransport)) do                     // enable MISTY in Settings Screen
-            ComboSyncType.Items.Add(SyncInfo[i].DisplayHeading)
-        else
-           for i := 0 to ord(high(TSyncTransport))-1 do                     // -1 to disable MISTY
-               ComboSyncType.Items.Add(SyncInfo[i].DisplayHeading);
-
+    for i := 0 to ord(high(TSyncTransport)) do                     // enable MISTY in Settings Screen
+            ComboSyncType.Items.Add(SyncInfo[i].DisplayHeading);
     ComboSyncType.ItemHeight := 0;
     ComboSyncType.ReadOnly := True;
 //    ComboSyncType.Items.Add(rsSyncTypeFile);
@@ -1075,8 +1068,6 @@ begin
         exit;
     end;
 end;
-
-
 
 
     // Will read and apply the config file if available, else sets sensible defaults
