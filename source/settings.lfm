@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 563
+  Left = 1095
   Height = 634
-  Top = 218
+  Top = 190
   Width = 789
   BorderIcons = []
   Caption = 'Form Caption'
@@ -673,12 +673,13 @@ object Sett: TSett
           AnchorSideTop.Control = GroupBoxUser
           AnchorSideRight.Control = SpeedSetupSync
           AnchorSideRight.Side = asrBottom
+          AnchorSideBottom.Control = GroupBoxUser
+          AnchorSideBottom.Side = asrBottom
           Left = 203
           Height = 60
           Top = 117
           Width = 562
-          Anchors = [akTop, akLeft, akRight]
-          AutoSize = True
+          Anchors = [akTop, akLeft, akRight, akBottom]
           BorderSpacing.Left = 15
           Caption = 'Token'
           ClientHeight = 34
@@ -724,7 +725,6 @@ object Sett: TSett
           Height = 60
           Top = 117
           Width = 173
-          AutoSize = True
           BorderSpacing.Top = 5
           Caption = 'User'
           ClientHeight = 34

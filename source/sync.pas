@@ -1045,6 +1045,8 @@ begin
                         Transport := TMistySync.Create(ProgressProcedure);
                         ConfigDir := ConfigDir + Sett.SyncInfo[ord(SyncMisty)].DisplayName + PathDelim;
                         ForceDirectory(ConfigDir);
+                        //Transport.Password := Password;
+                        //Transport.Username := UserName;
                     end;
 
         {$ifndef TESTRIG}
@@ -1055,8 +1057,8 @@ begin
                             debugln('TSync.SetTransport ErrorString is '+ ErrorString);
                             exit(SyncNetworkError);
                         end;
-                        Transport.Password := Password;
-                        Transport.Username := UserName;
+                        //Transport.Password := Password;
+                        //Transport.Username := UserName;
                         ConfigDir := ConfigDir + SyncGithub.ToString + PathDelim;
                         ForceDirectory(ConfigDir);
                       end;
@@ -1064,18 +1066,21 @@ begin
     end;
 //    Transport.ProgressProcedure := ProgressProcedure;
     Transport.Password := Password;
+    Transport.Username := UserName;
     Transport.NotesDir := NotesDir;
     Transport.DebugMode := DebugMode;
     Transport.ConfigDir := ConfigDir;                               // unneeded I think ??
     Transport.RemoteAddress:= SyncAddress;                          // happens _before_ Trans.SetTransport
     Result := Transport.SetTransport();                             // in github, this will (re)set Transport.RemoteAddress
     ErrorString := Transport.ErrorString;
-    if DebugMode then begin
-        debugln('Remote address is ' + SyncAddress);
-        debugln('Local Config ' + ConfigDir);
-        debugln('Notes dir ' + NotesDir);
-        debugln('SetTransport ErrorString : ' + ErrorString);
-	end;
+    if debugmode then begin
+        debugln('----- Transport Data, from TSync.SetTransport -----');
+        debugln('    Remote address is ' + SyncAddress);
+        debugln('    Local Config ' + ConfigDir);
+        debugln('    Notes dir ' + NotesDir);
+        //debugln('    SetTransport ErrorString : ' + ErrorString);
+        //debugln('    Password ' + Transport.Password);
+    end;
 end;
 
 function TSync.TestConnection(): TSyncAvailable;

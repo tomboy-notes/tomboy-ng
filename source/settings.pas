@@ -1230,7 +1230,7 @@ begin
 
 {PW}    SyncInfo[ord(SyncFile)].PW   := '';
         SyncInfo[ord(SyncGitHub)].PW := DecodeStringBase64(Configfile.ReadString('SyncSettings', 'GHPassword', ''));
-        SyncInfo[ord(SyncMisty)].PW  := '';
+        SyncInfo[ord(SyncMisty)].PW  := DecodeStringBase64(Configfile.ReadString('SyncSettings', 'MistyPassword', ''));
 
 {Last}  SyncInfo[ord(SyncFile)].LastSync   := ISO8601ToDate(Configfile.ReadString('SyncSettings', 'SyncTimingFileLast', TooEarlyDate));
         SyncInfo[ord(SyncGitHub)].LastSync := ISO8601ToDate(Configfile.ReadString('SyncSettings', 'SyncTimingGitHubLast', TooEarlyDate));
@@ -1238,7 +1238,7 @@ begin
 
 {User}  SyncInfo[ord(SyncFile)].User   := '';
         SyncInfo[ord(SyncGitHub)].User := Configfile.ReadString('SyncSettings', 'GHUserName', '');
-        SyncInfo[ord(SyncMisty)].User  := '';
+        SyncInfo[ord(SyncMisty)].User  := Configfile.ReadString('SyncSettings', 'MistyUserName', '');
         ComboSyncTypeChange(self);
 
         // ------------- S P E L L I N G ---------------------------------------
@@ -2000,25 +2000,30 @@ begin
     EditRepo.ReadOnly := True;
     EditPW.ReadOnly := True;
     SpeedTokenActions.Visible := False;
-    GroupBoxToken.Caption := 'Token';       // ToDo : resources
     case ComboSyncType.ItemIndex of         // remembering that the Combo contents matches TSyncTransport enumerated type !
         0 : begin
-                for Ctrl in [GroupBoxToken, GroupBoxUser, EditPW, EditUserName]
+                for Ctrl in [GroupBoxToken, GroupBoxUser]
                     do Ctrl.Visible := False;
                 EditRepo.Hint := 'Click Setup button to configure';             // ToDo : resources
             end;
         1 : begin
-                for Ctrl in [GroupBoxToken, GroupBoxUser, EditPW, EditUserName, SpeedTokenActions]
+                for Ctrl in [GroupBoxToken, GroupBoxUser, SpeedTokenActions]
                     do Ctrl.Visible := True;
+                GroupBoxUser.Enabled := True;
                 EditRepo.Hint := 'Provide User, Token and click Setup button to configure';   // ToDo : resources
+                GroupBoxToken.Caption := 'Token';
             end;
         2 : begin
-                for Ctrl in [GroupBoxToken, GroupBoxUser, EditPW, EditUserName]
-                        do Ctrl.Visible := false;
+                GroupBoxUser.Visible  := True;
+                GroupBoxUser.Enabled  := False;
+                GroupBoxToken.Visible := True;
+                GroupBoxToken.Enabled := True;
+                SpeedTokenActions.Visible := False;
                 EditRepo.ReadOnly := False;
                 EditPW.ReadOnly := False;
-                GroupBoxToken.Caption := 'Password';                             // ToDo : resources
+                GroupBoxToken.Caption := 'Password';                             // ToDo : resources ?
                 EditRepo.Hint := 'eg http://localhost:8088';
+                EditUserName.Text := 'tomboy-ng';
             end;
     end;
     MaskSettingsChanged := RememberMask;
@@ -2058,7 +2063,7 @@ begin
             FormSync.UserName := EditUserName.text;
             // SyncGUI will update LabelSyncRepo.Caption if successful.
           end;
-      2 : begin
+      2 : begin                                                                 // eg Misty
             FormSync.RemoteAddress := trim(EditRepo.Text);
             FormSync.Password := EditPW.Text;
             FormSync.UserName := EditUserName.text;

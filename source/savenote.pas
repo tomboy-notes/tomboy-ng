@@ -592,11 +592,11 @@ end;
 procedure TBSaveNote.ReadKMemo(FileName : ANSIString; Title : string; KM1 : TKMemo; STL : TStringList = nil);
 var
    Buff : ANSIstring = '';
-   // OutStream:TFilestream;
    BlockNo : integer = 0;
    Block : TKMemoBlock;
    NextBlock : integer;
    First : boolean = true;
+   // OutStream:TFilestream;
    //ExistingUnderline : boolean = false;
  begin
     KM := KM1;
@@ -618,7 +618,7 @@ var
         // http://free-pascal-general.1045716.n5.nabble.com/Creating-text-files-with-TFileStream-td2824859.html
     Buff := Header(Title);
     if STL = Nil then
-        OutStream.Write(Buff[1], length(Buff))
+        OutStream.Write(Buff[1], length(Buff))      // Almost certainly not doing this now.
     else STL.Add(Buff);
     Buff := '';
     try

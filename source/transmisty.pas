@@ -205,8 +205,10 @@ begin
     //InitSSLInterface;
     // curl -i -u $GH_USER https://api.github.com/repos/davidbannon/libappindicator3/contents/README.note
     Client := TFPHttpClient.Create(nil);
-//    Client.UserName := UserName;
-//    Client.Password := Password; // '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';     eg a github token
+    Client.UserName := UserName;                    // if given a username and password, generates a Authentication header
+ //   Client.UserName := 'tomboy-ng';
+ //   client.Password := 'TrustMe';
+    Client.Password := Password;                    //  UserName and Passwrd are inheriated from Trans. Filled in by Sync
     Client.AddHeader('User-Agent','Mozilla/5.0 (compatible; fpweb)');
     case ConType of
         ctXML :  Client.AddHeader('Content-Type','application/xml; charset=UTF-8');
@@ -267,6 +269,11 @@ begin
     Result := false;
     if DebugMode then debugln('TMistySync.UpLoader - Posting ', FFName, ' to ' + URL);
     Client := TFPHttpClient.Create(nil);
+    Client.UserName := UserName;                    // if given a username and password, generates a Authentication header
+ //   Client.UserName := 'tomboy-ng';
+ //   client.Password := 'TrustMe';
+    Client.Password := Password;                    //  UserName and Passwrd are inheriated from Trans. Filled in by Sync
+
     try
         try
             Client.AddHeader('User-Agent','Mozilla/5.0 (compatible; fpweb)');
