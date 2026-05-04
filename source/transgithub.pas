@@ -1333,28 +1333,12 @@ begin
 
 end;
 
-(*
-procedure TForm1.FormShow(Sender : TObject);
-var
-    Host : THostResolver;
-begin
-    Host := THostResolver.Create(nil);
-    if Host.NameLookup('api.github.com') then
-        writeln(Host.AddressAsString)
-    else writeln('not found');
-    host.Free;
-end;  *)
-
-
 
 constructor TGithubSync.Create(PP : TProgressProcedure = nil);
 var
     Host : THostResolver;
     Cnt : integer = 0;
 begin
-
-
-
     ProgressProcedure := PP;           // It gets passed after create.    WHY ?
     RemoteNotes := Nil;
     SelectiveNotebookIDs := nil;

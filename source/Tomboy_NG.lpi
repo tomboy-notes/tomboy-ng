@@ -1173,13 +1173,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-test --playmisty --debug-sync"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-test --debug-sync"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-test --playmisty --debug-sync"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-test --debug-sync"/>
           </local>
           <environment>
             <UserOverrides Count="2">

@@ -474,11 +474,11 @@ begin
         EndEndSt := SetFontXML(FSize, True) + EndEndSt;
 	end;
 
-    {writeLn('Buff at Start [' + Buff + ']');
-    writeln('StartStart    [' + StartStartSt + ']');
-    writeln('StartEnd      [' + StartEndSt + ']');
-    writeln('EndStart      [' + EndStartSt + ']');
-    writeln('EndEnd        [' + EndEndSt + ']');        }
+    //writeLn('Buff at Start [' + Buff + ']');
+    //writeln('StartStart    [' + StartStartSt + ']');
+    //writeln('StartEnd      [' + StartEndSt + ']');
+    //writeln('EndStart      [' + EndStartSt + ']');
+    //writeln('EndEnd        [' + EndEndSt + ']');
 
     Buff := StartEndSt + Buff + EndStartSt;
 (*    {$ifdef DOINDENT}

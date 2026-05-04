@@ -1414,10 +1414,10 @@ begin
                 if SyncInfo[ord(SyncMisty)].LastSync > ISO8601ToDate(EarlyDate) then begin  // either may not be set
                     ConfigFile.writestring('SyncSettings', 'SyncTimingMistyLast', FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncInfo[ord(SyncMisty)].LastSync));
                 end;
-{               TestSt := FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingFileLast);
-               Writeln('Incoming Datetime is ' + TestSt);
-               SyncTimingGitHubLast :=  ISO8601ToDate(TestSt);
-               Writeln('Converted and back ' + FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingGitHubLast));  }
+               //TestSt := FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingFileLast);
+               //Writeln('Incoming Datetime is ' + TestSt);
+               //SyncTimingGitHubLast :=  ISO8601ToDate(TestSt);
+               //Writeln('Converted and back ' + FormatDateTime('yyyy-mm-dd"T"hh:mm:ss', SyncTimingGitHubLast));
             end;
 
             //
