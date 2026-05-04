@@ -1877,6 +1877,10 @@ msgctxt "tsett.speedsetupsync.caption"
 msgid "Setup"
 msgstr ""
 
+#: tsett.speedsetupsync.hint
+msgid "Setup or Change a Sync Repository"
+msgstr ""
+
 #: tsett.speedtokenactions.caption
 msgid "Actions"
 msgstr ""
