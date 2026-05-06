@@ -6,27 +6,34 @@ program webserver;
 /home/dbannon/bin/FPC/fpc-3.2.3/bin/fpc -MObjFPC -Scaghi -Cg -CirotR -O1 -gw3 -gl -gh -gt -l -vewnhibq -Fu/home/dbannon/Pascal/tomboy-ng/experimental/Misty-Small/  -omisty-server -dLCL -dLCLgtk2 webserver.lpr
 }
 
-{ This is a simple version of Misty, it does not offer any way to view or edit notes online
-  and does no authentication nor SSL. So, avoids problems like certificates, Javascript
-  front ends etc.
+{ This is a simple version of Misty, it does not offer any way to view or edit
+  notes online. It will run in SSL secure mode if given a certificate and password
+  or in insecure mode, (not recommended) without the above.
 
-  Absolutly must NOT be used on the internet !
+  Absolutly must NOT be used on the internet in insecure mode !
 
-  While someone who connects to it from a browser cannot see your notes (I hope)
-  they could access them with a hacked version of tomboy-ng (and source is, of
-  course, available) or could easily enough make a new app after examining the
-  the protocol. It would most certainly not be Rocket Surgery !
+  To see the options, try this -
 
-  Did I mention it must, absolutly, not be used on the internet ?
+  $> ./misty-server -h
 
-  ./misty-server -p 8080 -H /home/dbannon/Misty
+  Insecure Mode eg (using built in defaults for repo location and port)
+  $> ./misty-server
 
-  check its running by browsing to (eg) http://localhost:8080
-  where localhost is where the server is running and
+  Secure Mode (recommended) eg -
+  $> ./misty-server -p 8080 -r ~/Misty -c domain.crt -k domain.key -w TrustMe
 
-  config tomboy-ng's Misty Sync with Repo = same thing.
+  (please don't use 'TrustMe' as your password !)
 
-  Do not use on the internet ! Local, secure home networks should be OK.
+  check its running by browsing to the url printed at startup if you use an official
+  certificate or are willing to se a browser security exception.
+
+  Config tomboy-ng's Misty Sync with Repo set to that URL and, of course the password
+  if running secure.
+
+  Do not use on the internet in insecure mode ! Local, secure home networks should be OK, maybe.
+
+  Every care but absolutly no responsability !
+  David Bannon, May 6, 2026
 }
 
 {$DEFINE MISTY-SMALL}
@@ -45,9 +52,8 @@ uses
     {$ENDIF}
     Classes, SysUtils, CustApp, IniFiles,
     BaseUnix,                     // for Signal Names  Hmm, windows ?  No idea !
-    TWebserver, {LazFileUtils}
-    ssync_utils, LazUTF8//, LazFileUtils
-    { you can add units after this };
+    TWebserver,
+    ssync_utils, LazUTF8;
 
 type
 
@@ -91,7 +97,9 @@ end;    }
 
 function TMyApplication.BuildServer : boolean;
 begin
-    writeln('WARNING, there are security issues, especially if not on secure home network !');
+    if UseSSL then
+    writeln('NOTICE, secure mode but please be aware of security issues!')
+    else writeln('WARNING, insecure, be aware of issues if not on a secure home network!');
     Serv:=TMistyHTTPServer.Create(Nil);
     Serv.BaseDir := HomeDir;
     Serv.Port := Port;                 // defaults to 8088

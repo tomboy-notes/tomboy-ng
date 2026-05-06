@@ -125,11 +125,10 @@ implementation
 
 uses FileUtil, LazFileUtils;
 
-const
-
+(* const
     Editor_1 : string = '<html>';    // placeholders, load real content at run time
     Editor_2 : string = '';
-    Editor_3 : string = '</html>';
+    Editor_3 : string = '</html>';      *)
 
 
     //Just a debug tool, probably delete at some stage
@@ -248,6 +247,7 @@ procedure TMistyHTTPServer.ShowBrowser(AResp : TFPHTTPConnectionResponse);
 var
     STL : tstringlist;
 begin
+    if DebugMode then writeln('TMistyHTTPServer.ShowBrowser');
     STL := TStringList.Create();
     STL.Insert(0, '<html><body><h1>tomboy-ng</h1>');
     Stl.Add('</body></html>');
@@ -304,7 +304,7 @@ var
     SaveFileName : string = '/tmp/';
 begin
     if DebugMode then writeln('DoCommandUpload ' + AReq.URL);
-     if not AuthOK(AReq) then begin
+    if not AuthOK(AReq) then begin
         AResp.Contents.Add('<html><body><h2>Nope</h2></p>' + 'Auth Failure' + '</p></body></html>');
         writeln('DoCommandUpLoad ERROR Auth Failed');
         AResp.Code := 401;
@@ -466,31 +466,37 @@ procedure TMistyHTTPServer.HandleRequest(var ARequest: TFPHTTPConnectionRequest;
 begin
     AResponse.Code := 200;          // Default, we return a HTML text error message and 200 if we cannot work out what to do.
 
-    if DebugMode then if AuthOK(ARequest) then writeln('AuthOK') else writeln('Auth FAILED');
+
+ {   writeln('-----------------------------');
+    writeln('CMD ' + ARequest.Command);
+    writeln('CL ' + ARequest.CommandLine);
+    writeln('HDL ' + ARequest.HeaderLine);
+    writeln('AU ' + ARequest.Authorization);
+    writeln('CHD ' + ARequest.CustomHeaders.Text);
+    writeln('-----------------------------');        }
+
+    if DebugMode then if AuthOK(ARequest) then writeln('AuthOK') else writeln('* Auth FAILED');
 
     // Here we decide just what this particular call is. We pass ctrl to a procedure
     // that handles each type of call. In  all cases, we assume that procedure all that is necessary.
     ARequest.HandleGetOnPost := True;                                           // ?
-    if DebugMode then writeln('TMistyHTTPServer.HandleRequest URL=' + ARequest.URL + ' FileCount='
+    if DebugMode then  writeln('TMistyHTTPServer.HandleRequest URL=' + ARequest.URL + ' FileCount='
             + ARequest.Files.Count.ToString + ' FieldCount=' + ARequest.ContentFields.Count.ToString);
 
-    if ARequest.Files.Count > 0 then                                            // Fileupload ?
+    if ARequest.Files.Count > 0 then                   // TB_Client wants to upload note
         DoCommandUpLoad(ARequest, AResponse)
-    else                                                  // Content Update, data back from Quill webpage, an edited note.
-    if ARequest.ContentFields.Count > 1 then              // > 0 would work too, but better checks necessary
-        writeln('Attempted to request a note edit')
     else
-    if ARequest.URL = '/LISTNOTES' then                   // List notes, user wants to browse list of notes
-        writeln('Attempted to request a note list')
-        // DoCommandListNotes(ARequest, AResponse)
+    (* if ARequest.ContentFields.Count > 1 then        // Content Update, data back from Quill webpage, an edited note.
+        writeln('Attempted to request a note edit')    // > 0 would work too, but better checks necessary
     else
+    if ARequest.URL = '/LISTNOTES' then
+        DoCommandListNotes(ARequest, AResponse)        // List notes, user wants to browse list of notes - Disabled
+    else  *)
     if pos('/DOWNLOAD', ARequest.URL) > 0 then
-    // if copy(ARequest.URL, 1, 9) = '/DOWNLOAD' then        // TB client wants to download a note from repo
-        DoCommandDownLoad(ARequest, AResponse)
+        DoCommandDownLoad(ARequest, AResponse)         // TB client wants to download a note from repo
     else
     if pos('/MANIFEST', ARequest.URL) > 0 then
-    // if copy(ARequest.URL, 1, 9) = '/MANIFEST' then        // TB client wants the manifest, same as above
-        DoCommandDownLoad(ARequest, AResponse)
+        DoCommandDownLoad(ARequest, AResponse)         // TB client wants the manifest, same as above
     else
         ShowBrowser(AResponse);
 end;
@@ -502,9 +508,9 @@ var
 	mDNSHostName : string;
 begin
     MetaData := nil;        // to be sure, to be sure
-    LoadFromFile('editor_1.template', Editor_1);
-    LoadFromFile('editor_2.template', Editor_2);
-    LoadFromFile('editor_3.template', Editor_3);
+    //LoadFromFile('editor_1.template', Editor_1);
+    //LoadFromFile('editor_2.template', Editor_2);
+    //LoadFromFile('editor_3.template', Editor_3);
     try
         {$ifdef unix}
         Serv.MimeTypesFile:='/etc/mime.types';
@@ -523,6 +529,7 @@ begin
              write('To check, browse to https://' + mDNSHostName + ':' + Serv.Port.tostring)
         else write('To check, browse to http://' + mDNSHostName + ':' + Serv.Port.tostring);
 	writeln('   (assuming mDNS in use)');
+        if DebugMode then writeln('NOTICE : debugmode is On');
         if MetaData <> nil then begin
             if debugmode then writeln('ServerID=', MetaData.ServerID);        // only show after first manifest.
             writeln(' Revision=', Serv.Revision.tostring + ' Found notes = ', MetaData.Count.ToString);

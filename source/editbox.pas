@@ -4796,9 +4796,9 @@ begin
         if Saver <> Nil then Saver.Destroy;
         Caption := CleanCaption();
     end;
-    debugln('TEditBoxForm.SaveTheNote - Line #2 is ' + SL[2]);                  // ToDo : Remove me
-    debugln('TEditBoxForm.SaveTheNote - Line #3 is ' + SL[3]);
-    debugln('TEditBoxForm.SaveTheNote - Line #4 is ' + SL[4]);
+//    debugln('TEditBoxForm.SaveTheNote - Line #2 is ' + SL[2]);                  // ToDo : Remove me
+//    debugln('TEditBoxForm.SaveTheNote - Line #3 is ' + SL[3]);
+//    debugln('TEditBoxForm.SaveTheNote - Line #4 is ' + SL[4]);
     //T5 := GetTickCount64();
     Loc.Width:=inttostr(Width);
     Loc.Height:=inttostr(Height);

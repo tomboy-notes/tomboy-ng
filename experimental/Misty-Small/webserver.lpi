@@ -91,13 +91,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="-p 8088 -r /home/dbannon/Misty-Small -d -w TrustMe"/>
+        <CommandLineParams Value="-p 8088 -r /home/dbannon/Misty-Small -w TrustMe -k domain.key -c domain.crt"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="-p 8088 -r /home/dbannon/Misty-Small -d -w TrustMe"/>
+            <CommandLineParams Value="-p 8088 -r /home/dbannon/Misty-Small -w TrustMe -k domain.key -c domain.crt"/>
           </local>
         </Mode0>
       </Modes>
