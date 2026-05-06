@@ -19,7 +19,7 @@
     <i18n>
       <EnableI18N LFM="False"/>
     </i18n>
-    <BuildModes Count="5">
+    <BuildModes Count="4">
       <Item1 Name="Default" Default="True"/>
       <Item2 Name="Debug">
         <CompilerOptions>
@@ -59,32 +59,7 @@
           </Other>
         </CompilerOptions>
       </Item2>
-      <Item3 Name="Release">
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="misty-server"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <Optimizations>
-              <OptimizationLevel Value="3"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-              <RunWithoutDebug Value="True"/>
-              <StripSymbols Value="True"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-          </Linking>
-        </CompilerOptions>
-      </Item3>
-      <Item4 Name="arm32">
+      <Item3 Name="MistyReleaseRasPi32">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -109,8 +84,8 @@
             <LinkSmart Value="True"/>
           </Linking>
         </CompilerOptions>
-      </Item4>
-      <Item5 Name="arm64">
+      </Item3>
+      <Item4 Name="MistyReleaseRasPi64">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
@@ -135,7 +110,7 @@
             <LinkSmart Value="True"/>
           </Linking>
         </CompilerOptions>
-      </Item5>
+      </Item4>
     </BuildModes>
     <PublishOptions>
       <Version Value="2"/>

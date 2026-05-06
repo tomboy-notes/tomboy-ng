@@ -188,8 +188,8 @@ function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $
             exit
         ;;
 		MistyReleaseX86_64 | MistyReleaseRasPi32 | MistyReleaseRasPi64)
-			cd experimemtal/Misty_Small
-			$LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode="$1" "$LPI"
+			cd experimental/Misty-Small
+			$LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode="$1" webserver.lpi
 			exit
 		;;
 
