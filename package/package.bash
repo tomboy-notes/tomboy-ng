@@ -139,7 +139,16 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ;;
        ReleaseRasPi64Qt5)
             echo "$PRODUCT"-arm64-qt5
-        ;; 
+        ;;
+	MistyReleaseX86_64)
+		echo "misty-server-x86_64"
+	;;
+	MistyReleaseRasPi32)
+		echo "misty-server-arm32"
+	;;
+	MistyReleaseRasPi64)
+		echo "misty-server-arm64"	
+	;;
     esac
 }
 
@@ -189,7 +198,20 @@ function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $
         ;;
 		MistyReleaseX86_64 | MistyReleaseRasPi32 | MistyReleaseRasPi64)
 			cd ../experimental/Misty-Small
+			BIN=$(ModeParamBin "$1")
+			if [ -e "$BIN" ]; then
+				rm "$BIN"
+			fi
 			$LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode="$1" webserver.lpi
+			cd ../../package
+			if [ -e "$1".tgz ]; then
+				rm "$1".tgz
+			fi
+			cp ../doc/misty-readme.note .
+			cp ../experimental/Misty-Small/"$BIN" .
+			cp ../scripts/play-misty.bash .
+			tar czf "$1".tgz "$BIN" play-misty.bash misty-readme.note
+			rm "$BIN" play-misty.bash misty-readme.note
 			exit
 		;;
 

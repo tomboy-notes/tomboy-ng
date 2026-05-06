@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
+  <title>Misty</title>
+  <text xml:space="preserve"><note-content version="0.1">Misty
+
+Misty is a server for a tomboy-ng sync system.Its one of the ways you can keep multple instances of tomboy-ng all in sync. Its a development project and, at present is experimental. The server itself only runs on a <bold>Linux box</bold> but can be connected to from tomby-ng instances running on Linux, Windows and Mac. Its likely the server will work on Windows and Mac if there is sufficent interest.
+
+Misty should be run as an ordinary user, no benifit (and increased risk) running as root.
+
+Now, this is important ! Misty can run in a very easily setup but very insecure mode or, at your choice, a bit harder but much more secure mode. The latter uses SSL, a web certificate and a password to protect your notes from prying eyes.
+<list><list-item dir="ltr"><list><list-item dir="ltr">This means that your tomby-ng must have <bold>SSL libraries</bold> available, Linux users will have them preinstalled but Windows and Mac users may not.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">The server needs a <bold>web certificate</bold>. If you use an external facing Linux box you will probably already have certificates, you need to identify where they are. If its a home network then its easy to generate a "self signed certificate" that works fine with tomboy-ng connections.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">You need a <bold>password</bold>, known to both the server and each instance of tomboy-ng you will be connecting with. In the interest of simplisity I have used 'basic' authentication, its up to you to ensure both ends use the same password.</list-item></list></list-item></list>
+
+The no security model needs none of the above. You may feel comfortable using it only on a home network, behind a reasonable firewall. That is very much your call. It means plain text across the ether, if there is a risk anyone is listening in, dangerous. But its simple, easy and quick to get going.
+
+<bold>Do not, under any circumstances, use the no security model on the open internet.</bold>
+
+$&gt;./misty-server &lt;enter&gt;
+
+Press Ctrl-C to stop it. I suggest you do not leave it running in no security mode.
+That will store your sync repo in Misty at the top of your home directory. There are options to set the port number and alternative repo location, try with -h for help
+
+$&gt; nohup ./misty-server -r ~/Misty  -c domain.crt -k domain.key -w TrustMe &amp;
+
+Will start Misty running as a simple daemon. It assumes you have the two certificate files in the current directory along with the binary. Being more secure, probably safe to leave running. What ? All your bank details and a list of your illisit lovers in your notes. Please don't !
+
+In both cases, you see a few lines confirming whats happening and a url that you enter into tomboy-ng or can browse to, such as https://mybox.local:8088
+
+<size:large><bold>Checking with a browser.</bold></size:large>
+Fun to do, not necessary for a tomboy-ng to  Misty sync. "No security mode" or self signed certificates worry your browser but are quite safe as you have control of both ends. Just reassure it. Put the URL mentioned above into our browser. You should see a tomboy-ng title and little else. Thats it.
+
+On Firefox, for example, the no security and self signed process will get you a screen "Security Risk Ahead", click the "accept the risk and continue". Firefox will remember this.
+
+<size:large><bold>Connecting tomboy-ng to the Misty Server.</bold></size:large>
+tomboy-ng v0.42c and later has a third syc option, open the settings window, click the sync tab and select Misty .. from the "Sync Type" combo box near the top. Enter, carefully, the URL the server told you about and, if working securly, the password, and click Change Sync Repository. Wait a bit ....
+
+<size:large><bold>Security</bold></size:large>
+OK, this section exits so you can make an informed choice about using Misty or not. In practise there are two risks you face.
+<list><list-item dir="ltr"><list><list-item dir="ltr">Listenering In</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Hacking</list-item></list></list-item></list>
+
+<size:large><bold>My checklist</bold></size:large>
+Non-ssl
+with SSL
+Create a new Repo
+Join an existing one
+
+
+
+</note-content></text>
+  <last-change-date>2026-05-05T19:50:01.9981630+10:00</last-change-date>
+  <last-metadata-change-date>2026-05-05T19:50:01.9981630+10:00</last-metadata-change-date>
+  <create-date>2026-04-29T21:20:26.2537466+10:00</create-date>
+  <cursor-position>1</cursor-position>
+  <selection-bound-position>1</selection-bound-position>
+  <width>723</width>
+  <height>505</height>
+  <x>838</x>
+  <y>164</y>
+  <open-on-startup>True</open-on-startup>
+</note>
