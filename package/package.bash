@@ -186,7 +186,13 @@ function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $
         ReleaseRasPi64Qt5)
             BuildAMode "$1"
             exit
-        ;;      
+        ;;
+		MistyReleaseX86_64 | MistyReleaseRasPi32 | MistyReleaseRasPi64)
+			cd experimemtal/Misty_Small
+			$LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode="$1" "$LPI"
+			exit
+		;;
+
    esac
    echo " ============ ERROR unknown build mode as second parameter $1 ============="
    exit
