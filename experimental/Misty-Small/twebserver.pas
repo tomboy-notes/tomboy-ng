@@ -231,7 +231,10 @@ end;
 procedure TMistyHTTPServer.DoIdle(Sender: TObject);
 begin
   // Writeln('Idle, waiting for connections');
-    if ExitNow then Serv.Active := False;      // Shutdown by a signal
+    if ExitNow then begin
+        Writeln('Ctrl+C used, will clean up and shutdown.');
+        Serv.Active := False;      // Shutdown by a signal
+    end;
 end;
 
 procedure TMistyHTTPServer.CheckMimeLoaded;

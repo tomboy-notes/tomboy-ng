@@ -149,6 +149,9 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
 	MistyReleaseRasPi64)
 		echo "misty-server-arm64"	
 	;;
+	MistyReleaseWin64)
+		echo "misty-server.exe
+	;;
     esac
 }
 
@@ -196,7 +199,7 @@ function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $
             BuildAMode "$1"
             exit
         ;;
-		MistyReleaseX86_64 | MistyReleaseRasPi32 | MistyReleaseRasPi64)
+		MistyReleaseX86_64 | MistyReleaseRasPi32 | MistyReleaseRasPi64 | MistyReleaseWin64)
 			cd ../experimental/Misty-Small
 			BIN=$(ModeParamBin "$1")
 			if [ -e "$BIN" ]; then

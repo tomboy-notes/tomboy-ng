@@ -42,16 +42,12 @@ program webserver;
 
 uses
     {$IFDEF UNIX}
-    cthreads,
+    cthreads, Unix, BaseUnix,     // for Signal Names
     {$ENDIF}
     {$ifdef USE-SSL}
     opensslsockets,
     {$endif}
-    {$IFDEF UNIX}
-    Unix,
-    {$ENDIF}
     Classes, SysUtils, CustApp, IniFiles,
-    BaseUnix,                     // for Signal Names  Hmm, windows ?  No idea !
     TWebserver,
     ssync_utils, LazUTF8;
 
@@ -84,6 +80,31 @@ var ReqFiles : array of string = ('editor_1.template', 'editor_2.template', 'edi
 
 var
     Application: TMyApplication;
+
+
+
+function GetHomeDir: string;
+begin
+    {$ifdef WINDOWS}
+    result := myappendPathDelim(GetEnvironmentVariableUTF8('HOMEPATH'));
+    {$else}
+    result := myappendPathDelim(GetEnvironmentVariableUTF8('HOME'));
+    {$endif}
+end;
+
+function GetDefaultRepoDir() : string;
+begin
+    {$IFDEF UNIX}
+    Result := GetHomeDir + 'Misty/';
+    {$ENDIF}
+    {$IFDEF DARWIN}
+    Result := GetHomeDir + 'Library/Application Support/Misty/';
+    {$ENDIF}
+    {$IFDEF WINDOWS}
+    Result := GetHomeDir + 'Misty\';
+    // %APPDATA%\Tomboy\notes\
+    {$ENDIF}
+end;
 
 { function TMyApplication.ReadConfig() : boolean;
 var
@@ -141,8 +162,7 @@ begin
     // ---------- Check repo location.
     if HasOption('r', 'repo') then
         HomeDir := GetOptionValue('r', 'repo')
-    else HomeDir := GetEnvironmentVariableUTF8('HOME') + '/Misty/';
-    HomeDir := MyAppendPathDelim(HomeDir);
+    else HomeDir := GetDefaultRepoDir();
     if not ((FPAccess(HomeDir, F_OK) = 0) and (FPAccess(HomeDir, W_OK)=0)) then begin              // we have a problem
         if DebugMode then writeln('TMyApplication.CommandLineOK - repo directory needs checking');
         if DirectoryExists(HomeDir) then begin                   // must be unwritable
@@ -185,7 +205,7 @@ begin
         BuildServer()
     else
         Terminate;  // stop program loop, DoRun is called repeatably !
-
+    // but we only get here when app has been terminated.
 end;
 
 constructor TMyApplication.Create(TheOwner: TComponent);
@@ -209,28 +229,32 @@ begin
     writeln('  -d                    Debug mode');
     writeln('  -w                    Set a new Pass Word, no spaces');
     writeln('  eg  misty-server --repo=/home/dbannon/Misty');
-    writeln('Do NOT use ports below 1024, requires root, app is not to that standard.');
+    writeln('Do NOT use ports below 1024, requires root, not necessary, not safe.');
     writeln('If you provide one, must provide all of Cert, Key, Password');
-    writeln('Maybe you want a self signed certificate for SSL ? try -');
+    writeln('Maybe you want a self signed certificate for SSL ? try this -');
     writeln('openssl req -newkey rsa:2048 -x509 -days 365 -keyout domain.key -out domain.crt -nodes');
     writeln('');
 end;
 
+//{$ifdef Linux}     // maybe this works in Windows or, an exception, https://fpc-pascal.freepascal.narkive.com/TBXENFF1/econtrolc-exception
 procedure HandleSigInt(aSignal: LongInt); cdecl;
 begin
-    case aSignal of
-        SigInt : Writeln('Ctrl + C used, will clean up and shutdown.');
-        SigTerm : writeln('TERM signal, will clean up and shutdown.');
-    else
-        begin writeln('Some signal received ??'); exit; end;
+    if DebugMode then begin
+        case aSignal of
+            SigInt : Writeln('Ctrl + C used, will clean up and shutdown.');
+            SigTerm : writeln('TERM signal, will clean up and shutdown.');
+        else
+            begin writeln('Some signal received ??'); exit; end;
+        end;
     end;
     ExitNow := True;            // Watched by the Idle method
     Application.Terminate;
 end;
-
+//{$endif}
 
 begin
 //    writeln(unix.GetHostName(), '.', GetDomainName());
+//    {$ifdef LINUX}
     if FpSignal(SigInt, @HandleSigInt) = signalhandler(SIG_ERR) then begin
         Writeln('Failed to install signal error: ', fpGetErrno);
         exit;
@@ -239,6 +263,7 @@ begin
         Writeln('Failed to install signal error: ', fpGetErrno);
         exit;
     end;
+//    {$endif}
     DebugMode := False;
     Application := TMyApplication.Create(nil);
     Application.Title := 'My Application';
