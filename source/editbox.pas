@@ -4796,9 +4796,6 @@ begin
         if Saver <> Nil then Saver.Destroy;
         Caption := CleanCaption();
     end;
-//    debugln('TEditBoxForm.SaveTheNote - Line #2 is ' + SL[2]);                  // ToDo : Remove me
-//    debugln('TEditBoxForm.SaveTheNote - Line #3 is ' + SL[3]);
-//    debugln('TEditBoxForm.SaveTheNote - Line #4 is ' + SL[4]);
     //T5 := GetTickCount64();
     Loc.Width:=inttostr(Width);
     Loc.Height:=inttostr(Height);
@@ -4831,6 +4828,7 @@ begin
         if LineNumb = -1 then debugln('TEditBoxForm.SaveTheNote did not find note in notelister to insert content into. ' + NoteTitle);
     end;
     if SaveStringList(SL, Loc, WeAreClosing) then Dirty := False;             // Note, thats not a guaranteed good save,
+
     // ToDo : Building search content is pretty slow ??
     // Move into SaveThread would require passing kmemo there too but thats probably the answer
 end;

@@ -141,6 +141,7 @@ type
             procedure BulletList(Level: TKMemoParaNumbering; var Buff: ANSIString);
             procedure CopyLastFontAttr();
             function SetFontXML(Size : integer; TurnOn : boolean) : string;
+            procedure ZeroFontAttr();
 
        public
             // TimeStamp : string;            // abandonded in SaveThread mode
@@ -216,7 +217,7 @@ begin
     // Important that we keep the tag order consistent. Good xml requires no cross over
     // tags. If the note is to be readable by Tomboy, must comply. (EditBox does not care)
     // Tag order -
-    // List|Indend, Bold, Italics HiLite Underline Strikeout Monospace Fontsize
+    // List|Indent, Bold, Italics HiLite Underline Strikeout Monospace Fontsize
     // Processing Order is the reverese -
     // ListOff BoldOff ItalicsOff HiLiteOff UnderOff StrikeOff MonoOff FontSize MonoSpace Strikeout Underline HiLite Ital Bold List
 
@@ -559,6 +560,16 @@ begin
    end;
 end;
 
+procedure TBSaveNote.ZeroFontAttr();
+begin
+    FSize := Sett.FontNormal;
+    Bold := False;
+    Italics := False;
+    HiLight := False;
+    Underline := False;
+    Strikeout := False;
+    FixedWidth := False;
+end;
 
 procedure TBSaveNote.CopyLastFontAttr();
 begin
@@ -569,7 +580,7 @@ begin
     PrevUnderline := Underline;
     PrevStrikeout := Strikeout;
     PrevFixedWidth := FixedWidth;
-    PrevFSize := FSize;
+    // PrevFSize := FSize;
 end;
 
 procedure TBSaveNote.AddIndent(BlkNo : integer; var Buf : string);
@@ -587,7 +598,7 @@ begin
    end else debugln('TBSaveNote.AddIndent - Warning, passed a non para block no');
 end;
 
-    // NEW : if passed a created StringList, we write to the list rather than to the
+    // If passed a created StringList, we write to the list rather than to the
     // Memory Buffer. Still need to deal with Header and Footer in a line by line mode.
 procedure TBSaveNote.ReadKMemo(FileName : ANSIString; Title : string; KM1 : TKMemo; STL : TStringList = nil);
 var
@@ -618,7 +629,7 @@ var
         // http://free-pascal-general.1045716.n5.nabble.com/Creating-text-files-with-TFileStream-td2824859.html
     Buff := Header(Title);
     if STL = Nil then
-        OutStream.Write(Buff[1], length(Buff))      // Almost certainly not doing this now.
+        OutStream.Write(Buff[1], length(Buff))      // ToDo : not doing this now ? Yeah, what about Templates ???
     else STL.Add(Buff);
     Buff := '';
     try
@@ -651,6 +662,7 @@ var
                     // debugln('Inner Buff=[' + Buff + ']');
 
 				until KM1.Blocks.Items[BlockNo].ClassNameIs('TKMemoParagraph');
+
                 if BlockNo >= KM1.Blocks.Count then break;
 
                 if  TKMemoParagraph(KM1.Blocks.Items[BlockNo]).Numbering <> pnuNone then
@@ -679,6 +691,7 @@ var
                 if First then begin             // drop first line, Title, on floor. Its in the header.
                     First := False;
                     Buff := '';
+                    ZeroFontAttr();
                     inc(BlockNo);
                     if BlockNo >= KM1.Blocks.Count then break;
                     continue;
@@ -693,7 +706,6 @@ var
                 inc(BlockNo);
                 if BlockNo >= KM1.Blocks.Count then break;
 			until false;
-
             { At this point we may have unsaved content in Buff cos last block was not
               a Para. But it cannot be Bullet. If it was a Para, Buff is empty. But we
               could still have hanging xml tags. So either case, send it to add tag with
@@ -702,8 +714,10 @@ var
             if Buff <> '' then begin
                 if STL = Nil then
                     OutStream.Write(Buff[1], length(Buff))
-                else STL.Add(Buff);
-			end;
+                else begin
+                    STL.Add(Buff);
+                end;
+            end;
 			Buff := '';
             if Bold then Buff := '</bold>';
             if Italics then Buff := Buff + '</italic>';
