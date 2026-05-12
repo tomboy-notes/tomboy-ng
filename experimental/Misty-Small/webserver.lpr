@@ -49,7 +49,7 @@ uses
     {$endif}
     Classes, SysUtils, CustApp, IniFiles,
     TWebserver,
-    ssync_utils, LazUTF8;
+    ssync_utils, LazUTF8, LazFileUtils;
 
 type
 
@@ -83,25 +83,16 @@ var
 
 
 
-function GetHomeDir: string;
-begin
-    {$ifdef WINDOWS}
-    result := myappendPathDelim(GetEnvironmentVariableUTF8('HOMEPATH'));
-    {$else}
-    result := myappendPathDelim(GetEnvironmentVariableUTF8('HOME'));
-    {$endif}
-end;
-
 function GetDefaultRepoDir() : string;
 begin
     {$IFDEF UNIX}
-    Result := GetHomeDir + 'Misty/';
+    Result := GetUserDir() + 'Misty/';
     {$ENDIF}
     {$IFDEF DARWIN}
-    Result := GetHomeDir + 'Library/Application Support/Misty/';
+    Result := GetUserDir() + 'Library/Application Support/Misty/';
     {$ENDIF}
     {$IFDEF WINDOWS}
-    Result := GetHomeDir + 'Misty\';
+    Result := GetUserDir() + 'Misty\';            // ???
     // %APPDATA%\Tomboy\notes\
     {$ENDIF}
 end;
@@ -163,14 +154,15 @@ begin
     if HasOption('r', 'repo') then
         HomeDir := GetOptionValue('r', 'repo')
     else HomeDir := GetDefaultRepoDir();
-    if not ((FPAccess(HomeDir, F_OK) = 0) and (FPAccess(HomeDir, W_OK)=0)) then begin              // we have a problem
+    // ToDo : below is only (?) dependency on LazFileUtils, paste it in locally ?
+    if not DirectoryIsWritable(HomeDir) then begin               // Lazutils
         if DebugMode then writeln('TMyApplication.CommandLineOK - repo directory needs checking');
-        if DirectoryExists(HomeDir) then begin                   // must be unwritable
+        if DirectoryExists(HomeDir) then begin                   // sysutils, must be unwritable
             writeln('ERROR Dir [' + HomeDir + '] cannot be written to.');
             WriteHelp;
             exit(false);
         end else begin
-            FPMkDir(HomeDir, &777);                                         // does not recurse, ret 0 if OK, pass Octal
+            ForceDirectoriesUTF8(HomeDir);       // systils, does recurse
             if DebugMode then writeln('TMyApplication.CommandLineOK - trying to create ', HomeDir);
             if not DirectoryExists(HomeDir) then begin
                 writeln('ERROR Dir [' + HomeDir + '] cannot be created');
@@ -202,7 +194,13 @@ end;
 procedure TMyApplication.DoRun;      // reads and checks options first
 begin
     if CommandLineOK() then
-        BuildServer()
+        try
+            BuildServer()
+        except on EControlC do begin             // I suspect this is not used in Unix, the FPSignal works first ??
+                    ExitNow := True;
+                    Terminate;                   // maybe redundant ?
+                end;
+        end
     else
         Terminate;  // stop program loop, DoRun is called repeatably !
     // but we only get here when app has been terminated.
@@ -236,7 +234,7 @@ begin
     writeln('');
 end;
 
-//{$ifdef Linux}     // maybe this works in Windows or, an exception, https://fpc-pascal.freepascal.narkive.com/TBXENFF1/econtrolc-exception
+{$ifdef Linux}     // not in Windows so an exception, https://fpc-pascal.freepascal.narkive.com/TBXENFF1/econtrolc-exception
 procedure HandleSigInt(aSignal: LongInt); cdecl;
 begin
     if DebugMode then begin
@@ -250,11 +248,11 @@ begin
     ExitNow := True;            // Watched by the Idle method
     Application.Terminate;
 end;
-//{$endif}
+{$endif}
 
 begin
 //    writeln(unix.GetHostName(), '.', GetDomainName());
-//    {$ifdef LINUX}
+    {$ifdef LINUX}
     if FpSignal(SigInt, @HandleSigInt) = signalhandler(SIG_ERR) then begin
         Writeln('Failed to install signal error: ', fpGetErrno);
         exit;
@@ -263,7 +261,7 @@ begin
         Writeln('Failed to install signal error: ', fpGetErrno);
         exit;
     end;
-//    {$endif}
+    {$endif}
     DebugMode := False;
     Application := TMyApplication.Create(nil);
     Application.Title := 'My Application';

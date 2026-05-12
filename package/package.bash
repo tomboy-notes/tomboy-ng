@@ -150,7 +150,7 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
 		echo "misty-server-arm64"	
 	;;
 	MistyReleaseWin64)
-		echo "misty-server.exe
+		echo "misty-server.exe"
 	;;
     esac
 }
@@ -178,6 +178,7 @@ function BuildAMode () {
 
 function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $1 here), does NOT return
 	# Only, at present, doing the ones we cannot build in default Build VM, but could do all I guess.
+	echo " ----------------- JustMakeBinary $1 --------------"
    case $1 in 
    		Default)
    			BuildAMode "$1"
@@ -202,14 +203,22 @@ function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $
 		MistyReleaseX86_64 | MistyReleaseRasPi32 | MistyReleaseRasPi64 | MistyReleaseWin64)
 			cd ../experimental/Misty-Small
 			BIN=$(ModeParamBin "$1")
+			if [ "$BIN" == "" ]; then
+				echo "ERROR - failed to get a binary name for $1"
+				exit
+			fi
 			if [ -e "$BIN" ]; then
 				rm "$BIN"
 			fi
 			$LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode="$1" webserver.lpi
 			cd ../../package
-			if [ -e "$1".tgz ]; then
-				rm "$1".tgz
+			if [ -e "$1".zip ]; then
+				rm "$1".zip
 			fi
+			echo "zip -j  "$1".zip ../experimental/Misty-Small/$BIN ../scripts/play-misty.bash ../doc/misty-readme.note"
+			zip -j  "$1".zip ../experimental/Misty-Small/"$BIN" ../scripts/play-misty.bash ../doc/misty-readme.note
+			exit
+			
 			cp ../doc/misty-readme.note .
 			cp ../experimental/Misty-Small/"$BIN" .
 			cp ../scripts/play-misty.bash .

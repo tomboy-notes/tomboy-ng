@@ -162,6 +162,9 @@
             </Debugging>
             <LinkSmart Value="True"/>
           </Linking>
+          <Other>
+            <CompilerPath Value="ppcrossx64"/>
+          </Other>
         </CompilerOptions>
       </Item6>
     </BuildModes>
