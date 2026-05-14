@@ -1184,9 +1184,8 @@
             <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-test --debug-sync"/>
           </local>
           <environment>
-            <UserOverrides Count="2">
-              <Variable0 Name="QT_QPA_PLATFORMTHEME" Value="gtk2"/>
-              <Variable1 Name="TB_GITHUB_REPO" Value="tb_alt"/>
+            <UserOverrides Count="1">
+              <Variable0 Name="TB_GITHUB_REPO" Value="tb_alt"/>
             </UserOverrides>
           </environment>
         </Mode0>
@@ -1203,7 +1202,7 @@
         <PackageName Value="LCL"/>
       </Item3>
     </RequiredPackages>
-    <Units Count="38">
+    <Units Count="39">
       <Unit0>
         <Filename Value="Tomboy_NG.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -1417,6 +1416,11 @@
         <Filename Value="transmisty.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit37>
+      <Unit38>
+        <Filename Value="qtWorkAround.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="QtWorkaround"/>
+      </Unit38>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

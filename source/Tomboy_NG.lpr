@@ -16,17 +16,16 @@ program Tomboy_NG;
 
 {$define TOMBOY_NG}
 
-
 uses
     {$DEFINE UseCThreads}
     {$IFDEF UNIX}{$IFDEF UseCThreads}
-
     // works correctly but codetools always shows 'greyed out'
     {$if not declared(UseHeapTrace)}cmem, {$endIf}               // TRons's trick, nice !
-
     cthreads,
-    {$ENDIF}{$ENDIF}
-    Interfaces, // this includes the LCL widgetset
+    {$ENDIF}
+    qtWorkAround,  // does nothing except in Qt inserts an env var QT_QPA_PLATFORM=xcb into app
+    {$ENDIF}
+    Interfaces,    // this includes the LCL widgetset
     LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,
     Notebook, Spelling, Mainunit, BackupView, recover, Index, autostart,
     hunspell, sync, syncutils, ResourceStr, colours, cli, RollBack, commonmark,
@@ -68,6 +67,21 @@ uses
 end;
 {$endif}
 
+{$IFDEF XXXLINUX}
+procedure CheckAndForceXCB;
+var
+  SessionType: String;
+begin
+  // Retrieve the current desktop session type
+  SessionType := LowerCase(fpGetEnv('XDG_SESSION_TYPE'));
+
+  // If running on Wayland, force Qt to fallback to XCB (via XWayland)
+  if SessionType = 'wayland' then
+  begin
+ //   fpSetEnv('QT_QPA_PLATFORM', 'xcb', 1);
+  end;
+end;
+{$ENDIF}
 
 begin
     Application.Scaled := True;
