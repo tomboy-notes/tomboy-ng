@@ -269,7 +269,7 @@ begin
             ASync.RepoAction:=RepoNew;
             SyncAvail := ASync.TestConnection();
         end;
-
+                                                   // ToDo : a passord error in Misty wants to create new !!
     if SyncAvail <> SyncReady then begin           // This is the catch all for other errors
         debugln('TFormSync.JoinSync FAILED:' + inttostr(ord(SyncAvail)) + ' ' + ASync.ErrorString);
         showmessage(rsUnableToProceed + ' ' + ASync.ErrorString);
@@ -418,6 +418,7 @@ begin
                 showmessage('Unable to sync because ' + ASync.ErrorString);
                 if SyncAvail = SyncOpenSSLError then
                     showmessage('Your OpenSSL libraries are unavailable or unsuitable');
+                if SyncAvail = SyncCredentialError then showMessage('Invalid Password');
                 //Screen.Cursor := crHourGlass;
               //  if AnotherSync then
                     FormSync.ModalResult := mrAbort;

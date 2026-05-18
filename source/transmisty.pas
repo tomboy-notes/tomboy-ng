@@ -355,6 +355,11 @@ begin
     if (pos('404', ErrorString) > 0) then
         ErrorString := 'Remote dir does not contain a manifest ' + RemoteAddress;  // not always an error !
 
+    if (pos('401', ErrorString) > 0) then begin
+        ErrorString := 'Invalid Password : ' + ErrorString;
+        exit(SyncCredentialError);
+    end;
+
     if not ManExists then exit(SyncNoRemoteRepo);
 
     if 36 <> length(ServerID) then begin

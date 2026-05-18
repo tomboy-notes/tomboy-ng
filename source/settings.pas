@@ -524,7 +524,6 @@ implementation
 
 {$R *.lfm}
 
-
 {X$define DEBUG}
 
 { TSett }
