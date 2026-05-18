@@ -5,36 +5,50 @@
 
 If you are looking for the quick start guide, well, bad luck !
 
-Misty is a server for a tomboy-ng sync system.Its one of the ways you can keep multple instances of tomboy-ng all in sync. Its a development project and, at present is experimental. The server itself only runs on a <bold>Linux box</bold> but can be connected to from tomby-ng instances running on Linux, Windows and Mac. Its likely the server will work on Windows and Mac if there is sufficent interest. You MUST have tomboy-ng version 0.42c of later to use Misty.
+Misty is a server for a tomboy-ng sync system. Its one of the ways you can keep multiple instances of tomboy-ng all in sync. Its a development project and, at present is experimental. The server itself only runs on a <bold>Linux box</bold> (and maybe Windows?) but can be connected to from tomboy-ng instances running on Linux, Windows and Mac. Its likely the server will work on Windows and Mac if there is sufficient interest. You MUST have tomboy-ng version 0.42c or later to use Misty.
 
-Misty should be run as an ordinary user, no benifit (and increased risk) running as root.
+The Tomboy sync model always involves a separate sync server, it may well run on one of the Tomboy machines but must not directly access the Tomboy notes directory. Always have a distinct sync repo. No exceptions.
+
+Misty should be run as an ordinary user, no benefit (and increased risk) running as root.
 
 Now, this is important ! Misty can run in a very easily setup but very insecure mode or, at your choice, a bit harder but much more secure mode. The latter uses SSL, a web certificate and a password to protect your notes from prying eyes.
-<list><list-item dir="ltr"><list><list-item dir="ltr">This means that your tomby-ng must have <bold>SSL libraries</bold> available, Linux users will have them preinstalled but Windows and Mac users may not.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">The server needs a <bold>web certificate</bold>. If you use an external facing Linux box you will probably already have certificates, you need to identify where they are. If its a home network then its easy to generate a "self signed certificate" that works fine with tomboy-ng connections (see below).</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">You need a <bold>password</bold>, known to both the server and each instance of tomboy-ng you will be connecting with. In the interest of simplisity I have used 'basic' authentication, its up to you to ensure both ends use the same password.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">This means that your tomboy-ng must have <bold>SSL libraries</bold> available, Linux users will have them preinstalled but Windows and Mac users may not. They are easy enough to install. See the tomboy-ng wiki pages for help with that. The server needs a <bold>web certificate</bold>. If you use an external facing box you will probably already have certificates, you need to identify where they are. If its a home network then its easy to generate a "self signed certificate" that works fine with tomboy-ng connections (see below).</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">You need a <bold>password</bold>, known to both the server and each instance of tomboy-ng you will be connecting with. In the interest of simplicity I have used 'basic' authentication, its up to you to ensure both ends use the same password.</list-item></list></list-item></list>
 
-The no security model needs none of the above. You may feel comfortable using it only on a home network, behind a reasonable firewall. That is very much your call. It means plain text across the ether, if there is a risk anyone is listening in, dangerous. But its simple, easy and quick to get going.
+The Misty server will display some help (and exits) with -h on the command line. When it does start up, it displays a few lines of info including a URL you might use to test it and certainly need when configuring tomboy-ng.
 
-<bold>Do not, under any circumstances, use the no security model on the open internet.</bold>
+<size:large><bold>The "Safe Mode", but not guaranteed !</bold></size:large>
+Much safer, absolutely essential if your server box is visible from the network, maybe too if you plan to leave it running on even a home network. If your server box does not have an official certificate, then its easy to make a "self signed" one. Run the following command line on the Linux box you wish to use as the server.
 
-$&gt;./misty-server &lt;enter&gt;
+<monospace>$&gt; openssl req -newkey rsa:2048 -x509 -days 365 -keyout domain.key -out domain.crt -nodes</monospace>
 
-Press Ctrl-C to stop it. I suggest you do not leave it running in no security mode.
-That will store your sync repo in Misty at the top of your home directory. There are options to set the port number and alternative repo location, try with -h for help
+Will, after a few inconsequential questions, make two files, domain.crt and domain.key, tomboy-ng and Misty require those files plus a Sync Password.
 
-If your server box does not have an official certificate, then its easy to make a "self signed" one. Run the following command line on the Linux box you wish to use as the server.
+In the directory where you have the Misty binary and, if applicable, the two certificate files run this command -
 
-$&gt; nohup ./misty-server -r ~/Misty  -c domain.crt -k domain.key -w TrustMe &amp;
+<monospace>$&gt; ./misty-server -c domain.crt -k domain.key -w -s</monospace>
 
-Will start Misty running as a simple daemon. It assumes you have the two certificate files in the current directory along with the binary. Being more secure, probably safe to leave running. What ? All your bank details and a list of your illisit lovers in your notes. Please don't !
+Misty will prompt for a sync password (that you will also enter in tomboy-ng) and will make sensible choices for Repo, port (8088), location of config file. The "-s" says save all those settings.  You can now run config tomboy-ng and run a sync. Come back here and press Ctrl-C to stop the server. You can alter those settings at any time with a similar command.
 
-In both cases, you see a few lines confirming whats happening and a url that you enter into tomboy-ng or can browse to, such as https://mybox.local:8088
+Once a config file is saved, you may want to start the server to run even when you close the terminal session.
 
-The tgz package has a template script you might want to use. It leaves the password there, in plain text, so, consider who has access to your machine.
+$&gt; nohup ./misty-server &gt; ~/Misty/server.log &amp;
+
+This a user space daemon, runs with only your permissions and, even if security is compromised, can only process files under the Repo directory (ie ~/Misty).
+
+<size:large><bold>The "no security model"</bold></size:large>
+The "no security model" needs neither certificate nor password. You may feel comfortable using it only on a home network, behind a reasonable firewall. That is very much your call. It means plain text across the ether, if there is a risk anyone is listening in, dangerous. But its simple, easy and quick to get going.
+
+<italic><bold>Do not, under any circumstances, use the "no security model" on the open internet.</bold></italic>
+
+<monospace>$&gt;./misty-server &lt;enter&gt;</monospace>
+
+Press Ctrl-C to stop it. I suggest you do not leave it running in no security mode. Fire it up, sync, shut it down.
+
+There are options to set the port number and alternative repo location, try with -h for help. Quite possibly no real need to save  config file in this mode but you can (-s).
 
 <size:large><bold>Checking with a browser.</bold></size:large>
-Fun to do, not necessary for a tomboy-ng to  Misty sync. . Put the URL mentioned above into your browser. You should see a tomboy-ng title and little else. But  the "No security mode" or self signed certificates worry your browser but are quite safe as you have control of both ends. Just reassure it a "security exception" Thats it.
+Fun to do, not necessary. Put the URL mentioned above into your browser. You should see a tomboy-ng title and little else. But  the "No security mode" and self signed certificates worry your browser but are quite safe as you have control of both ends. Just reassure it with a "security exception" (varies between browsers). Thats it.
 
 On Firefox, for example, the no security and self signed process will get you a screen "Security Risk Ahead", click the "accept the risk and continue". Firefox will remember this.
 
@@ -43,25 +57,24 @@ tomboy-ng v0.42c and later has a third syc option, open the settings window, cli
 
 <size:large><bold>Security</bold></size:large>
 OK, this section exits so you can make an informed choice about using Misty or not. In practise there are two risks you face.
-<list><list-item dir="ltr"><list><list-item dir="ltr">Listenering In</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Hacking</list-item></list></list-item></list>
-todo
+<list><list-item dir="ltr"><list><list-item dir="ltr">Listening In - in the "no security" mode, a real risk if anyone in your household knows something about web protocols. In the "Secure" mode that uses SSL encryption, almost impossible.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Hacking - lets face it, if you are really targeted by a skilled hacking team, you are in trouble. But in the secure mode you have taken what is considered reasonable precautions.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Access to your computer is probably a far greater risk and its there with no sync in use. But I still recommend using the secure sync mode.</list-item></list></list-item></list>
 
 <size:large><bold>What could possibly go wrong ?</bold></size:large>
-
-todo
+Astroid strike ? Not my fault. Anything wrong with the sync is possibly my problem and I will help to fix it if I can. But, its open source, I cannot be held responsible for any losses or damage you may suffer. Please, if you have a problem, report it !
 
 
 
 </note-content></text>
-  <last-change-date>2026-05-06T22:07:53.0552699+10:00</last-change-date>
-  <last-metadata-change-date>2026-05-06T22:07:53.0552699+10:00</last-metadata-change-date>
+  <last-change-date>2026-05-18T21:30:20.8924409+10:00</last-change-date>
+  <last-metadata-change-date>2026-05-18T21:30:20.8924409+10:00</last-metadata-change-date>
   <create-date>2026-04-29T21:20:26.2537466+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
-  <width>987</width>
+  <width>1002</width>
   <height>767</height>
-  <x>588</x>
-  <y>102</y>
+  <x>217</x>
+  <y>25</y>
   <open-on-startup>False</open-on-startup>
 </note>

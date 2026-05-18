@@ -152,7 +152,7 @@ function TMyApplication.CommandLineOK() : boolean;    // false if error .....
 var
     ErrorMsg: String;
 begin
-    ErrorMsg := CheckOptions('hdr:p:k:c:w::s', 'help ssl debug port: repo: key: cert: save-settings');
+    ErrorMsg := CheckOptions('hdr:p:k::c::w::s', 'help ssl debug port: repo: key: cert: save-settings');
     if ErrorMsg <> '' then begin
         writeln('ERROR - ' + ErrorMsg);
         //ShowException(Exception.Create(ErrorMsg));  // Leaks
@@ -173,7 +173,7 @@ begin
         Sett.Port := strtoint(GetOptionValue('p', 'port'));
     if HasOption('w', 'password') then begin
         Sett.PW := GetOptionValue('w', 'password');
-        if Sett.PW = '' then
+        if (Sett.PW = '') and (Sett.Cert <> '') and (Sett.Key <> '') then
             Sett.PW := GetPassword();                // prompt user
     end;
 
@@ -306,8 +306,8 @@ begin
     writeln('tomboy-ng Sync Webserver - Options :');
     writeln('  -r Dir | --repo=Dir   Repo Dir to store sync files. Default ~/Misty');
     writeln('  -p PortNumber         Port to run on, default is 8088');
-    writeln('  -c certificate        A valid SSL certificate (maybe self signed)');
-    writeln('  -k key                A valid SSL key file that matches above');
+    writeln('  -c certificate        A valid SSL certificate (maybe self signed), or blank.');
+    writeln('  -k key                A valid SSL key file that matches above, or blank.');
     writeln('  -d                    Debug mode');
     writeln('  -w or --passWord      Set a passWord, if password is not present, will prompt');
     writeln('  -s or --save-settings Save current settings (inc password)');

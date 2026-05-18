@@ -3,7 +3,7 @@
 # A script to build tomboy and make deb packages and zip up the other binaries
 # see https://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics
 # we can also add preinst, postinst, prerm, and postrm scripts if required
-# David Bannon, November, 2017
+# David Bannon, May 18th, 2026
 # Assumes a working FPC/Lazarus install with cross compile tools as described in
 # http://wiki.lazarus.freepascal.org/Cross_compiling_for_Win32_under_Linux and
 # http://wiki.lazarus.freepascal.org/Cross_compiling
@@ -15,8 +15,9 @@
            
 #  add one of [ReleaseRasPi64, ReleaseQt6, ReleaseLin32Qt5 ] after laz path
 #  to build just that binary, no packaging done.
+#  or add one of the Misty package names (assuming right platform)
 
-# Note we assume laz config has same name as Laz directory, ie .laz-200
+# Note we assume laz config has same name as Laz directory, ie .lazarus_4_6
 # ----------------------------------------------------------------------------
 
 PRODUCT="tomboy-ng"
@@ -215,8 +216,15 @@ function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $
 			if [ -e "$1".zip ]; then
 				rm "$1".zip
 			fi
-			echo "zip -j  "$1".zip ../experimental/Misty-Small/$BIN ../scripts/play-misty.bash ../doc/misty-readme.note"
-			zip -j  "$1".zip ../experimental/Misty-Small/"$BIN" ../scripts/play-misty.bash ../doc/misty-readme.note
+			
+			rm -f misty-server
+			if [ "$BIN" == "misty-server.exe" ]; then             # Windows binary retains its name
+				zip -j  "$1".zip ../experimental/Misty-Small/"$BIN" ../scripts/play-misty.bash ../doc/misty-readme.note
+			else			
+				cp ../experimental/Misty-Small/"$BIN" misty-server
+				zip -j  "$1".zip misty-server ../scripts/play-misty.bash ../doc/misty-readme.note
+			fi
+			ls -l "$1".zip
 			exit
 			
 			cp ../doc/misty-readme.note .
@@ -529,6 +537,8 @@ fakeroot bash ./mk_rpm.sh
 echo "OK, we will now sign the RPMs - david, use the longer passphrase !"
 for i in `ls -b *.rpm`; do rpm --addsign "$i"; echo "Signed $i"; done
 ls -l *.rpm *.deb "$WIN_DIR"/*.exe
+
+echo "Currently supported Misty packages MistyReleaseX86_64, MistyReleaseRasPi32, MistyReleaseRasPi64, MistyReleaseWin64"
 
 echo "ERROR REPORT = $ERROR"
 
