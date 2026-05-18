@@ -87,6 +87,9 @@ Type
     // procedure DoCommandAcceptEdit(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
 
     //procedure GenerateFileList(FFName: string; AResp: TFPHTTPConnectionResponse);
+
+                        { Passed note name and returns with the full local pathname to that note. Returns
+                        fsOK if note found or other TFileStatus errors, takes ID or FName (inc .note) }
     function GetFullFileName(FName: string; var FFName: string): TFileStatus;
 
     procedure SetBaseDir(const AValue: String);
@@ -104,6 +107,7 @@ Type
 
     Property MimeLoaded : Boolean Read FMimeLoaded;
   public
+    PW : string;        // set after creation, only use in AuthOK()
     procedure Startup;
     procedure HandleRequest(Var ARequest: TFPHTTPConnectionRequest;
                             Var AResponse : TFPHTTPConnectionResponse); override;
@@ -119,7 +123,7 @@ var
     DebugMode : boolean;
     ErrorSt : string = '';       // Check this before exiting with an error
     ServerHome : string;
-    PW : string;
+
 
 implementation
 
@@ -179,6 +183,10 @@ function TMistyHTTPServer.AuthOK(AReq  : TFPHTTPConnectionRequest) : boolean;
 var St : string;
 begin
     if not Serv.UseSSL then exit(True);
+
+    writeln('TMistyHTTPServer.AuthOK PW is [', DecodeStringBase64(copy(AReq.GetHeader(hhAuthorization), 6, 99)), ']');
+
+
     if PW = '' then exit(False);
     St := DecodeStringBase64(copy(AReq.GetHeader(hhAuthorization), 6, 99));
     result := ('tomboy-ng:' + PW = St);
@@ -220,8 +228,8 @@ begin
 	  end;
 	end;
     // if to here, copy the file over top of existing main local manifest
-    if fileexists(FFName) then                                                  // ToDo : and if it does not exist ?
-        CopyFile(FFName, ServerHome + 'manifest.xml');                          // Note : Requires LazUtils/FileUtils !
+    if fileexists(FFName) then                                                  // must be there ?
+        CopyFile(FFName, ServerHome + 'manifest.xml');                          // Note : Requires LazUtils/FileUtils ! Might raise exception
     if debugmode then
        writeln('Have written server manifest to [' + FFName  + '] [' + ServerHome + 'manifest.xml' + ']');
     Result := True;
@@ -232,7 +240,7 @@ procedure TMistyHTTPServer.DoIdle(Sender: TObject);
 begin
   // Writeln('Idle, waiting for connections');
     if ExitNow then begin
-        Writeln('Ctrl+C used, will clean up and shutdown.');
+        Writeln('Terminate requested, will clean up and shutdown.');
         Serv.Active := False;      // Shutdown by a signal
     end;
 end;
@@ -337,9 +345,8 @@ begin
                     else begin
                         writeln('TMistyHTTPServer.DoCommandUpload - ERROR cannot read manifest : ' {+ ErrorSt});
                         ErrorSt := '';
-                        exit;                                                   // ToDo : Unlikely but extreamly bad, is this a Quit situation ?
+                        exit;                                                   // Unlikely but extreamly bad, is this a Quit situation ?
                     end;
-                    // inc(Revision);                                           // no - update it by reading the manifest !
                 end;
             end else begin                                                      // Its a note, save to current Rev dir
                 SaveFileName := GetRevisionDirPath(ServerHome, Revision) + F.FileName;
@@ -362,13 +369,13 @@ end;
 
 
 
-{ Passed note name and returns with the full local pathname to that note. Returns
-fsOK if note found or other TFileStatus errors, takes ID or FName (inc .note) }
+
 function TMistyHTTPServer.GetFullFileName(FName: string; var FFName: string): TFileStatus;
 var
     PNote : PNoteInfo = nil;
 begin
     if FileExists(ServerHome + 'manifest.xml') then begin        // can only help here if we have a manifest.
+
        PNote := MetaData.FindID(copy(FName, 1, 36));
        if PNote <> Nil then                                      // if nil, FileExists test below will get and report it
            FFName := GetRevisionDirPath(ServerHome, PNote^.Rev, FName)
@@ -389,7 +396,7 @@ var STL : TStringList;
 //    St  : string;
     FName : string;
     PNote : PNoteInfo = nil;
-begin                                              // ToDo : this should use GetFullFileName()
+begin                                              // be nice to use GetFullFileName() but not worth the effort
     if not AuthOK(AReq) then begin
         AResp.Contents.Add('<html><body><h2>Nope</h2></p>' + 'Auth Failure' + '</p></body></html>');
         writeln('DoCommandDownLoad ERROR Auth Failed');
@@ -430,6 +437,7 @@ begin                                              // ToDo : this should use Get
             AResp.code := 404;
             Stl.Add('Cannot serve files without manifest');
             writeln('TMistyHTTPServer.DoCommandDownload - ' + Stl.Text);
+            if DebugMode then writeln('Requested file was ', ServerHome + 'manifest.xml');
         end;
         AResp.ContentLength := length(STL.Text);
         AResp.Content := STL.Text;
@@ -517,7 +525,7 @@ begin
     try
         {$ifdef unix}
         Serv.MimeTypesFile:='/etc/mime.types';
-	mDNSHostName := GetHostName() + '.local';
+	    mDNSHostName := GetHostName() + '.local';
         {$endif}
         Serv.Threaded:=False;
         Serv.AcceptIdleTimeout:=1000;
@@ -531,7 +539,7 @@ begin
         if Serv.UseSSL then
              write('To check, browse to https://' + mDNSHostName + ':' + Serv.Port.tostring)
         else write('To check, browse to http://' + mDNSHostName + ':' + Serv.Port.tostring);
-	writeln('   (assuming mDNS in use)');
+	    writeln('   (assuming mDNS in use)');
         if DebugMode then writeln('NOTICE : debugmode is On');
         if MetaData <> nil then begin
             if debugmode then writeln('ServerID=', MetaData.ServerID);        // only show after first manifest.

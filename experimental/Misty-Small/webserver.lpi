@@ -190,7 +190,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="webserver.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -204,6 +204,10 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="TWebserver"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="getpass.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

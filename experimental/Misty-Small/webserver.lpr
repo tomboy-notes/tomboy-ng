@@ -1,6 +1,7 @@
 program webserver;
 {$ifdef WINDOWS} {$apptype console} {$endif}
 {$mode objfpc}{$H+}
+{$modeSwitch advancedRecords}
 
 {
 /home/dbannon/bin/FPC/fpc-3.2.3/bin/fpc -MObjFPC -Scaghi -Cg -CirotR -O1 -gw3 -gl -gh -gt -l -vewnhibq -Fu/home/dbannon/Pascal/tomboy-ng/experimental/Misty-Small/  -omisty-server -dLCL -dLCLgtk2 webserver.lpr
@@ -47,9 +48,26 @@ uses
     {$ifdef USE-SSL}
     opensslsockets,
     {$endif}
-    Classes, SysUtils, CustApp, IniFiles,
+    Classes, SysUtils, CustApp, IniFiles, base64,
     TWebserver,
-    ssync_utils, LazUTF8, LazFileUtils;
+    ssync_utils, LazUTF8, LazFileUtils,
+    termIO;                              // use in the GetPassword function
+
+type
+
+    { TSettings }
+
+    TSettings = record
+      Repo : string;
+      Cert : string;
+      Key  : string;
+      Port : integer;
+      PW   : string;
+                // we are all set for SSL
+      function UsingSSL() : boolean;
+                // has provided one or two SSL prerequisits but not three !
+      function WantsSSL() : boolean;
+    end;
 
 type
 
@@ -57,12 +75,13 @@ type
 
     TMyApplication = class(TCustomApplication)
     private
-        Certificate, CertKey, HomeDir : string;
-        Port : integer;
-        UseSSL : boolean;
+        Sett : TSettings;
+        // UseSSL : boolean;
         function BuildServer: boolean;
         function CommandLineOK(): boolean;
-        // function ReadConfig(): boolean;
+        function GetPassword() : string;
+        procedure WriteConfig;
+        function ReadConfig() : boolean;
     protected
         procedure DoRun; override;
     public
@@ -70,6 +89,7 @@ type
         destructor Destroy; override;
         procedure WriteHelp; virtual;
     end;
+
 
 
 {$ifndef MISTY-SMALL}
@@ -80,13 +100,12 @@ var ReqFiles : array of string = ('editor_1.template', 'editor_2.template', 'edi
 
 var
     Application: TMyApplication;
-
-
+    ConfigFileName : string = 'misty.cfg';
 
 function GetDefaultRepoDir() : string;
 begin
     {$IFDEF UNIX}
-    Result := GetUserDir() + 'Misty/';
+    Result := GetUserDir() + 'Misty/';          // in SysUtils
     {$ENDIF}
     {$IFDEF DARWIN}
     Result := GetUserDir() + 'Library/Application Support/Misty/';
@@ -97,28 +116,33 @@ begin
     {$ENDIF}
 end;
 
-{ function TMyApplication.ReadConfig() : boolean;
-var
-    ConfigFile : TINIFile;
-begin
-    // Record Repo dir, full path to two cert files (if '' then insecure), port, pw.
-    // eg [BasicSettings]
-    //    NotesPath=/home/dbannon/.local/share/tomboy-ng-test/
-end;    }
+{ ----------------- TSettings -------------------- }
 
+function TSettings.UsingSSL(): boolean;
+begin
+    result := (Cert <> '') and (Key <> '') and (PW <> '');
+end;
+
+function TSettings.WantsSSL(): boolean;
+begin
+    Result := (Cert <> '') or (Key <> '') or (PW <> '');
+end;
+
+{ -------------------- TMyApplication ---------------- }
 
 function TMyApplication.BuildServer : boolean;
 begin
-    if UseSSL then
-    writeln('NOTICE, secure mode but please be aware of security issues!')
+    if Sett.UsingSSL() then
+        writeln('NOTICE, secure mode but please be aware of security issues!')
     else writeln('WARNING, insecure, be aware of issues if not on a secure home network!');
     Serv:=TMistyHTTPServer.Create(Nil);
-    Serv.BaseDir := HomeDir;
-    Serv.Port := Port;                 // defaults to 8088
-    if UseSSL then begin
+    Serv.BaseDir := Sett.Repo;
+    Serv.Port := Sett.Port;                 // defaults to 8088
+    if Sett.UsingSSL then begin
         Serv.UseSSL := True;
-        Serv.CertificateData.PrivateKey.FileName := CertKey;
-        Serv.CertificateData.Certificate.FileName := Certificate;
+        Serv.CertificateData.PrivateKey.FileName := Sett.Key;
+        Serv.CertificateData.Certificate.FileName := Sett.Cert;
+        Serv.PW := Sett.PW;
     end;
     Serv.Startup;
     Result := True;
@@ -128,44 +152,50 @@ function TMyApplication.CommandLineOK() : boolean;    // false if error .....
 var
     ErrorMsg: String;
 begin
-    ErrorMsg := CheckOptions('hdr:p:k:c:w::', 'help ssl debug port: repo: key: cert:');
+    ErrorMsg := CheckOptions('hdr:p:k:c:w::s', 'help ssl debug port: repo: key: cert: save-settings');
     if ErrorMsg <> '' then begin
         writeln('ERROR - ' + ErrorMsg);
         //ShowException(Exception.Create(ErrorMsg));  // Leaks
         Exit(false);
     end;
-    Port := 8088;       // default, works for ssl or not
+    if HasOption('d', 'debug') then
+        DebugMode := True;
+    ReadConfig();
     if HasOption('h', 'help') then begin
         WriteHelp;
         Exit(false);
     end;
-    if HasOption('d', 'debug') then
-        DebugMode := True;
     if HasOption('c', 'cert') then
-        Certificate := GetOptionValue('c', 'cert');
+        Sett.Cert := GetOptionValue('c', 'cert');
     if HasOption('k', 'key') then
-        CertKey := GetOptionValue('k', 'key');
+        Sett.Key := GetOptionValue('k', 'key');
     if HasOption('p', 'port') then
-        Port := strtoint(GetOptionValue('p', 'port'))
-    else Port := 8088;
-    if HasOption('w', 'password') then
-        PW := GetOptionValue('w', 'password');
+        Sett.Port := strtoint(GetOptionValue('p', 'port'));
+    if HasOption('w', 'password') then begin
+        Sett.PW := GetOptionValue('w', 'password');
+        if Sett.PW = '' then
+            Sett.PW := GetPassword();                // prompt user
+    end;
+
     // ---------- Check repo location.
     if HasOption('r', 'repo') then
-        HomeDir := GetOptionValue('r', 'repo')
-    else HomeDir := GetDefaultRepoDir();
-    // ToDo : below is only (?) dependency on LazFileUtils, paste it in locally ?
-    if not DirectoryIsWritable(HomeDir) then begin               // Lazutils
+        Sett.Repo := GetOptionValue('r', 'repo');    // Danger, the '~' is not expanded !
+    if Sett.Repo[1] = '~' then begin                 // Unix only, ~ expands to user home dir
+        delete(Sett.Repo,1,1);                       // ... and if Repo = '' ?
+        Sett.Repo := GetUserDir() + Sett.Repo;
+    end;
+    if not DirectoryIsWritable(Sett.Repo) then begin               // ToDo : can I use FPAccess() ?
         if DebugMode then writeln('TMyApplication.CommandLineOK - repo directory needs checking');
-        if DirectoryExists(HomeDir) then begin                   // sysutils, must be unwritable
-            writeln('ERROR Dir [' + HomeDir + '] cannot be written to.');
+        if DirectoryExists(Sett.Repo) then begin                   // sysutils, must be unwritable
+            writeln('ERROR Dir [' + Sett.Repo + '] exists but cannot be written to.');
             WriteHelp;
             exit(false);
-        end else begin
-            ForceDirectoriesUTF8(HomeDir);       // systils, does recurse
-            if DebugMode then writeln('TMyApplication.CommandLineOK - trying to create ', HomeDir);
-            if not DirectoryExists(HomeDir) then begin
-                writeln('ERROR Dir [' + HomeDir + '] cannot be created');
+        end else begin                                           // it does not exist
+            if DebugMode then writeln('TMyApplication.CommandLineOK - trying to create ', Sett.Repo);
+            ForceDirectoriesUTF8(Sett.Repo);       // systils does not recurse // ToDo : might generate EInOutError
+            if DebugMode then writeln('TMyApplication.CommandLineOK - tried to create ', Sett.Repo);
+            if not DirectoryExists(Sett.Repo) then begin
+                writeln('ERROR Dir [' + Sett.Repo + '] cannot be created');
                 WriteHelp;
                 exit(false);
             end;
@@ -178,28 +208,82 @@ begin
             Exit(false);
         end;
     {$endif}
-    // ---------- Check of a correct request to use SSL
-    if ((Certificate <> '') or (CertKey <> '') or (PW <> '')) then begin                     // user wants SSL
-        if ((Certificate = '') or (CertKey = '') or (PW = '')) then begin                    // but at least one is missing
+    // ---------- Check for a correct request to use SSL
+
+    if Sett.WantsSSL() then begin                            // user wants SSL
+        if not Sett.UsingSSL() then begin                    // but at least one is missing
             writeln('ERROR, must provide all 3, a Certificate, Key and Password to use SSL');
             WriteHelp;
             Exit(false);
         end;
-        UseSSL := True;
+        // UseSSL := True;
     end else writeln('----- Running in insecure mode ! -----');
+    // At this point, our settings in the variables are as user wants them. Maybe different from ini file.
+    if HasOption('s', 'save-settings') then
+        WriteConfig();
     if DebugMode then writeln('TMyApplication.CommandLineOK - Repo dir OK');
     Result := True;
 end;
 
+function TMyApplication.GetPassword(): string;
+var
+     oldSettings, newSettings : termios;                   // uses termIO unit;
+begin
+  tcgetattr(0, OldSettings);                               // Get current terminal settings
+  NewSettings := OldSettings;
+  newSettings.c_lflag := newSettings.c_lflag and not ECHO; // Disable echo
+  tcsetattr(0, TCSANOW, newSettings);
+  Write('Enter password (does not echo) : ');
+  ReadLn(result);
+  tcsetattr(0, TCSANOW, oldSettings);                      // Restore old settings
+end;
+
+procedure TMyApplication.WriteConfig();
+var
+    SettF : TIniFile;
+begin
+    SettF := TIniFile.Create(ConfigFileName);
+    SettF.WriteString('basic', 'repo', Sett.Repo);
+    SettF.WriteString('basic', 'certificate', Sett.Cert);
+    SettF.WriteString('basic', 'key', Sett.Key);
+    SettF.WriteInteger('basic', 'port', Sett.Port);
+    SettF.WriteString('basic', 'pw', EncodeStringBase64(Sett.PW));
+    {$ifdef UNIX}                                                               // check what permissions Win can do, fpsetattrUF8()
+    fpChmod(ConfigFileName,&600);        // 600, user read/write only
+    {$endif}
+    SettF.Free;
+end;
+
+function TMyApplication.ReadConfig(): boolean;
+var
+    SettF : TIniFile;
+begin
+    Result := FileExists(ConfigFileName);
+    if DebugMode then
+        writeln('TMyApplication.ReadConfig Config File is ', ConfigFileName, ' exists=', booltostr(Result, true));
+    SettF := TIniFile.Create(ConfigFileName);
+    Sett.Repo     := SettF.ReadString('basic', 'repo', GetDefaultRepoDir());
+    Sett.Cert := SettF.ReadString('basic', 'certificate', '');
+    Sett.Key     := SettF.ReadString('basic', 'key', '');
+    Sett.Port        := SettF.ReadInteger('basic', 'port', 8088);
+    Sett.PW          := DecodeStringBase64(SettF.ReadString('basic', 'pw', encodeStringBase64('')));
+//    CheckBox1.Checked := Sett.ReadBool('Main', 'CheckBox', true);
+    SettF.Free;
+//    if DebugMode then
+//        writeln('TMyApplication.ReadConfig Repo=', Sett.Repo, ' Cert=', Sett.Cert, ' Key=', Sett.Key, ' Port=', Sett.Port, ' PW=', Sett.PW);
+end;
+
 procedure TMyApplication.DoRun;      // reads and checks options first
 begin
+
     if CommandLineOK() then
         try
             BuildServer()
         except on EControlC do begin             // I suspect this is not used in Unix, the FPSignal works first ??
-                    ExitNow := True;
-                    Terminate;                   // maybe redundant ?
-                end;
+                writeln('TMyApplication.DoRun - EControlC');
+                ExitNow := True;
+                Terminate;                   // maybe redundant ?
+            end;
         end
     else
         Terminate;  // stop program loop, DoRun is called repeatably !
@@ -225,8 +309,10 @@ begin
     writeln('  -c certificate        A valid SSL certificate (maybe self signed)');
     writeln('  -k key                A valid SSL key file that matches above');
     writeln('  -d                    Debug mode');
-    writeln('  -w                    Set a new Pass Word, no spaces');
+    writeln('  -w or --passWord      Set a passWord, if password is not present, will prompt');
+    writeln('  -s or --save-settings Save current settings (inc password)');
     writeln('  eg  misty-server --repo=/home/dbannon/Misty');
+    writeln('Do not set repo to your tomboy-ng notes directory, they are different things');
     writeln('Do NOT use ports below 1024, requires root, not necessary, not safe.');
     writeln('If you provide one, must provide all of Cert, Key, Password');
     writeln('Maybe you want a self signed certificate for SSL ? try this -');
@@ -237,14 +323,12 @@ end;
 {$ifdef Linux}     // not in Windows so an exception, https://fpc-pascal.freepascal.narkive.com/TBXENFF1/econtrolc-exception
 procedure HandleSigInt(aSignal: LongInt); cdecl;
 begin
-    if DebugMode then begin
         case aSignal of
             SigInt : Writeln('Ctrl + C used, will clean up and shutdown.');
             SigTerm : writeln('TERM signal, will clean up and shutdown.');
         else
             begin writeln('Some signal received ??'); exit; end;
         end;
-    end;
     ExitNow := True;            // Watched by the Idle method
     Application.Terminate;
 end;
@@ -262,6 +346,7 @@ begin
         exit;
     end;
     {$endif}
+    ConfigFileName := GetAppConfigDir(False) + 'misty.cfg';
     DebugMode := False;
     Application := TMyApplication.Create(nil);
     Application.Title := 'My Application';
