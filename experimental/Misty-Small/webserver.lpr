@@ -50,8 +50,8 @@ uses
     {$endif}
     Classes, SysUtils, CustApp, IniFiles, base64,
     TWebserver,
-    ssync_utils, LazUTF8, LazFileUtils,
-    termIO;                              // use in the GetPassword function
+    ssync_utils, LazUTF8, LazFileUtils
+    {$ifdef UNIX}, termIO{$endif};                              // use in the GetPassword function
 
 type
 
@@ -226,16 +226,23 @@ begin
 end;
 
 function TMyApplication.GetPassword(): string;
+{$ifdef UNIX}
 var
      oldSettings, newSettings : termios;                   // uses termIO unit;
 begin
-  tcgetattr(0, OldSettings);                               // Get current terminal settings
-  NewSettings := OldSettings;
-  newSettings.c_lflag := newSettings.c_lflag and not ECHO; // Disable echo
-  tcsetattr(0, TCSANOW, newSettings);
-  Write('Enter password (does not echo) : ');
-  ReadLn(result);
-  tcsetattr(0, TCSANOW, oldSettings);                      // Restore old settings
+    tcgetattr(0, OldSettings);                               // Get current terminal settings
+    NewSettings := OldSettings;
+    newSettings.c_lflag := newSettings.c_lflag and not ECHO; // Disable echo
+    tcsetattr(0, TCSANOW, newSettings);
+    Write('Enter password (does not echo) : ');
+    {$else}
+ begin
+    Write('Enter password (does echo) : ');
+    {$endif}
+    ReadLn(result);
+    {$ifdef UNIX}
+    tcsetattr(0, TCSANOW, oldSettings);                      // Restore old settings
+    {$endif}
 end;
 
 procedure TMyApplication.WriteConfig();
@@ -279,11 +286,14 @@ begin
     if CommandLineOK() then
         try
             BuildServer()
-        except on EControlC do begin             // I suspect this is not used in Unix, the FPSignal works first ??
+        except
+            on EControlC do begin             // this is not used in Unix, the FPSignal works first
                 writeln('TMyApplication.DoRun - EControlC');
                 ExitNow := True;
                 Terminate;                   // maybe redundant ?
             end;
+            on E: Exception do
+                writeln('Exception reported, beats me ! ', E.message);
         end
     else
         Terminate;  // stop program loop, DoRun is called repeatably !

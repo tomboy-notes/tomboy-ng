@@ -219,10 +219,10 @@ function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $
 			
 			rm -f misty-server
 			if [ "$BIN" == "misty-server.exe" ]; then             # Windows binary retains its name
-				zip -j  "$1".zip ../experimental/Misty-Small/"$BIN" ../scripts/play-misty.bash ../doc/misty-readme.note
+				zip -j  "$1".zip ../experimental/Misty-Small/"$BIN"  ../doc/misty-readme.note
 			else			
 				cp ../experimental/Misty-Small/"$BIN" misty-server
-				zip -j  "$1".zip misty-server ../scripts/play-misty.bash ../doc/misty-readme.note
+				zip -j  "$1".zip misty-server ../doc/misty-readme.note
 			fi
 			ls -l "$1".zip
 			exit

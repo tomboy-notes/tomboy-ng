@@ -33,6 +33,8 @@ unit TWebserver;
 }
 interface
 
+{$define SHOW_OpenSSL_VERSION}
+
 uses
   {$IFDEF UNIX}{$IFDEF UseCThreads}
   cthreads,
@@ -41,6 +43,7 @@ uses
   {$ENDIF}
   ssync_utils,    // data sync utils based on tomboy-ng code
   sysutils, Classes, fphttpserver, fpmimetypes, httpdefs,
+  {$ifdef SHOW_OPENSSL_VERSION}openssl, {$endif}
   httpprotocol, base64;   // hhAuthorization
 
   // html2note;
@@ -523,9 +526,11 @@ begin
     //LoadFromFile('editor_2.template', Editor_2);
     //LoadFromFile('editor_3.template', Editor_3);
     try
+        mDNSHostName := GetHostName();
         {$ifdef unix}
         Serv.MimeTypesFile:='/etc/mime.types';
-	    mDNSHostName := GetHostName() + '.local';
+        if pos('.', mDNSHostName) = 0 then
+	        mDNSHostName := mDNSHostName + '.local';    // thats mDNS ...
         {$endif}
         Serv.Threaded:=False;
         Serv.AcceptIdleTimeout:=1000;
@@ -535,11 +540,14 @@ begin
             Serv.Revision := MetaData.LastRev
         else
             Serv.Revision := -1;                    // Thats OK, its a new install.
+        {$ifdef SHOW_OPENSSL_VERSION}
+        if DebugMode then
+            writeln('OpenSSL version : ', OpenSSLGetVersion(0));
+        {$endif}
         writeln('Starting, serving from ', Serv.BaseDir, ' on port ', Serv.Port.tostring);
         if Serv.UseSSL then
-             write('To check, browse to https://' + mDNSHostName + ':' + Serv.Port.tostring)
-        else write('To check, browse to http://' + mDNSHostName + ':' + Serv.Port.tostring);
-	    writeln('   (assuming mDNS in use)');
+             writeln('To check, browse to https://' + mDNSHostName + ':' + Serv.Port.tostring)
+        else writeln('To check, browse to http://' + mDNSHostName + ':' + Serv.Port.tostring);
         if DebugMode then writeln('NOTICE : debugmode is On');
         if MetaData <> nil then begin
             if debugmode then writeln('ServerID=', MetaData.ServerID);        // only show after first manifest.
