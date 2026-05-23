@@ -163,7 +163,7 @@
             <LinkSmart Value="True"/>
           </Linking>
           <Other>
-            <CompilerPath Value="ppcrossx64"/>
+            <CompilerPath Value="fpc"/>
           </Other>
         </CompilerOptions>
       </Item6>

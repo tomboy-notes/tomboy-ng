@@ -16,6 +16,7 @@ unit TWebserver;
 
 {$mode objfpc}{$H+}   {$ifdef windows}{$apptype console}{$endif}
 {$define UseCThreads}
+{$modeSwitch advancedRecords}
 
 {   Revision - we the current Revision number in memory at all time. At startup we read
     it from the manifestif preset, set to -1 otherwise.  When a Sync sends us a new or
@@ -52,6 +53,21 @@ uses
 
 type TFileStatus = (fsOK, fsNoNote, fsNoEntry, fsNoManifest);
 
+type
+    { TSettings }
+    TSettings = record
+      Repo : string;
+      Cert : string;
+      Key  : string;
+      Port : integer;
+      PW   : string;
+      Domain : string;
+                // we are all set for SSL
+      function UsingSSL() : boolean;
+                // has provided one or two SSL prerequisits but not three !
+      function WantsSSL() : boolean;
+    end;
+
 Type
 
   { TTestHTTPServer }
@@ -77,6 +93,7 @@ Type
                         // Sync - This might be called to send a note - /DOWNLOAD/$ID.note
                         // or, still an xml file, the manifest - /MANIFEST back to client -ng
     procedure DoCommandDownload(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
+    function FindTheHostName(): string;
 
                         // Interactive, user has requested to see a list of clickable notes.
     // procedure DoCommandListNotes(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
@@ -126,7 +143,7 @@ var
     DebugMode : boolean;
     ErrorSt : string = '';       // Check this before exiting with an error
     ServerHome : string;
-
+    Sett : TSettings;            // Settings from CLI/Config
 
 implementation
 
@@ -150,6 +167,18 @@ begin
     finally
       CloseFile(F);
     end;
+end;
+
+{ ----------------- TSettings -------------------- }
+
+function TSettings.UsingSSL(): boolean;
+begin
+    result := (Cert <> '') and (Key <> '') and (PW <> '');
+end;
+
+function TSettings.WantsSSL(): boolean;
+begin
+    Result := (Cert <> '') or (Key <> '') or (PW <> '');
 end;
 
 function LoadFromFile(const FFName : string; var TheSt : string) : boolean;
@@ -515,22 +544,47 @@ begin
         ShowBrowser(AResponse);
 end;
 
+function TMistyHTTPServer.FindTheHostName() : string;
+{$ifdef DARWIN}
+var
+  status : Integer;
+  len : size_t;
+  p   : PChar;
+{$endif}
+begin
+    {$ifdef unix}
+    Result := GetHostName();         // this gets the one in fphtpserver, apparently not viable in windows
+    {$endif}
+    {$ifdef WINDOWS}
+    Result := GetEnvironmentVariable('COMPUTERNAME');
+    {$endif}
+    {$ifdef DARWIN}                  // https://forum.lazarus.freepascal.org/index.php/topic,50533.msg369081.html#msg369081
+                                     // only Trev could come up with a solution like this !  Further research is indicated ....
+                                     // Totally untested
+    status := fpSysCtlByName('kern.hostname', Nil, @len, Nil, 0);
+    if status <> 0 then RaiseLastOSError;
+    GetMem(p, len);
+    try
+      status := fpSysCtlByName('kern.hostname', p, @len, Nil, 0);
+      if status <> 0 then RaiseLastOSError;
+      Result := p;
+    finally
+      FreeMem(p);
+    end;
+    {$endif}
+    Result := Result + Sett.Domain;     // ie mDNS
 
+end;
 
 procedure TMistyHTTPServer.Startup;
-var
-	mDNSHostName : string;
 begin
     MetaData := nil;        // to be sure, to be sure
     //LoadFromFile('editor_1.template', Editor_1);
     //LoadFromFile('editor_2.template', Editor_2);
     //LoadFromFile('editor_3.template', Editor_3);
     try
-        mDNSHostName := GetHostName();
         {$ifdef unix}
         Serv.MimeTypesFile:='/etc/mime.types';
-        if pos('.', mDNSHostName) = 0 then
-	        mDNSHostName := mDNSHostName + '.local';    // thats mDNS ...
         {$endif}
         Serv.Threaded:=False;
         Serv.AcceptIdleTimeout:=1000;
@@ -546,8 +600,8 @@ begin
         {$endif}
         writeln('Starting, serving from ', Serv.BaseDir, ' on port ', Serv.Port.tostring);
         if Serv.UseSSL then
-             writeln('To check, browse to https://' + mDNSHostName + ':' + Serv.Port.tostring)
-        else writeln('To check, browse to http://' + mDNSHostName + ':' + Serv.Port.tostring);
+             writeln('To check, browse to https://' + FindTheHostName() + ':' + Serv.Port.tostring)
+        else writeln('To check, browse to http://' + FindTheHostName() + ':' + Serv.Port.tostring);
         if DebugMode then writeln('NOTICE : debugmode is On');
         if MetaData <> nil then begin
             if debugmode then writeln('ServerID=', MetaData.ServerID);        // only show after first manifest.

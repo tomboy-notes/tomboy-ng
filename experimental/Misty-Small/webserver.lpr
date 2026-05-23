@@ -1,7 +1,7 @@
 program webserver;
 {$ifdef WINDOWS} {$apptype console} {$endif}
 {$mode objfpc}{$H+}
-{$modeSwitch advancedRecords}
+
 
 {
 /home/dbannon/bin/FPC/fpc-3.2.3/bin/fpc -MObjFPC -Scaghi -Cg -CirotR -O1 -gw3 -gl -gh -gt -l -vewnhibq -Fu/home/dbannon/Pascal/tomboy-ng/experimental/Misty-Small/  -omisty-server -dLCL -dLCLgtk2 webserver.lpr
@@ -53,21 +53,7 @@ uses
     ssync_utils, LazUTF8, LazFileUtils
     {$ifdef UNIX}, termIO{$endif};                              // use in the GetPassword function
 
-type
 
-    { TSettings }
-
-    TSettings = record
-      Repo : string;
-      Cert : string;
-      Key  : string;
-      Port : integer;
-      PW   : string;
-                // we are all set for SSL
-      function UsingSSL() : boolean;
-                // has provided one or two SSL prerequisits but not three !
-      function WantsSSL() : boolean;
-    end;
 
 type
 
@@ -75,7 +61,6 @@ type
 
     TMyApplication = class(TCustomApplication)
     private
-        Sett : TSettings;
         // UseSSL : boolean;
         function BuildServer: boolean;
         function CommandLineOK(): boolean;
@@ -116,17 +101,7 @@ begin
     {$ENDIF}
 end;
 
-{ ----------------- TSettings -------------------- }
 
-function TSettings.UsingSSL(): boolean;
-begin
-    result := (Cert <> '') and (Key <> '') and (PW <> '');
-end;
-
-function TSettings.WantsSSL(): boolean;
-begin
-    Result := (Cert <> '') or (Key <> '') or (PW <> '');
-end;
 
 { -------------------- TMyApplication ---------------- }
 
@@ -152,7 +127,7 @@ function TMyApplication.CommandLineOK() : boolean;    // false if error .....
 var
     ErrorMsg: String;
 begin
-    ErrorMsg := CheckOptions('hdr:p:k::c::w::s', 'help ssl debug port: repo: key: cert: save-settings');
+    ErrorMsg := CheckOptions('hdrs:p:k::c::w::D:', 'help ssl debug port: repo: key: cert: save-settings');
     if ErrorMsg <> '' then begin
         writeln('ERROR - ' + ErrorMsg);
         //ShowException(Exception.Create(ErrorMsg));  // Leaks
@@ -164,6 +139,11 @@ begin
     if HasOption('h', 'help') then begin
         WriteHelp;
         Exit(false);
+    end;
+    if HasOption('D', 'domain') then begin
+        Sett.Domain := GetOptionValue('D', 'domain');
+        if Sett.Domain[1] <> '.' then
+            Sett.Domain := '.' + Sett.Domain;
     end;
     if HasOption('c', 'cert') then
         Sett.Cert := GetOptionValue('c', 'cert');
@@ -230,7 +210,7 @@ function TMyApplication.GetPassword(): string;
 var
      oldSettings, newSettings : termios;                   // uses termIO unit;
 begin
-    tcgetattr(0, OldSettings);                               // Get current terminal settings
+    tcgetattr(0, OldSettings{%H-});                               // Get current terminal settings
     NewSettings := OldSettings;
     newSettings.c_lflag := newSettings.c_lflag and not ECHO; // Disable echo
     tcsetattr(0, TCSANOW, newSettings);
@@ -255,6 +235,7 @@ begin
     SettF.WriteString('basic', 'key', Sett.Key);
     SettF.WriteInteger('basic', 'port', Sett.Port);
     SettF.WriteString('basic', 'pw', EncodeStringBase64(Sett.PW));
+    SettF.WriteString('basic', 'domain', Sett.Domain);
     {$ifdef UNIX}                                                               // check what permissions Win can do, fpsetattrUF8()
     fpChmod(ConfigFileName,&600);        // 600, user read/write only
     {$endif}
@@ -269,12 +250,12 @@ begin
     if DebugMode then
         writeln('TMyApplication.ReadConfig Config File is ', ConfigFileName, ' exists=', booltostr(Result, true));
     SettF := TIniFile.Create(ConfigFileName);
-    Sett.Repo     := SettF.ReadString('basic', 'repo', GetDefaultRepoDir());
-    Sett.Cert := SettF.ReadString('basic', 'certificate', '');
-    Sett.Key     := SettF.ReadString('basic', 'key', '');
-    Sett.Port        := SettF.ReadInteger('basic', 'port', 8088);
-    Sett.PW          := DecodeStringBase64(SettF.ReadString('basic', 'pw', encodeStringBase64('')));
-//    CheckBox1.Checked := Sett.ReadBool('Main', 'CheckBox', true);
+    Sett.Repo   := SettF.ReadString('basic', 'repo', GetDefaultRepoDir());
+    Sett.Cert   := SettF.ReadString('basic', 'certificate', '');
+    Sett.Key    := SettF.ReadString('basic', 'key', '');
+    Sett.Port   := SettF.ReadInteger('basic', 'port', 8088);
+    Sett.PW     := DecodeStringBase64(SettF.ReadString('basic', 'pw', encodeStringBase64('')));
+    Sett.Domain := SettF.ReadString('basic', 'domain', '.local');    // default works for mDNS
     SettF.Free;
 //    if DebugMode then
 //        writeln('TMyApplication.ReadConfig Repo=', Sett.Repo, ' Cert=', Sett.Cert, ' Key=', Sett.Key, ' Port=', Sett.Port, ' PW=', Sett.PW);
@@ -292,8 +273,11 @@ begin
                 ExitNow := True;
                 Terminate;                   // maybe redundant ?
             end;
-            on E: Exception do
+            on E: Exception do begin
                 writeln('Exception reported, beats me ! ', E.message);
+                ExitNow := True;
+                Terminate;
+            end;
         end
     else
         Terminate;  // stop program loop, DoRun is called repeatably !
@@ -319,6 +303,7 @@ begin
     writeln('  -c certificate        A valid SSL certificate (maybe self signed), or blank.');
     writeln('  -k key                A valid SSL key file that matches above, or blank.');
     writeln('  -d                    Debug mode');
+    writeln('  -D Domain             A network facing domain, eg example.com, box uses.');
     writeln('  -w or --passWord      Set a passWord, if password is not present, will prompt');
     writeln('  -s or --save-settings Save current settings (inc password)');
     writeln('  eg  misty-server --repo=/home/dbannon/Misty');
@@ -345,7 +330,7 @@ end;
 {$endif}
 
 begin
-//    writeln(unix.GetHostName(), '.', GetDomainName());
+    //writeln(GetHostName(), '.', GetDomainName());
     {$ifdef LINUX}
     if FpSignal(SigInt, @HandleSigInt) = signalhandler(SIG_ERR) then begin
         Writeln('Failed to install signal error: ', fpGetErrno);
