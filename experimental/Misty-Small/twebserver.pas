@@ -181,6 +181,7 @@ begin
     Result := (Cert <> '') or (Key <> '') or (PW <> '');
 end;
 
+
 function LoadFromFile(const FFName : string; var TheSt : string) : boolean;
 var
     InFile : TextFile;
@@ -572,7 +573,8 @@ begin
       FreeMem(p);
     end;
     {$endif}
-    Result := Result + Sett.Domain;     // ie mDNS
+    if pos('.', Result) = 0 then
+        Result := Result + Sett.Domain;     // ie mDNS (.local) or -D
 
 end;
 
