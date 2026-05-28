@@ -257,9 +257,12 @@ begin
     ASync.SyncAddress := RemoteAddress;                       // because this must have come from Sett, it will have given us this address, join only !
 // debugln('TFormSync.JoinSync RemoteAddress = ' + RemoteAddress);
 
-    if (Async.SetTransport(TransPort) = SyncNetworkError) then begin            // What about an SSL error ?
+    SyncAvail := Async.SetTransport(TransPort);
+    if SyncAvail in [SyncNetworkError, SyncDNSError, SyncOpenSSLError] then begin   // What about an SSL error ?
+    // if (Async.SetTransport(TransPort) = SyncNetworkError) then begin
         debugln('TFormSync.JoinSync FAILED in SetTransport, network or remote server not available ?');
-        showmessage(rsUnableToProceed + ' ' + rsNetworkNotAvailable);
+        // showmessage(rsUnableToProceed + ' ' + rsNetworkNotAvailable);
+        showmessage(rsUnableToProceed + ' ' + Async.ErrorString);
         close;                      // close the form sending back (SyncNetworkError) mrCancel
         exit;                       // The 'close' does not happen until procedure exits !!
     end;
@@ -385,9 +388,9 @@ begin
         Async.UserName := Sett.SyncInfo[ord(Transport)].User;
 
         if ASync.DebugMode then
-            debugln('TFormSync.ManualSync - U=' + Async.UserName + ' - ' + ' P=' + copy(ASync.Password, 1, 8) + '...');
+            debugln('TFormSync.ManualSync - U=' + Async.UserName + ' - ' + ' P=' + copy(ASync.Password, 1, 3) + '...');
 
-        if Async.SetTransport(TransPort) in [SyncNetworkError, SyncCredentialError] then begin
+        if Async.SetTransport(TransPort) in [SyncNetworkError, SyncCredentialError, SyncDNSError] then begin
             if not Visible then begin
                 SearchForm.UpdateStatusBar(1, rsAutoSyncNotPossible);
                 if Sett.CheckNotifications.checked then begin

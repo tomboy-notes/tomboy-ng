@@ -1991,19 +1991,20 @@ begin
     EditPW.ReadOnly := True;
     SpeedTokenActions.Visible := False;
     case ComboSyncType.ItemIndex of         // remembering that the Combo contents matches TSyncTransport enumerated type !
-        0 : begin
+        0 : begin                                                   // File Sync
                 for Ctrl in [GroupBoxToken, GroupBoxUser]
                     do Ctrl.Visible := False;
                 EditRepo.Hint := 'Click Setup button to configure';             // ToDo : resources
             end;
-        1 : begin
+        1 : begin                                                   // GitHub Sync
                 for Ctrl in [GroupBoxToken, GroupBoxUser, SpeedTokenActions]
                     do Ctrl.Visible := True;
                 GroupBoxUser.Enabled := True;
                 EditRepo.Hint := 'Provide User, Token and click Setup button to configure';   // ToDo : resources
                 GroupBoxToken.Caption := 'Token';
+                EditPW.EchoMode := emNormal;
             end;
-        2 : begin
+        2 : begin                                                   // Misty Sync
                 GroupBoxUser.Visible  := True;
                 GroupBoxUser.Enabled  := False;
                 GroupBoxToken.Visible := True;
@@ -2011,8 +2012,9 @@ begin
                 SpeedTokenActions.Visible := False;
                 EditRepo.ReadOnly := False;
                 EditPW.ReadOnly := False;
-                GroupBoxToken.Caption := 'Password';                             // ToDo : resources ?
-                EditRepo.Hint := 'eg http://localhost:8088';
+                EditPW.EchoMode := emPassword;
+                GroupBoxToken.Caption := 'Password';                            // ToDo : resources ?
+                EditRepo.Hint := 'eg https://localhost:8088';
                 EditUserName.Text := 'tomboy-ng';
             end;
     end;

@@ -1071,14 +1071,15 @@ begin
     Transport.DebugMode := DebugMode;
     Transport.ConfigDir := ConfigDir;                               // unneeded I think ??
     Transport.RemoteAddress:= SyncAddress;                          // happens _before_ Trans.SetTransport
-    Result := Transport.SetTransport();                             // in github, this will (re)set Transport.RemoteAddress
+    Result := Transport.SetTransport();                             // in github, Misty this will (re)set Transport.RemoteAddress
     ErrorString := Transport.ErrorString;
     if debugmode then begin
         debugln('----- Transport Data, from TSync.SetTransport -----');
+        debugln('    ErrorString is ' + ErrorString);
         debugln('    Remote address is ' + SyncAddress);
         debugln('    Local Config ' + ConfigDir);
         debugln('    Notes dir ' + NotesDir);
-        //debugln('    SetTransport ErrorString : ' + ErrorString);
+        debugln('    SetTransport ErrorString : ' + ErrorString);
         //debugln('    Password ' + Transport.Password);
     end;
 end;

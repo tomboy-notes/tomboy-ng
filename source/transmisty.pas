@@ -313,10 +313,19 @@ function TMistySync.SetTransport(): TSyncAvailable;
 var SomeString : string;
 begin
    if DebugMode then DebugLn('TMistySync.SetTransport RemoteAddress = ' + RemoteAddress);
-   RemoteAddress := PreResolve(AppendSlash(RemoteAddress));  // Not sure about this ...
-   if ErrorString <> '' then exit(SyncDNSError);             // we failed to resolve the hostname
+   RemoteAddress := PreResolve(AppendSlash(RemoteAddress));  // occsionally, initial failure mDNS
+   if DebugMode then DebugLn('TMistySync.SetTransport Resolvd RemoteAddress = ' + RemoteAddress);
+   if ErrorString <> '' then begin
+        ErrorString := '';
+        RemoteAddress := PreResolve(AppendSlash(RemoteAddress));                // try again, might work second time
+   end;
+   if ErrorString <> '' then begin
+        DebugLn('FAILED to resolve address ', RemoteAddress);
+        Debugln('FAILED ', ErrorString);
+       exit(SyncDNSError);             // we failed to resolve the hostname
+   end;
    if Downloader(RemoteAddress,  SomeString, ctHTML) then    // all we care about is the 200 status Downloader found
-        Result := SyncReady                                  // OR maybe create a repo code goes here ?
+        Result := SyncReady
    else Result := SyncNetworkError;
 
 // following are some tests used during development, clean it out !

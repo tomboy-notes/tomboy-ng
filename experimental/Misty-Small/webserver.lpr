@@ -85,7 +85,7 @@ var ReqFiles : array of string = ('editor_1.template', 'editor_2.template', 'edi
 
 var
     Application: TMyApplication;
-    ConfigFileName : string = 'misty.cfg';
+    ConfigFileName : string = 'misty.cfg';       // Main function will add path
 
 function GetDefaultRepoDir() : string;
 begin
@@ -127,7 +127,7 @@ function TMyApplication.CommandLineOK() : boolean;    // false if error .....
 var
     ErrorMsg: String;
 begin
-    ErrorMsg := CheckOptions('hdrs:p:k::c::w::D:', 'help ssl debug port: repo: key: cert: save-settings');
+    ErrorMsg := CheckOptions('hdrsp:k::c::w::D:', 'help ssl debug port: repo: key: cert: save-settings');
     if ErrorMsg <> '' then begin
         writeln('ERROR - ' + ErrorMsg);
         //ShowException(Exception.Create(ErrorMsg));  // Leaks
@@ -303,7 +303,7 @@ begin
     writeln('  -c certificate        A valid SSL certificate (maybe self signed), or blank.');
     writeln('  -k key                A valid SSL key file that matches above, or blank.');
     writeln('  -d                    Debug mode');
-    writeln('  -D Domain             A network facing domain, eg example.com, box uses.');
+    writeln('  -D Domain             The network facing domain, eg example.com, in use.');
     writeln('  -w or --passWord      Set a passWord, if password is not present, will prompt');
     writeln('  -s or --save-settings Save current settings (inc password)');
     writeln('  eg  misty-server --repo=/home/dbannon/Misty');

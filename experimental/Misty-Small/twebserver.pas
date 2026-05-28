@@ -217,8 +217,8 @@ var St : string;
 begin
     if not Serv.UseSSL then exit(True);
 
-    writeln('TMistyHTTPServer.AuthOK PW is [', DecodeStringBase64(copy(AReq.GetHeader(hhAuthorization), 6, 99)), ']');
-
+    // writeln('TMistyHTTPServer.AuthOK PW is [', DecodeStringBase64(copy(AReq.GetHeader(hhAuthorization), 6, 99)), ']');
+    writeln('TMistyHTTPServer.AuthOK PW');
 
     if PW = '' then exit(False);
     St := DecodeStringBase64(copy(AReq.GetHeader(hhAuthorization), 6, 99));

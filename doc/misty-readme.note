@@ -10,7 +10,7 @@ Misty is a (software) server for a tomboy-ng sync system. Its one of the ways yo
 <size:large><bold>Where can I run Misty ?</bold></size:large>
 Misty can run on a Linux or Windows box (MacOS not just yet) and can be on the machine you also use for tomboy-ng or a stand alone machine like a Raspberry PI. It does not need a powerful machine, just needs enough available disk space to accommodate a copy of all your notes. It is launched from the command line and can be left running indefinitely or just started up when needed. Misty must be used with tomboy-ng 0.42c or later. It must be allowed to make its own synced note repo, do not, under any circumstances, point Misty to your existing tomboy-ng note repository. See below "More about the server machine."
 
-To run Misty on a Windows machine, go to your Network &amp; Internet  Settings page, the default setting is probably <italic>"Public Network (recommended)"</italic> but you need to set it to "<italic>Private Network (your device is discoverable ...)</italic>". This is reasonably safe on a local, home network.
+To run Misty on a Windows machine, go to your Network &amp; Internet  Settings page, the default setting is probably <italic>"Public Network (recommended)"</italic> but you need to set it to "<italic>Private Network (your device is discoverable ...)</italic>". This is reasonably safe on a local, home network. Further, if you allow the screen saver to activate, it will top Misty running, so, keep working or disable the creen saver (yes, I know its pretty).
 
 Misty is intended to run on a local home network where, typically a reasonable firewall in the router protects you from external threats. It can run on a machine "live" on the internet, while I don't recommend it, Misty used with a secure web certificate is possibly as safe many other systems. Your call.
 
@@ -99,11 +99,12 @@ Are best directed to the issues at https://github.com/tomboy-notes/tomboy-ng . B
 <list><list-item dir="ltr">My Windows box does not have the OpenSSL command used to generate a certificate but it does have SSL libraries ?  You should have  the command "openssl.exe" somewhere on (or not on) your PATH. If not its possible you  could have just the libraries but not the OpenSSL package.</list-item></list>
 <list><list-item dir="ltr">Are you an expert in administrating a Windows box ?  No. Absolutely NOT !</list-item></list>
 <list><list-item dir="ltr">Do you collect tips, bounties etc ? No, I have used open source for a large par of my life, this is my 'put back'.</list-item></list>
+<list><list-item dir="ltr">In tomboy-ng, I see an error message, "Unable to sync ....reading data from socket, Result Code 0" ?  Its probable that you have a mixed up secure mode with insecure mode. Secure mode must have 'https' at the start of the Settings-&gt;Sync-&gt;Misty-&gt;Repo line, assumes you have provided a certificate to the misty-server.</list-item></list>
 
 
 </note-content></text>
-  <last-change-date>2026-05-26T17:52:40.0119477+10:00</last-change-date>
-  <last-metadata-change-date>2026-05-26T17:52:40.0119477+10:00</last-metadata-change-date>
+  <last-change-date>2026-05-27T22:12:08.7275722+10:00</last-change-date>
+  <last-metadata-change-date>2026-05-27T22:12:08.7275722+10:00</last-metadata-change-date>
   <create-date>2026-04-29T21:20:26.2537466+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
