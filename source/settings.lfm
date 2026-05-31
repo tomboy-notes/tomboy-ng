@@ -1,7 +1,7 @@
 object Sett: TSett
-  Left = 485
+  Left = 577
   Height = 583
-  Top = 137
+  Top = 78
   Width = 789
   AutoSize = True
   BorderIcons = []
@@ -538,7 +538,7 @@ object Sett: TSett
       Caption = 'Sync'
       ClientHeight = 507
       ClientWidth = 785
-      object GroupBox4: TGroupBox
+      object GroupBoxSyncOpt: TGroupBox
         AnchorSideLeft.Control = TabSync
         AnchorSideTop.Control = GroupBoxSync
         AnchorSideTop.Side = asrBottom
@@ -560,10 +560,10 @@ object Sett: TSett
         ClientHeight = 125
         ClientWidth = 775
         ParentColor = False
-        TabOrder = 0
+        TabOrder = 2
         object RadioAlwaysAsk: TRadioButton
-          AnchorSideLeft.Control = GroupBox4
-          AnchorSideTop.Control = GroupBox4
+          AnchorSideLeft.Control = GroupBoxSyncOpt
+          AnchorSideTop.Control = GroupBoxSyncOpt
           Left = 15
           Height = 26
           Top = 13
@@ -586,6 +586,7 @@ object Sett: TSett
           BorderSpacing.Top = 14
           Caption = 'Use Local Note and Overwrite Server Note.'
           TabOrder = 1
+          TabStop = True
         end
         object RadioUseServer: TRadioButton
           AnchorSideLeft.Control = RadioAlwaysAsk
@@ -598,6 +599,7 @@ object Sett: TSett
           BorderSpacing.Top = 14
           Caption = 'Use Server Note and Rename Local Note.'
           TabOrder = 2
+          TabStop = True
         end
       end
       object Label12: TLabel
@@ -627,7 +629,6 @@ object Sett: TSett
         ClientWidth = 775
         ParentColor = False
         TabOrder = 1
-        OnClick = GroupBoxSyncClick
         object Label4: TLabel
           AnchorSideLeft.Control = GroupBoxSync
           AnchorSideTop.Control = LabelSyncInfo2
@@ -640,7 +641,7 @@ object Sett: TSett
           BorderSpacing.Top = 18
           Caption = 'Repo : '
         end
-        object SpeedSetupSync: TSpeedButton
+        object ButtSetupSync: TBitBtn
           AnchorSideTop.Control = ComboSyncTiming
           AnchorSideTop.Side = asrCenter
           AnchorSideRight.Control = GroupBoxSync
@@ -654,9 +655,10 @@ object Sett: TSett
           Anchors = [akTop, akRight]
           BorderSpacing.Right = 10
           Caption = 'Setup'
-          ShowHint = True
           ParentShowHint = False
-          OnClick = SpeedSetupSyncClick
+          ShowHint = True
+          TabOrder = 4
+          OnClick = ButtSetupSyncClick
         end
         object LabelSyncInfo1: TLabel
           AnchorSideLeft.Control = GroupBoxSync
@@ -685,7 +687,7 @@ object Sett: TSett
           AnchorSideLeft.Control = GroupBoxUser
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = GroupBoxUser
-          AnchorSideRight.Control = SpeedSetupSync
+          AnchorSideRight.Control = ButtSetupSync
           AnchorSideRight.Side = asrBottom
           AnchorSideBottom.Control = GroupBoxUser
           AnchorSideBottom.Side = asrBottom
@@ -698,8 +700,8 @@ object Sett: TSett
           Caption = 'Token'
           ClientHeight = 34
           ClientWidth = 558
-          TabOrder = 0
-          object SpeedTokenActions: TSpeedButton
+          TabOrder = 2
+          object ButtTokenActions: TBitBtn
             AnchorSideLeft.Control = GroupBoxToken
             AnchorSideTop.Control = EditPW
             AnchorSideTop.Side = asrCenter
@@ -709,10 +711,11 @@ object Sett: TSett
             Width = 96
             BorderSpacing.Left = 5
             Caption = 'Actions'
-            OnClick = SpeedTokenActionsClick
+            TabOrder = 0
+            OnClick = ButtTokenActionsClick
           end
           object EditPW: TEdit
-            AnchorSideLeft.Control = SpeedTokenActions
+            AnchorSideLeft.Control = ButtTokenActions
             AnchorSideLeft.Side = asrBottom
             AnchorSideTop.Control = GroupBoxToken
             AnchorSideRight.Control = GroupBoxToken
@@ -727,7 +730,7 @@ object Sett: TSett
             BorderSpacing.Right = 9
             ParentShowHint = False
             ShowHint = True
-            TabOrder = 0
+            TabOrder = 1
             Text = 'EditPW'
           end
         end
@@ -782,7 +785,7 @@ object Sett: TSett
             'Weekly'
             'Monthly'
           )
-          TabOrder = 2
+          TabOrder = 3
           Text = 'ComboSyncTiming'
           OnChange = ComboSyncTimingChange
         end
@@ -801,7 +804,7 @@ object Sett: TSett
           AnchorSideLeft.Side = asrBottom
           AnchorSideTop.Control = Label4
           AnchorSideTop.Side = asrCenter
-          AnchorSideRight.Control = SpeedSetupSync
+          AnchorSideRight.Control = ButtSetupSync
           AnchorSideRight.Side = asrBottom
           Left = 77
           Height = 34
@@ -811,7 +814,7 @@ object Sett: TSett
           BorderSpacing.Left = 5
           ParentShowHint = False
           ShowHint = True
-          TabOrder = 3
+          TabOrder = 0
           Text = 'EditRepo'
         end
       end
@@ -832,8 +835,9 @@ object Sett: TSett
           'rsSyncTypeGithub'
         )
         ParentShowHint = False
+        ReadOnly = True
         ShowHint = True
-        TabOrder = 2
+        TabOrder = 0
         Text = 'ComboSyncType'
         OnChange = ComboSyncTypeChange
       end

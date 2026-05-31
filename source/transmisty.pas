@@ -70,8 +70,8 @@ type
                     // Misty, public inherited. Establish we can talk to Server unathenticated, start by testing
                     // that we can resolve the hostname in the URL. If good put the IP it to URL. Then check
                     // we can dowload server's default page, no interest in content, just result code.
-                    // Might return one of SyncReady, SyncOpenSSLError, SyncNetworkError, SyncDNSError. Working
-                    // server will return a human readable error page and code 200 if no command given. }
+                    // Might return one of SyncReady, SyncOpenSSLError, SyncNetworkError, SyncDNSError. SyncDNSError.
+                    // Working server will return a human readable error page and code 200 if no command given. }
         function SetTransport(): TSyncAvailable; override;
                     // Misty, public inherited.
         function TestTransport(const WriteNewServerID : boolean = False) : TSyncAvailable; override;
@@ -317,6 +317,7 @@ begin
    if DebugMode then DebugLn('TMistySync.SetTransport Resolvd RemoteAddress = ' + RemoteAddress);
    if ErrorString <> '' then begin
         ErrorString := '';
+        sleep(200);                                                             // give it 200mS
         RemoteAddress := PreResolve(AppendSlash(RemoteAddress));                // try again, might work second time
    end;
    if ErrorString <> '' then begin

@@ -1693,6 +1693,23 @@ msgstr "Відновити втрачені нотатки"
 msgid "If you have previously taken a snapshot ..."
 msgstr "Якщо у вас є попередньо зроблений зріз ..."
 
+#: tsett.buttsetupsync.caption
+#, fuzzy
+msgctxt "tsett.buttsetupsync.caption"
+msgid "Setup"
+msgstr "Встановлення"
+
+#: tsett.buttsetupsync.hint
+msgctxt "tsett.buttsetupsync.hint"
+msgid "Setup or Change a Sync Repository"
+msgstr ""
+
+#: tsett.butttokenactions.caption
+#, fuzzy
+msgctxt "tsett.butttokenactions.caption"
+msgid "Actions"
+msgstr "Дії"
+
 #: tsett.checkautosnapenabled.caption
 msgid "Use auto snapshots"
 msgstr "Використовувати автозрізи"
@@ -1792,11 +1809,6 @@ msgstr ""
 msgid "Your Github User Name"
 msgstr ""
 
-#: tsett.groupbox4.caption
-msgctxt "tsett.groupbox4.caption"
-msgid "When a conflict is detected between a local note and remote one :"
-msgstr "Коли виник конфлікт між локальною нотаткою і віддаленою :"
-
 #: tsett.groupbox5.caption
 msgid "Font Size"
 msgstr "Розмір шрифту"
@@ -1804,6 +1816,12 @@ msgstr "Розмір шрифту"
 #: tsett.groupboxsync.caption
 msgid "  Sync  "
 msgstr "  Синхр.  "
+
+#: tsett.groupboxsyncopt.caption
+#, fuzzy
+msgctxt "tsett.groupboxsyncopt.caption"
+msgid "When a conflict is detected between a local note and remote one :"
+msgstr "Коли виник конфлікт між локальною нотаткою і віддаленою :"
 
 #: tsett.groupboxtoken.caption
 msgctxt "tsett.groupboxtoken.caption"
@@ -1957,19 +1975,6 @@ msgstr "Закрити"
 msgctxt "tsett.speedbutttbmenu.caption"
 msgid "Menu"
 msgstr "Меню"
-
-#: tsett.speedsetupsync.caption
-msgctxt "tsett.speedsetupsync.caption"
-msgid "Setup"
-msgstr "Встановлення"
-
-#: tsett.speedsetupsync.hint
-msgid "Setup or Change a Sync Repository"
-msgstr ""
-
-#: tsett.speedtokenactions.caption
-msgid "Actions"
-msgstr "Дії"
 
 #: tsett.tabbackup.caption
 msgid "BackUp"

@@ -124,7 +124,7 @@ uses
     Buttons, ComCtrls, ExtCtrls, Menus, FileUtil, BackUpView,
     LCLIntf, Spin{, notifier}, base64, fpttf, LMessages, syncutils, LazUTF8
     {$ifdef LCLQT5}, qt5{$endif}
-    {$ifdef LCLQT6}, qt6{$endif} , {Types,} TypInfo;
+    {$ifdef LCLQT6}, qt6{$endif} , {Types,} TypInfo, Types;
 
 // Types;
 
@@ -199,7 +199,7 @@ type
         CheckShowExtLinks: TCheckBox;
         CheckShowIntLinks: TCheckBox;
         FontDialog1: TFontDialog;
-        GroupBox4: TGroupBox;
+        GroupBoxSyncOpt: TGroupBox;
         GroupBox5: TGroupBox;
         Label1: TLabel;
         Label12: TLabel;
@@ -242,9 +242,9 @@ type
         SelectSnapDir: TSelectDirectoryDialog;
         SpeedButHide: TSpeedButton;
         SpeedButHelp: TSpeedButton;
-        SpeedTokenActions: TSpeedButton;
+        ButtTokenActions: TBitBtn;
         SpeedButtTBMenu: TSpeedButton;
-        SpeedSetupSync: TSpeedButton;
+        ButtSetupSync: TBitBtn;
         SpinDaysPerSnapshot: TSpinEdit;
         SpinMaxSnapshots: TSpinEdit;
         TabBasic: TTabSheet;
@@ -268,7 +268,6 @@ type
         procedure CheckAutoSnapEnabledChange(Sender: TObject);
         procedure CheckAutostartChange(Sender: TObject);
         procedure ComboSyncTimingChange(Sender: TObject);
-        procedure GroupBoxSyncClick(Sender: TObject);
         procedure MenuItemCopyTokenClick(Sender: TObject);
         procedure MenuItemGetTokenClick(Sender: TObject);
         procedure MenuItemPasteTokenClick(Sender: TObject);
@@ -292,8 +291,8 @@ type
                         // Called when we are setting up a sync. Its sets up what ever sync is
                         // currently displayed. So, take parameters directly from the Settings Sync
                         // Screen. If it works, it then pokes those settings into SyncInfo.
-        procedure SpeedSetupSyncClick(Sender: TObject);
-        procedure SpeedTokenActionsClick(Sender: TObject);
+        procedure ButtSetupSyncClick(Sender: TObject);
+        procedure ButtTokenActionsClick(Sender: TObject);
         procedure SpinDaysPerSnapshotChange(Sender: TObject);
         procedure TabBasicResize(Sender: TObject);
         procedure TabRecoverResize(Sender: TObject);
@@ -330,6 +329,7 @@ type
                         // and, if enabled, notifications.
         procedure HandlePostMessage(var Msg: TLMessage); message WM_SYNCMESSAGES;    // ThreadTest
         procedure SetNotePath(const NewNotePath: string);
+        procedure SetSelectedTabOrder(const TabIndex: integer);
 
                         // Checks WantFileSync, WantGitHubSync if both false, exits. Otherwise it deals with one off them,
                         // mark that one false, create a thread and execute().  HandlePostMessage() will
@@ -695,6 +695,8 @@ begin
     ButtonSetSpellLibrary.Width := (TabSpell.Width div 2) -7;
     ButtonSetDictionary.Width := ButtonSetSpellLibrary.Width;
 end;
+
+
 
 
 
@@ -1960,7 +1962,30 @@ end;
   that is, hourly, but autosnapshop looks at NextAutoSnapshot to decide if its time to do its thing.
 }
 
+// At present, just on the Sync Tab, should expand to all
+procedure TSett.SetSelectedTabOrder(const TabIndex : integer);
+begin
+    case TabIndex of
+        0 : ;
+        1 : begin                             // GitHub
+                ComboSyncType.TabOrder := 1;
+                EditUserName.TabOrder := 2;
+                ButtTokenActions.TabOrder := 3;
+                //EditPW.TabOrder := 3;
+            end;
+        2 : begin                             // misty
+                ComboSyncType.TabOrder  := 0;
+                GroupBoxSync.TabOrder   := 1;
+                    EditRepo.TabOrder   := 0;
+                    // GroupBoxUser.TabOrder := 1;
+                    GroupBoxToken.TabOrder   := 1;
+                    ComboSyncTiming.TabOrder := 2;
+                    ButtSetupSync.TabOrder   := 3;
+                GroupBoxSyncOpt.TabOrder := 2;
+            end;
+    end;
 
+end;
 
 { This method manages display of all the controls associated with setting
 up Sync connections. }
@@ -1981,15 +2006,17 @@ begin
     if SyncInfo[ComboSyncType.ItemIndex].RemoteAddress = '' then begin
         //LabelSyncRepo.Caption  := rsSyncNotConfig;
         EditRepo.Text := rsSyncNotConfig; ;
-        SpeedSetUpSync.Caption := rsSetUp;
+        ButtSetupSync.Caption := rsSetUp;
     end else begin
         // LabelSyncRepo.Caption  := SyncInfo[ComboSyncType.ItemIndex].RemoteAddress;
         EditRepo.Text := SyncInfo[ComboSyncType.ItemIndex].RemoteAddress;
-        SpeedSetUpSync.Caption := rsChangeSync;
+        ButtSetupSync.Caption := rsChangeSync;
     end;
     EditRepo.ReadOnly := True;
+    EditRepo.TabStop := False;
+    EditPW.TabStop := False;
     EditPW.ReadOnly := True;
-    SpeedTokenActions.Visible := False;
+    ButtTokenActions.Visible := False;
     case ComboSyncType.ItemIndex of         // remembering that the Combo contents matches TSyncTransport enumerated type !
         0 : begin                                                   // File Sync
                 for Ctrl in [GroupBoxToken, GroupBoxUser]
@@ -1997,10 +2024,10 @@ begin
                 EditRepo.Hint := 'Click Setup button to configure';             // ToDo : resources
             end;
         1 : begin                                                   // GitHub Sync
-                for Ctrl in [GroupBoxToken, GroupBoxUser, SpeedTokenActions]
+                for Ctrl in [GroupBoxToken, GroupBoxUser, ButtTokenActions]
                     do Ctrl.Visible := True;
                 GroupBoxUser.Enabled := True;
-                EditRepo.Hint := 'Provide User, Token and click Setup button to configure';   // ToDo : resources
+                EditRepo.Hint := 'Provide User and Token then click Setup button to configure';   // ToDo : resources
                 GroupBoxToken.Caption := 'Token';
                 EditPW.EchoMode := emNormal;
             end;
@@ -2009,20 +2036,23 @@ begin
                 GroupBoxUser.Enabled  := False;
                 GroupBoxToken.Visible := True;
                 GroupBoxToken.Enabled := True;
-                SpeedTokenActions.Visible := False;
+                ButtTokenActions.Visible := False;
                 EditRepo.ReadOnly := False;
+                EditRepo.TabStop := True;
                 EditPW.ReadOnly := False;
                 EditPW.EchoMode := emPassword;
                 GroupBoxToken.Caption := 'Password';                            // ToDo : resources ?
                 EditRepo.Hint := 'eg https://localhost:8088';
                 EditUserName.Text := 'tomboy-ng';
+                EditPW.TabStop := True;
+                // SetSelectedTabOrder(ComboSyncType.ItemIndex);
             end;
     end;
     MaskSettingsChanged := RememberMask;
 end;
 
 
-procedure TSett.SpeedSetupSyncClick(Sender: TObject);
+procedure TSett.ButtSetupSyncClick(Sender: TObject);
 var
    SyncType : integer;
    ManifestFile : string;
@@ -2073,7 +2103,7 @@ begin
     end;
 end;
 
-procedure TSett.SpeedTokenActionsClick(Sender: TObject);
+procedure TSett.ButtTokenActionsClick(Sender: TObject);
 begin
     PopupMenuTokenActions.PopUp;
 end;
@@ -2127,10 +2157,7 @@ begin
     ComboSyncTiming.LockRealizeBounds;
 end;
 
-procedure TSett.GroupBoxSyncClick(Sender: TObject);
-begin
 
-end;
 
 // Iterates over SyncInfo, checking for a configured sync, runs the ones it finds.
 procedure TSett.Synchronise();

@@ -1613,6 +1613,21 @@ msgstr ""
 msgid "If you have previously taken a snapshot ..."
 msgstr ""
 
+#: tsett.buttsetupsync.caption
+msgctxt "tsett.buttsetupsync.caption"
+msgid "Setup"
+msgstr ""
+
+#: tsett.buttsetupsync.hint
+msgctxt "tsett.buttsetupsync.hint"
+msgid "Setup or Change a Sync Repository"
+msgstr ""
+
+#: tsett.butttokenactions.caption
+msgctxt "tsett.butttokenactions.caption"
+msgid "Actions"
+msgstr ""
+
 #: tsett.checkautosnapenabled.caption
 msgid "Use auto snapshots"
 msgstr ""
@@ -1708,17 +1723,17 @@ msgstr ""
 msgid "Your Github User Name"
 msgstr ""
 
-#: tsett.groupbox4.caption
-msgctxt "tsett.groupbox4.caption"
-msgid "When a conflict is detected between a local note and remote one :"
-msgstr ""
-
 #: tsett.groupbox5.caption
 msgid "Font Size"
 msgstr ""
 
 #: tsett.groupboxsync.caption
 msgid "  Sync  "
+msgstr ""
+
+#: tsett.groupboxsyncopt.caption
+msgctxt "tsett.groupboxsyncopt.caption"
+msgid "When a conflict is detected between a local note and remote one :"
 msgstr ""
 
 #: tsett.groupboxtoken.caption
@@ -1870,19 +1885,6 @@ msgstr ""
 #: tsett.speedbutttbmenu.caption
 msgctxt "tsett.speedbutttbmenu.caption"
 msgid "Menu"
-msgstr ""
-
-#: tsett.speedsetupsync.caption
-msgctxt "tsett.speedsetupsync.caption"
-msgid "Setup"
-msgstr ""
-
-#: tsett.speedsetupsync.hint
-msgid "Setup or Change a Sync Repository"
-msgstr ""
-
-#: tsett.speedtokenactions.caption
-msgid "Actions"
 msgstr ""
 
 #: tsett.tabbackup.caption
