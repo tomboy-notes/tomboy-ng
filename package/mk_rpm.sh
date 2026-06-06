@@ -70,10 +70,10 @@ function DoAlien ()  {
 	
 	sed -i '10i Packager: David Bannon <tomboy-ng@bannons.id.au>' "$RDIR"/"$RDIR"-"$PACKVER".spec
 	sed -i '11i URL: https://githup.com/tomboy/tomboy-ng' "$RDIR"/"$RDIR"-"$PACKVER".spec
-	if [ "$1" = amd64Qt5 ]; then
-	    echo "------------ Setting Minium libqt5pas to 1.2.15 ---------------------------"
-	    sed -i '12i Requires: libqt5pas >= 1.2.15' "$RDIR"/"$RDIR"-"$PACKVER".spec
-	fi
+//	if [ "$1" = amd64Qt5 ]; then           // this does not seem to work, overwritten in alien.
+//	    echo "------------ Setting Minium libqt5pas to 1.2.15 ---------------------------"
+//	    sed -i '12i Requires: libqt5pas >= 1.2.15' "$RDIR"/"$RDIR"-"$PACKVER".spec
+//	fi                                     // also note dnf recognises it as qt5pas, without the 'lib' only
 	gunzip "$RDIR"/usr/share/man/man1/tomboy-ng.1.gz
 	bzip2  "$RDIR"/usr/share/man/man1/tomboy-ng.1
 	sed -i "s/tomboy-ng.1.gz/tomboy-ng.1.bz2/" "$RDIR"/"$RDIR"-"$PACKVER".spec

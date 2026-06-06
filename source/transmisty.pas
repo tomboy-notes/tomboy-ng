@@ -137,7 +137,7 @@ var
 begin
     result := false;
     AProcess := TProcess.Create(nil);
-    AProcess.Executable:= 'getent';
+    AProcess.Executable:= 'getent';            // getent does a better job of resolving mDNS or .local addresses.
     AProcess.Parameters.Add('hosts');
     AProcess.Parameters.Add(HostName);
     AProcess.Options := AProcess.Options + [poWaitOnExit, poUsePipes];
@@ -270,10 +270,7 @@ begin
     if DebugMode then debugln('TMistySync.UpLoader - Posting ', FFName, ' to ' + URL);
     Client := TFPHttpClient.Create(nil);
     Client.UserName := UserName;                    // if given a username and password, generates a Authentication header
- //   Client.UserName := 'tomboy-ng';
- //   client.Password := 'TrustMe';
-    Client.Password := Password;                    //  UserName and Passwrd are inheriated from Trans. Filled in by Sync
-
+    Client.Password := Password;                    // UserName and Password are inheriated from Trans. Filled in by Sync
     try
         try
             Client.AddHeader('User-Agent','Mozilla/5.0 (compatible; fpweb)');
@@ -318,12 +315,13 @@ begin
    if ErrorString <> '' then begin
         ErrorString := '';
         sleep(200);                                                             // give it 200mS
+        DebugLn('TMistySync.SetTransport temp failure to resolve ' + AppendSlash(RemoteAddress));
         RemoteAddress := PreResolve(AppendSlash(RemoteAddress));                // try again, might work second time
    end;
    if ErrorString <> '' then begin
         DebugLn('FAILED to resolve address ', RemoteAddress);
         Debugln('FAILED ', ErrorString);
-       exit(SyncDNSError);             // we failed to resolve the hostname
+        exit(SyncDNSError);                                                     // we failed to resolve the hostname
    end;
    if Downloader(RemoteAddress,  SomeString, ctHTML) then    // all we care about is the 200 status Downloader found
         Result := SyncReady

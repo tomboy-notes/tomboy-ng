@@ -325,11 +325,10 @@ type
                         // Clears any Sync we have configured. Only proceeds if lock is available
                         // but DOES NOT grab that lock because it has trashed the Sync anyway.
         function DidCleanAndLockSync(): boolean;
-                        // Recieves messages from the auto sync system, updates searchform status bar
+                        // Receives messages from the auto sync system, updates searchform status bar
                         // and, if enabled, notifications.
         procedure HandlePostMessage(var Msg: TLMessage); message WM_SYNCMESSAGES;    // ThreadTest
         procedure SetNotePath(const NewNotePath: string);
-        procedure SetSelectedTabOrder(const TabIndex: integer);
 
                         // Checks WantFileSync, WantGitHubSync if both false, exits. Otherwise it deals with one off them,
                         // mark that one false, create a thread and execute().  HandlePostMessage() will
@@ -1962,30 +1961,6 @@ end;
   that is, hourly, but autosnapshop looks at NextAutoSnapshot to decide if its time to do its thing.
 }
 
-// At present, just on the Sync Tab, should expand to all
-procedure TSett.SetSelectedTabOrder(const TabIndex : integer);
-begin
-    case TabIndex of
-        0 : ;
-        1 : begin                             // GitHub
-                ComboSyncType.TabOrder := 1;
-                EditUserName.TabOrder := 2;
-                ButtTokenActions.TabOrder := 3;
-                //EditPW.TabOrder := 3;
-            end;
-        2 : begin                             // misty
-                ComboSyncType.TabOrder  := 0;
-                GroupBoxSync.TabOrder   := 1;
-                    EditRepo.TabOrder   := 0;
-                    // GroupBoxUser.TabOrder := 1;
-                    GroupBoxToken.TabOrder   := 1;
-                    ComboSyncTiming.TabOrder := 2;
-                    ButtSetupSync.TabOrder   := 3;
-                GroupBoxSyncOpt.TabOrder := 2;
-            end;
-    end;
-
-end;
 
 { This method manages display of all the controls associated with setting
 up Sync connections. }
@@ -2031,20 +2006,19 @@ begin
                 GroupBoxToken.Caption := 'Token';
                 EditPW.EchoMode := emNormal;
             end;
-        2 : begin                                                   // Misty Sync
-                GroupBoxUser.Visible  := True;
+        2 : begin                                                               // Misty Sync
+                for Ctrl in [GroupBoxUser, GroupBoxToken] do Ctrl.Visible := True;
                 GroupBoxUser.Enabled  := False;
-                GroupBoxToken.Visible := True;
                 GroupBoxToken.Enabled := True;
                 ButtTokenActions.Visible := False;
                 EditRepo.ReadOnly := False;
                 EditRepo.TabStop := True;
                 EditPW.ReadOnly := False;
                 EditPW.EchoMode := emPassword;
+                EditPW.TabStop := True;
                 GroupBoxToken.Caption := 'Password';                            // ToDo : resources ?
                 EditRepo.Hint := 'eg https://localhost:8088';
                 EditUserName.Text := 'tomboy-ng';
-                EditPW.TabStop := True;
                 // SetSelectedTabOrder(ComboSyncType.ItemIndex);
             end;
     end;

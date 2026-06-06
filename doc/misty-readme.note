@@ -10,7 +10,7 @@ Misty is a (software) server for a tomboy-ng sync system. Its one of the ways yo
 <size:large><bold>Where can I run Misty ?</bold></size:large>
 Misty can run on a Linux or Windows box (MacOS not just yet) and can be on the machine you also use for tomboy-ng or a stand alone machine like a Raspberry PI. It does not need a powerful machine, just needs enough available disk space to accommodate a copy of all your notes. It is launched from the command line and can be left running indefinitely or just started up when needed. Misty must be used with tomboy-ng 0.42c or later. It must be allowed to make its own synced note repo, do not, under any circumstances, point Misty to your existing tomboy-ng note repository. See below "More about the server machine."
 
-To run Misty on a Windows machine, go to your Network &amp; Internet  Settings page, the default setting is probably <italic>"Public Network (recommended)"</italic> but you need to set it to "<italic>Private Network (your device is discoverable ...)</italic>". This is reasonably safe on a local, home network. Further, if you allow the screen saver to activate, it will top Misty running, so, keep working or disable the creen saver (yes, I know its pretty).
+To run Misty on a <bold>Windows</bold> machine, go to your Network &amp; Internet  Settings page, the default setting is probably <italic>"Public Network (recommended)"</italic> but you need to set it to "<italic>Private Network (your device is discoverable ...)</italic>". This is reasonably safe on a local, home network. Further, if you allow the screen saver to activate, it will stop Misty running, so, keep working or disable the screen saver (yes, I know its pretty).
 
 Misty is intended to run on a local home network where, typically a reasonable firewall in the router protects you from external threats. It can run on a machine "live" on the internet, while I don't recommend it, Misty used with a secure web certificate is possibly as safe many other systems. Your call.
 
@@ -61,7 +61,7 @@ On Firefox, for example, the no security and self signed process will get you a 
 <size:large><bold>Connecting tomboy-ng to the Misty Server.</bold></size:large>
 tomboy-ng v0.42c and later has a third syc option, open the settings window, click the sync tab and select Misty .. from the "Sync Type" combo box near the top. Enter, carefully, the URL the server told you about and, if working securely, the password, and click Change Sync Repository. Wait a bit ....
 
-Note that in "Secure mode" the URL starts with "https" but the insecure mode has only "http".
+Note that in "Secure mode" the URL starts with "https" but the insecure mode has only "http". The URL you enter must start with either http:// or https:// and must end with Misty's port number, default is :8088. You can replace the host name with an ip address eg 182.168.5.17 if you know it and know it won't change.
 
 <size:large><bold>Security</bold></size:large>
 OK, some discussion so you can make an informed choice about using Misty or not. In practise there are two risks you face.
@@ -103,8 +103,8 @@ Are best directed to the issues at https://github.com/tomboy-notes/tomboy-ng . B
 
 
 </note-content></text>
-  <last-change-date>2026-05-27T22:12:08.7275722+10:00</last-change-date>
-  <last-metadata-change-date>2026-05-27T22:12:08.7275722+10:00</last-metadata-change-date>
+  <last-change-date>2026-06-06T18:05:05.0273451+10:00</last-change-date>
+  <last-metadata-change-date>2026-06-06T18:05:05.0273451+10:00</last-metadata-change-date>
   <create-date>2026-04-29T21:20:26.2537466+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
