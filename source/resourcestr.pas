@@ -169,7 +169,7 @@ RESOURCESTRING
   // RollBack
 
   rsContentDated = 'Content Dated';
-  rsNotAvailable = 'Not Available';
+  rsNotAvailable = 'Not Found';
   rsRollBackIntro = 'You can roll back to previous version of this note';
 
   // EditBox  - lots more to do ..

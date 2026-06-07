@@ -19,5 +19,9 @@ function setenv(const name, value: pchar; overwrite: cint): cint; cdecl; externa
 initialization
     setenv('QT_QPA_PLATFORM', 'xcb', 1);
     // writeln('Session type is ', fpGetEnv('XDG_SESSION_TYPE')); // note, this NOT changed
+    {$ifdef LINUX}
+    writeln('Using xcb to get around ugly Wayland bugs');
+    {$endif}
+    // ToDo : should check that xcb is installed
 {$endif  qt5 or qt6}
 end.
