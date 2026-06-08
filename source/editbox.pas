@@ -324,6 +324,8 @@ type
         MenuHuge: TMenuItem;
         MenuItem1: TMenuItem;
 		MenuFindNext: TMenuItem;
+        MenuItemSearchNotes: TMenuItem;
+        MenuItemSearchHere: TMenuItem;
         MenuItemToolsBackLinks: TMenuItem;
         MenuItem4: TMenuItem;
         MenuItem5: TMenuItem;
@@ -370,6 +372,7 @@ type
         PanelFind: TPanel;
         PanelReadOnly: TPanel;
         PopupMainTBMenu: TPopupMenu;
+        PopupMenuSearch: TPopupMenu;
         PopupMenuSymbols: TPopupMenu;
 		PopupMenuRightClick: TPopupMenu;
         PopupMenuTools: TPopupMenu;
@@ -392,6 +395,7 @@ type
 //		TaskDialogDelete: TTaskDialog;           just why was this here ?  Messes with Windows
 		TimerSave: TTimer;
         TimerHousekeeping: TTimer;
+        TimerTripleClick: TTimer;
         procedure BitBtnBackLinksClick(Sender: TObject);
         procedure BitBtnCloseFindClick(Sender: TObject);
         procedure ButtMainTBMenuClick(Sender: TObject);
@@ -425,6 +429,8 @@ type
         procedure MenuItemExportPDFClick(Sender: TObject);
         procedure MenuItemCopyPlainClick(Sender: TObject);
         procedure MenuItemFileLinkClick(Sender: TObject);
+        procedure MenuItemSearchHereClick(Sender: TObject);
+        procedure MenuItemSearchNotesClick(Sender: TObject);
         procedure MenuItemToolsLinksClick(Sender: TObject);
                                 // All the Text menu items go through this event
         procedure MenuTextGeneralClick(Sender: TObject);
@@ -846,7 +852,7 @@ end;
 
 procedure TEditBoxForm.SpeedButtonSearchClick(Sender: TObject);
 begin
-    SearchForm.Show;
+   PopupMenuSearch.PopUp;
 end;
 
 procedure TEditBoxForm.SpeedButtonDeleteClick(Sender: TObject);
@@ -875,7 +881,7 @@ end;
     - TheMainNoteLister.DeleteNote(ShortFileName);
     - back it up
     - index and refresh
-    (i appears I don't remove a note ID from the NotebookList ???
+    (it appears I don't remove a note ID from the NotebookList ???
 }
 
 procedure TEditBoxForm.BitBtnBackLinksClick(Sender: TObject);
@@ -3078,6 +3084,17 @@ begin
                KMemo1.SelLength := SelLen;
         end;
     end;
+end;
+
+
+procedure TEditBoxForm.MenuItemSearchHereClick(Sender: TObject);
+begin
+   MenuItemFindClick(self);
+end;
+
+procedure TEditBoxForm.MenuItemSearchNotesClick(Sender: TObject);
+begin
+    SearchForm.Show;
 end;
 
 procedure TEditBoxForm.MenuItemToolsLinksClick(Sender: TObject);

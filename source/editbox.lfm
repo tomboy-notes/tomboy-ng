@@ -1525,4 +1525,18 @@ object EditBoxForm: TEditBoxForm
     Left = 408
     Top = 472
   end
+  object PopupMenuSearch: TPopupMenu
+    Left = 583
+    Top = 217
+    object MenuItemSearchNotes: TMenuItem
+      Caption = 'Search Notes'
+      ShortCut = 24646
+      OnClick = MenuItemSearchNotesClick
+    end
+    object MenuItemSearchHere: TMenuItem
+      Caption = 'Search Here'
+      ShortCut = 16454
+      OnClick = MenuItemSearchHereClick
+    end
+  end
 end

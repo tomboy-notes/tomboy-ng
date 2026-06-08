@@ -358,6 +358,10 @@ msgstr "Sincronizar"
 msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
 msgstr "Recuerde que para tener una sincronización fiable, no deba cambiar archivos en el directorio Meta."
 
+#: resourcestr.rsmistyswitch
+msgid "EXPERIMENTAl Misty Sync, danger !"
+msgstr ""
+
 #: resourcestr.rsmistysyncinfo1
 msgid "tomboy-ng can sync to a network server called Misty, sync and edit notes"
 msgstr "tomboy-ng puede sincronizarse al servidor llamado Misty, sincronizar y editar notas"
@@ -392,7 +396,10 @@ msgid "No other notes link to this one"
 msgstr "Ninguna nota vinculada a ésta"
 
 #: resourcestr.rsnotavailable
-msgid "Not Available"
+#, fuzzy
+#| msgid "Not Available"
+msgctxt "resourcestr.rsnotavailable"
+msgid "Not Found"
 msgstr "No disponible"
 
 #: resourcestr.rsnotealreadyinrepo
@@ -856,6 +863,14 @@ msgstr "Pegar"
 #: teditboxform.menuitemprint.caption
 msgid "Print"
 msgstr "Imprimir"
+
+#: teditboxform.menuitemsearchhere.caption
+msgid "Search Here"
+msgstr ""
+
+#: teditboxform.menuitemsearchnotes.caption
+msgid "Search Notes"
+msgstr ""
 
 #: teditboxform.menuitemselectall.caption
 msgctxt "teditboxform.menuitemselectall.caption"
@@ -1647,6 +1662,22 @@ msgstr "Recuperar notas perdidas"
 msgid "If you have previously taken a snapshot ..."
 msgstr "Si has hecho una instantánia antes ..."
 
+#: tsett.buttsetupsync.caption
+#, fuzzy
+msgctxt "tsett.buttsetupsync.caption"
+msgid "Setup"
+msgstr "Configurar"
+
+#: tsett.buttsetupsync.hint
+msgid "Setup or Change a Sync Repository"
+msgstr ""
+
+#: tsett.butttokenactions.caption
+#, fuzzy
+msgctxt "tsett.butttokenactions.caption"
+msgid "Actions"
+msgstr "Acciones"
+
 #: tsett.checkautosnapenabled.caption
 msgid "Use auto snapshots"
 msgstr "Use instantáneas automáticas"
@@ -1727,6 +1758,10 @@ msgstr "Cierre y reabra una nota para que tenga efecto. Use Ctrl-Z Ctrl-Y"
 msgid "Github or File Sync"
 msgstr "Sincronización de Archivos o Github"
 
+#: tsett.editpw.hint
+msgid "Use Actions button to set this field"
+msgstr ""
+
 #: tsett.editpw.text
 msgid "EditPW"
 msgstr "EditPW"
@@ -1735,10 +1770,9 @@ msgstr "EditPW"
 msgid "EditRepo"
 msgstr "EditRepo"
 
-#: tsett.groupbox4.caption
-msgctxt "tsett.groupbox4.caption"
-msgid "When a conflict is detected between a local note and remote one :"
-msgstr "Al detectar un conflicto entre una nota local y una remota:"
+#: tsett.editusername.hint
+msgid "Your Github User Name"
+msgstr ""
 
 #: tsett.groupbox5.caption
 msgid "Font Size"
@@ -1747,6 +1781,12 @@ msgstr "Tamaño de la fuente"
 #: tsett.groupboxsync.caption
 msgid "  Sync  "
 msgstr " Sincronizar "
+
+#: tsett.groupboxsyncopt.caption
+#, fuzzy
+msgctxt "tsett.groupboxsyncopt.caption"
+msgid "When a conflict is detected between a local note and remote one :"
+msgstr "Al detectar un conflicto entre una nota local y una remota:"
 
 #: tsett.groupboxtoken.caption
 msgctxt "tsett.groupboxtoken.caption"
@@ -1901,15 +1941,6 @@ msgctxt "tsett.speedbutttbmenu.caption"
 msgid "Menu"
 msgstr "Menú"
 
-#: tsett.speedsetupsync.caption
-msgctxt "tsett.speedsetupsync.caption"
-msgid "Setup"
-msgstr "Configurar"
-
-#: tsett.speedtokenactions.caption
-msgid "Actions"
-msgstr "Acciones"
-
 #: tsett.tabbackup.caption
 msgid "BackUp"
 msgstr "Copia de Seguridad"
@@ -1936,3 +1967,4 @@ msgstr "Ortografía"
 msgctxt "tsett.tabsync.caption"
 msgid "Sync"
 msgstr "Sync"
+

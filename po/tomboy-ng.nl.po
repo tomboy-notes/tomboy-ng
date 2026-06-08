@@ -403,7 +403,10 @@ msgid "No other notes link to this one"
 msgstr ""
 
 #: resourcestr.rsnotavailable
-msgid "Not Available"
+#, fuzzy
+#| msgid "Not Available"
+msgctxt "resourcestr.rsnotavailable"
+msgid "Not Found"
 msgstr "Niet beschikbaar"
 
 #: resourcestr.rsnotealreadyinrepo
@@ -883,6 +886,14 @@ msgstr "Plakken"
 #: teditboxform.menuitemprint.caption
 msgid "Print"
 msgstr "Afdrukken"
+
+#: teditboxform.menuitemsearchhere.caption
+msgid "Search Here"
+msgstr ""
+
+#: teditboxform.menuitemsearchnotes.caption
+msgid "Search Notes"
+msgstr ""
 
 #: teditboxform.menuitemselectall.caption
 msgctxt "teditboxform.menuitemselectall.caption"
