@@ -202,7 +202,7 @@ object Sett: TSett
           Left = 10
           Height = 26
           Top = 0
-          Width = 184
+          Width = 189
           BorderSpacing.Left = 10
           Caption = 'tomboy-ng Default'
           Checked = True
@@ -654,7 +654,7 @@ object Sett: TSett
           Width = 253
           Anchors = [akTop, akRight]
           BorderSpacing.Right = 10
-          Caption = 'Setup'
+          Caption = 'Set Up'
           ParentShowHint = False
           ShowHint = True
           TabOrder = 4

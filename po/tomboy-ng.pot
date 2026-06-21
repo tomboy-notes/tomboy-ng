@@ -503,7 +503,7 @@ msgstr ""
 
 #: resourcestr.rssetup
 msgctxt "resourcestr.rssetup"
-msgid "Setup"
+msgid "Set Up"
 msgstr ""
 
 #: resourcestr.rssetupnotesdirfirst
@@ -1624,7 +1624,7 @@ msgstr ""
 
 #: tsett.buttsetupsync.caption
 msgctxt "tsett.buttsetupsync.caption"
-msgid "Setup"
+msgid "Set Up"
 msgstr ""
 
 #: tsett.buttsetupsync.hint

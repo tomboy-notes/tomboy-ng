@@ -534,8 +534,10 @@ msgid "Set the Notebooks this note is a member of"
 msgstr "Вкажіть записник, частиною якого є ця нотатка"
 
 #: resourcestr.rssetup
+#, fuzzy
+#| msgid "Setup"
 msgctxt "resourcestr.rssetup"
-msgid "Setup"
+msgid "Set Up"
 msgstr "Встановлення"
 
 #: resourcestr.rssetupnotesdirfirst
@@ -1706,8 +1708,9 @@ msgstr "Якщо у вас є попередньо зроблений зріз .
 
 #: tsett.buttsetupsync.caption
 #, fuzzy
+#| msgid "Setup"
 msgctxt "tsett.buttsetupsync.caption"
-msgid "Setup"
+msgid "Set Up"
 msgstr "Встановлення"
 
 #: tsett.buttsetupsync.hint

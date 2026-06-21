@@ -539,8 +539,10 @@ msgid "Set the Notebooks this note is a member of"
 msgstr "Choisir le(s) carnet(s) où ajouter la note courante."
 
 #: resourcestr.rssetup
+#, fuzzy
+#| msgid "Setup"
 msgctxt "resourcestr.rssetup"
-msgid "Setup"
+msgid "Set Up"
 msgstr "Configurer"
 
 #: resourcestr.rssetupnotesdirfirst
@@ -1727,8 +1729,9 @@ msgstr "Si un précédent snapshot existe..."
 
 #: tsett.buttsetupsync.caption
 #, fuzzy
+#| msgid "Setup"
 msgctxt "tsett.buttsetupsync.caption"
-msgid "Setup"
+msgid "Set Up"
 msgstr "Configurer"
 
 #: tsett.buttsetupsync.hint

@@ -91,11 +91,11 @@ RESOURCESTRING
   //rsChangeNetSync = 'Change Net Sync Repo';          // These are labels on the button used to set sync repo
   rsChangeSync = 'Change Sync Repository';
   rsSyncNotConfig = 'not configured';               // means that the file of net sync is not configured yet.
-  rsSetUp = 'Setup';                                // means configure something, eg, one of the Sync modules.
+  rsSetUp = 'Set Up';                               // means configure something, eg, one of the Sync modules.
   rsAutosnapshotRun='Completed autosnapshot run.';  // Message on status bar after an AutoSnapshot run.
   rsSnapshotCreated = 'created, do you want to copy it elsewhere ?';      // refers to a just taken snapshot
   rsErrorCopyFile = 'Failed to copy file, does destination dir exist ?';
-  rsAutoSyncNotPossible = 'Auto sync not possible right now';               // Auto sync is configured but cannot proceed, probably because drive is not available
+  rsAutoSyncNotPossible = 'Auto sync not possible right now';             // Auto sync is configured but cannot proceed, probably because drive is not available
   rsSyncTypeFile = 'File Sync - local or shared filesystem';
   rsSyncTypeGitHub = 'Github - free Github account required';
   rsSyncTypeMisty  = 'Misty - Misty server required';

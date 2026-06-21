@@ -535,8 +535,10 @@ msgid "Set the Notebooks this note is a member of"
 msgstr "Stel in in welke notitieboeken deze notitie moet worden geplaatst"
 
 #: resourcestr.rssetup
+#, fuzzy
+#| msgid "Setup"
 msgctxt "resourcestr.rssetup"
-msgid "Setup"
+msgid "Set Up"
 msgstr "Instellen"
 
 #: resourcestr.rssetupnotesdirfirst
@@ -1707,8 +1709,9 @@ msgstr "Als u eerder een reservekopie heeft gemaakt"
 
 #: tsett.buttsetupsync.caption
 #, fuzzy
+#| msgid "Setup"
 msgctxt "tsett.buttsetupsync.caption"
-msgid "Setup"
+msgid "Set Up"
 msgstr "Instellen"
 
 #: tsett.buttsetupsync.hint

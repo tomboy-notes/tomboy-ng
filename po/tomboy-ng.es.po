@@ -525,8 +525,10 @@ msgid "Set the Notebooks this note is a member of"
 msgstr "Establezca los cuadernos de esta nota"
 
 #: resourcestr.rssetup
+#, fuzzy
+#| msgid "Setup"
 msgctxt "resourcestr.rssetup"
-msgid "Setup"
+msgid "Set Up"
 msgstr "Configurar"
 
 #: resourcestr.rssetupnotesdirfirst
@@ -1664,8 +1666,9 @@ msgstr "Si has hecho una instantánia antes ..."
 
 #: tsett.buttsetupsync.caption
 #, fuzzy
+#| msgid "Setup"
 msgctxt "tsett.buttsetupsync.caption"
-msgid "Setup"
+msgid "Set Up"
 msgstr "Configurar"
 
 #: tsett.buttsetupsync.hint
