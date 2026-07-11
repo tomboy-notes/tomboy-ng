@@ -31,6 +31,31 @@ unit TWebserver;
 
     We don't delete notes, just don't list them in the updated manifest.
 
+    ================= Syntax ==========================
+    Un-authenticated 'browse' to (eg) server:8088, status of server page.
+    All below require Auth, all except LOCKSESSION check IP against SessionLock
+        /LOCKSESSION - set SessionLock var to IP, ret 200, other IPs now rejected. Send back 503 is cannot get lock now.
+        /RELEASELOCK - unlock, set SessionLock to ''. If IP does not match SessionLock, send back 422
+        /MANIFEST - return current Manifest
+        /DOWNLOAD/(filename) - sends back current (according to manifest) indicated file.
+        ARequest.Files.Count > 0, POST upload the file, save it in appropriate indexed dir.
+
+    Status Codes.
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/200
+
+
+    ========= Process (eg one locally edited note to upload) ===========
+
+    0. Proposed - asks server to lock this IP
+    1. -ng makes contact with server and offers credentials, getsback same page you
+       see if connecting with a browser.
+    2. -ng asks for a copy of the manifest. Server sends it back.
+    3. -ng decides what needs to be done using Tomboy sync rules.
+    4. -ng sends the server a new copy of manifest.
+    5. -ng sends updated note, server increments revision number and saves note.
+    6. Proposed - asks server to release lock.
+    if there are no changed notes at either end, only steps 1,2 and 3 happen.
+
 }
 interface
 
@@ -76,7 +101,7 @@ Type
 
   TMistyHTTPServer = Class(TFPHTTPServer)
   private
-
+    SessionLock : string;
     FBaseDir : String;
 //    FCount : Integer;
     FMimeLoaded : Boolean;
@@ -89,6 +114,8 @@ Type
                         // Note commented out test code to trigger uploadfrom browser.
                         // Will return to client 200 on success or 422 on fail to save (permission, disk space).
     function AuthOK(AReq: TFPHTTPConnectionRequest): boolean;
+    procedure DoLockSession(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
+    procedure DoReleaseLock(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
     procedure DoCommandUpload(AReq : TFPHTTPConnectionRequest; AResp : TFPHTTPConnectionResponse);
                         // Sync - This might be called to send a note - /DOWNLOAD/$ID.note
                         // or, still an xml file, the manifest - /MANIFEST back to client -ng
@@ -120,7 +147,7 @@ Type
                         // changes would be Revision, note rev and note LCD. Second and Third line of manifest -
                         // <sync revision="1" server-id="53576166-6C50-4FB6-9AAB-CDC289D084CC">
                         // <note id="88299c65-8858-44d0-9fa2-e78ca77749ba" rev="0" last-change-date="2020-02-19T02:41:48.0510000+00:00" />
-    function WriteNewManifest(FFName : string) : boolean;
+    // function WriteNewManifest(FFName : string) : boolean;
   Protected
     Procedure DoIdle(Sender : TObject);
     procedure CheckMimeLoaded;
@@ -136,6 +163,7 @@ Type
 
   end;
 
+procedure WriteLog(const Msg : string; More : boolean = false);
 
 var
     Serv : TMistyHTTPServer;
@@ -153,6 +181,22 @@ uses FileUtil, LazFileUtils;
     Editor_1 : string = '<html>';    // placeholders, load real content at run time
     Editor_2 : string = '';
     Editor_3 : string = '</html>';      *)
+
+const LogFileName = 'Misty.log';
+
+procedure WriteLog(const Msg : string; More : boolean = false);
+var
+   OutFile: TextFile;
+begin
+    AssignFile(OutFile, MyAppendPathDelim(Sett.Repo) + LogFileName);
+    if FileExists(MyAppendPathDelim(Sett.Repo) + LogFileName) then
+       Append(OutFile)
+    else
+        Rewrite(OutFile);
+    writeln(OutFile, Msg);
+    CloseFile(OutFile);
+    writeln(Msg);         // that to std out, in case user is watching
+end;
 
 
     //Just a debug tool, probably delete at some stage
@@ -218,12 +262,59 @@ begin
     if not Serv.UseSSL then exit(True);
 
     // writeln('TMistyHTTPServer.AuthOK PW is [', DecodeStringBase64(copy(AReq.GetHeader(hhAuthorization), 6, 99)), ']');
-    writeln('TMistyHTTPServer.AuthOK PW');
+    // writelog('TMistyHTTPServer.AuthOK PW');
 
     if PW = '' then exit(False);
     St := DecodeStringBase64(copy(AReq.GetHeader(hhAuthorization), 6, 99));
     result := ('tomboy-ng:' + PW = St);
  end;
+
+procedure TMistyHTTPServer.DoLockSession(AReq: TFPHTTPConnectionRequest;
+    AResp: TFPHTTPConnectionResponse);
+var
+    STL : tstringlist;
+begin
+    STL := TStringList.Create();
+    STL.Insert(0, '<html><body><h1>tomboy-ng</h1>');
+    // we allow for a situation where a lock was not removed by this remote host previously.
+    if (SessionLock = '') or (SessionLock = AReq.RemoteAddress) then begin
+        SessionLock := AReq.RemoteAddress;
+        if DebugMode then writelog('TMistyHTTPServer.DoLockSession Locked');
+        Stl.Add('<p>Have locked session for ' + SessionLock + '</p>');
+        AResp.Code := 201;     // lock is "created"
+    end else begin
+        AResp.Code := 503;                // thats wait a bit and try again
+        Stl.Add('<p>Cannot lock now, please try again in a little while.</p>');
+        if DebugMode then begin
+            writelog('TMistyHTTPServer.DoLockSession unable to get lock now.');
+            writelog('Its currently locked by ' + SessionLock);
+        end;
+    end;
+    Stl.Add('</body></html>');
+    AResp.Content := StL.Text;
+    STL.Free;
+    AResp.SendContent;
+end;
+
+procedure TMistyHTTPServer.DoReleaseLock(AReq: TFPHTTPConnectionRequest;
+    AResp: TFPHTTPConnectionResponse);
+var
+    STL : tstringlist;
+begin
+    STL := TStringList.Create();
+    STL.Insert(0, '<html><body><h1>tomboy-ng</h1>');
+    if (SessionLock = AReq.RemoteAddress) then begin
+            SessionLock := '';
+            if DebugMode then writelog('TMistyHTTPServer.DoReleaseLock Lock Released');
+            Stl.Add('<p>Have released session lock for ' + SessionLock + '</p>');
+            AResp.Code := 200;
+    end else begin
+            // This is serious ! How did we get here ?
+            if DebugMode then writelog('TMistyHTTPServer.DoReleaseLock trying to unlock wrong session.');
+            Stl.Add('<p>Cannot release session for ' + SessionLock + '</p>');
+            AResp.Code := 422;
+    end;
+end;
 
 procedure TMistyHTTPServer.SetBaseDir(const AValue: String);
 begin
@@ -233,7 +324,7 @@ begin
     FBaseDir:=IncludeTrailingPathDelimiter(FBaseDir);
 end;
 
-function TMistyHTTPServer.WriteNewManifest(FFName: string): boolean;    // don't need this ?
+(* function TMistyHTTPServer.WriteNewManifest(FFName: string): boolean;    // don't need this ?
 var
     OutFile: TextFile;
     FPath : string;
@@ -256,7 +347,7 @@ begin
 		end;
     except
       on E: EInOutError do begin
-          writeln('File handling error occurred. Details: ' + E.Message);
+          writelog('File handling error occurred. Details: ' + E.Message);
           exit(false);
 	  end;
 	end;
@@ -264,16 +355,16 @@ begin
     if fileexists(FFName) then                                                  // must be there ?
         CopyFile(FFName, ServerHome + 'manifest.xml');                          // Note : Requires LazUtils/FileUtils ! Might raise exception
     if debugmode then
-       writeln('Have written server manifest to [' + FFName  + '] [' + ServerHome + 'manifest.xml' + ']');
+       writelog('Have written server manifest to [' + FFName  + '] [' + ServerHome + 'manifest.xml' + ']');
     Result := True;
-end;
+end;   *)
 
 
 procedure TMistyHTTPServer.DoIdle(Sender: TObject);
 begin
   // Writeln('Idle, waiting for connections');
     if ExitNow then begin
-        Writeln('Terminate requested, will clean up and shutdown.');
+        Writelog('Terminate requested, will clean up and shutdown.');
         Serv.Active := False;      // Shutdown by a signal
     end;
 end;
@@ -291,7 +382,7 @@ procedure TMistyHTTPServer.ShowBrowser(AResp : TFPHTTPConnectionResponse);
 var
     STL : tstringlist;
 begin
-    if DebugMode then writeln('TMistyHTTPServer.ShowBrowser');
+    if DebugMode then writelog('TMistyHTTPServer.ShowBrowser');
     STL := TStringList.Create();
     STL.Insert(0, '<html><body><h1>tomboy-ng</h1>');
     Stl.Add('</body></html>');
@@ -347,10 +438,10 @@ var
     Sts : TstringList;
     SaveFileName : string = '/tmp/';
 begin
-    if DebugMode then writeln('DoCommandUpload ' + AReq.URL);
+    if DebugMode then writelog('DoCommandUpload ' + AReq.URL);
     if not AuthOK(AReq) then begin
         AResp.Contents.Add('<html><body><h2>Nope</h2></p>' + 'Auth Failure' + '</p></body></html>');
-        writeln('DoCommandUpLoad ERROR Auth Failed');
+        writelog('DoCommandUpLoad ERROR Auth Failed');
         AResp.Code := 401;
         exit;
     end;
@@ -369,6 +460,8 @@ begin
             Sts.LoadFromStream(F.Stream);
             if F.FileName.Endswith('-remote') then begin                        // manifest
                 SaveFileName := GetRevisionDirPath(ServerHome, Revision + 1);   // +1 because we have spotted a new change sync starting !
+                WriteLog('Manifest saved, sync from :' + AReq.RemoteAddress);
+
                 if ForceDirectory(SaveFileName) then begin
                     SaveFileName := SaveFileName + 'manifest.xml';
                     Sts.SaveToFile(SaveFileName);                               // thats the copy of manifest
@@ -376,7 +469,7 @@ begin
                     if ReadManifest(MetaData, ServerHome + 'manifest.xml', ErrorSt) then
                         Revision := MetaData.LastRev
                     else begin
-                        writeln('TMistyHTTPServer.DoCommandUpload - ERROR cannot read manifest : ' {+ ErrorSt});
+                        writelog('TMistyHTTPServer.DoCommandUpload - ERROR cannot read manifest : ' {+ ErrorSt});
                         ErrorSt := '';
                         exit;                                                   // Unlikely but extreamly bad, is this a Quit situation ?
                     end;
@@ -386,12 +479,12 @@ begin
                 Sts.SaveToFile(SaveFileName);                                   // Save note or copy of manifest in Rev dir
             end;
             if FileExists(SaveFileName) then begin
-                if DebugMode then writeln('DoCommandUpload just saved ' + SaveFileName);
+                if DebugMode then writelog('DoCommandUpload just saved ' + SaveFileName);
                 AResp.Contents.Add('<html><body><h2>OK</h2></p>' + f.FileName +  ' was uploaded.' + '</p></body></html>');
             end else begin
-                writeln('DoCommandUpload ERROR - failed to create or save ' + SaveFileName);
+                writelog('DoCommandUpload ERROR - failed to create or save ' + SaveFileName);
                 AResp.Contents.Add('<html><body><h2>Nope</h2></p>' + 'file was not uploaded.' + '</p></body></html>');
-                writeln('DoCommandUpload ERROR [' + SaveFileName + '] NOT saved.');
+                writelog('DoCommandUpload ERROR [' + SaveFileName + '] NOT saved.');
                 AResp.Code := 422;
             end;
             AResp.SendResponse;
@@ -432,12 +525,12 @@ var STL : TStringList;
 begin                                              // be nice to use GetFullFileName() but not worth the effort
     if not AuthOK(AReq) then begin
         AResp.Contents.Add('<html><body><h2>Nope</h2></p>' + 'Auth Failure' + '</p></body></html>');
-        writeln('DoCommandDownLoad ERROR Auth Failed');
+        writelog('DoCommandDownLoad ERROR Auth Failed');
         AResp.Code := 401;
         exit;
     end;
     // MetaData.DumpList('in DoCommandDownload');
-    if DebugMode then writeln('TMistyHTTPServer.DoCommandDownload ' + AReq.URL);
+    if DebugMode then writelog('TMistyHTTPServer.DoCommandDownload ' + AReq.URL);
     AResp.ContentType := 'application/text';                     // in case we have to return an error message
     STL := TStringList.Create;
     try
@@ -452,7 +545,7 @@ begin                                              // be nice to use GetFullFile
                 PNote := MetaData.FindID(copy(FName, 1, 36));
                 if PNote <> Nil then                                // if nil, FileExists test below will get and report it
                     FName := GetRevisionDirPath(ServerHome, PNote^.Rev, FName)
-                else writeln('TMistyHTTPServer.DoCommandDownload, ERROR failed to find ' + FName + ' in MetaData');
+                else writelog('TMistyHTTPServer.DoCommandDownload, ERROR failed to find ' + FName + ' in MetaData');
             end;
             // writeln('TMistyHTTPServer.DoCommandDownload FName is ' + FName);
             if FileExists(FName) then begin
@@ -463,14 +556,14 @@ begin                                              // be nice to use GetFullFile
                 AResp.ContentType := 'application/text';                // hmm, client will be expecting XML
                 AResp.code := 404;
                 Stl.Add('Cannot find that file ' + FName);
-                writeln('TMistyHTTPServer.DoCommandDownload ' + Stl.Text);
-                writeln('That file has revision number ' + inttostr(PNote^.Rev) + ' using ' + ServerHome + 'manifest.xml');
+                writelog('TMistyHTTPServer.DoCommandDownload ' + Stl.Text);
+                writelog('That file has revision number ' + inttostr(PNote^.Rev) + ' using ' + ServerHome + 'manifest.xml');
             end;
         end else begin
             AResp.code := 404;
             Stl.Add('Cannot serve files without manifest');
-            writeln('TMistyHTTPServer.DoCommandDownload - ' + Stl.Text);
-            if DebugMode then writeln('Requested file was ', ServerHome + 'manifest.xml');
+            writelog('TMistyHTTPServer.DoCommandDownload - ' + Stl.Text);
+            if DebugMode then writelog('Requested file was ' + ServerHome + 'manifest.xml');
         end;
         AResp.ContentLength := length(STL.Text);
         AResp.Content := STL.Text;
@@ -488,7 +581,7 @@ end;
     (nothing but ARequest.ContentFields.Count > 0) - We are sending back an edit from Quill
     (nothing but ARequest.Files.Count > 0) - its a file upload.
     /LISTNOTES             - dislays a html formatted list of notes, click to edit
-    /DOWNLOAD/$NOTEID.note - client wants to download ndicated note
+    /DOWNLOAD/$NOTEID.note - client wants to download indicated note
     /MANIFEST              - client wants to download the manifest,
     /$NOTEID.note          - User has clicked a LISTNOTES entry, send it back wrapped up in Quill
     /
@@ -504,6 +597,7 @@ end;
 procedure TMistyHTTPServer.HandleRequest(var ARequest: TFPHTTPConnectionRequest;
                                         var AResponse: TFPHTTPConnectionResponse);
 //Var
+//    Cnt : integer;
 //  F : TFileStream;
 //  FN : String;                      // ToDo : must refactor this method, its a dogs breakfast !
 
@@ -511,38 +605,52 @@ begin
     AResponse.Code := 200;          // Default, we return a HTML text error message and 200 if we cannot work out what to do.
 
 
- {   writeln('-----------------------------');
+{   writeln('-----------------------------');
     writeln('CMD ' + ARequest.Command);
     writeln('CL ' + ARequest.CommandLine);
     writeln('HDL ' + ARequest.HeaderLine);
     writeln('AU ' + ARequest.Authorization);
     writeln('CHD ' + ARequest.CustomHeaders.Text);
-    writeln('-----------------------------');        }
+    writeln('Res ' + AResponse.Host + ' and ' + Aresponse.From);
+    AResponse.FieldNames[Cnt] is not answer.
 
-    if DebugMode then if AuthOK(ARequest) then writeln('AuthOK') else writeln('* Auth FAILED');
+    writeln('This server is ' + ARequest.Host);
+    writeln('Remote address is ' + ARequest.RemoteAddress);
+    writeln('Handle Request ', DateTimeToStr(now()));
+    writeln('-----------------------------');      }
+
+    if DebugMode then if AuthOK(ARequest) then writelog('AuthOK') else writelog('* Auth FAILED');
 
     // Here we decide just what this particular call is. We pass ctrl to a procedure
     // that handles each type of call. In  all cases, we assume that procedure all that is necessary.
     ARequest.HandleGetOnPost := True;                                           // ?
-    if DebugMode then  writeln('TMistyHTTPServer.HandleRequest URL=' + ARequest.URL + ' FileCount='
+    if DebugMode then  writelog('TMistyHTTPServer.HandleRequest URL=' + ARequest.URL + ' FileCount='
             + ARequest.Files.Count.ToString + ' FieldCount=' + ARequest.ContentFields.Count.ToString);
 
-    if ARequest.Files.Count > 0 then                   // TB_Client wants to upload note
+    if ARequest.Files.Count > 0 then                       // TB_Client wants to upload note
         DoCommandUpLoad(ARequest, AResponse)
     else
-    (* if ARequest.ContentFields.Count > 1 then        // Content Update, data back from Quill webpage, an edited note.
-        writeln('Attempted to request a note edit')    // > 0 would work too, but better checks necessary
-    else
-    if ARequest.URL = '/LISTNOTES' then
-        DoCommandListNotes(ARequest, AResponse)        // List notes, user wants to browse list of notes - Disabled
-    else  *)
     if pos('/DOWNLOAD', ARequest.URL) > 0 then
         DoCommandDownLoad(ARequest, AResponse)         // TB client wants to download a note from repo
     else
     if pos('/MANIFEST', ARequest.URL) > 0 then
         DoCommandDownLoad(ARequest, AResponse)         // TB client wants the manifest, same as above
     else
-        ShowBrowser(AResponse);
+    if pos('/LOCKSESSION', ARequest.URL) > 0 then
+        DoLockSession(ARequest, AResponse)
+    else
+    if pos('/RELEASELOCK', ARequest.URL) > 0 then
+        DoReleaseLock(ARequest, AResponse)
+    else
+    ShowBrowser(AResponse);                        // No Auth check !
+
+
+    (* if ARequest.ContentFields.Count > 1 then        // Content Update, data back from Quill webpage, an edited note.
+        writeln('Attempted to request a note edit')    // > 0 would work too, but better checks necessary
+    else
+    if ARequest.URL = '/LISTNOTES' then
+        DoCommandListNotes(ARequest, AResponse)        // List notes, user wants to browse list of notes - Disabled
+    else  *)
 end;
 
 function TMistyHTTPServer.FindTheHostName() : string;
@@ -598,16 +706,16 @@ begin
             Serv.Revision := -1;                    // Thats OK, its a new install.
         {$ifdef SHOW_OPENSSL_VERSION}
         if DebugMode then
-            writeln('OpenSSL version : ', OpenSSLGetVersion(0));
+            writelog('OpenSSL version : ' + OpenSSLGetVersion(0));
         {$endif}
-        writeln('Starting, serving from ', Serv.BaseDir, ' on port ', Serv.Port.tostring);
+        writelog('Starting, serving from ' + Serv.BaseDir + ' on port ' + Serv.Port.tostring);
         if Serv.UseSSL then
-             writeln('To check, browse to https://' + FindTheHostName() + ':' + Serv.Port.tostring)
-        else writeln('To check, browse to http://' + FindTheHostName() + ':' + Serv.Port.tostring);
-        if DebugMode then writeln('NOTICE : debugmode is On');
+             writelog('To check, browse to https://' + FindTheHostName() + ':' + Serv.Port.tostring)
+        else writelog('To check, browse to http://' + FindTheHostName() + ':' + Serv.Port.tostring);
+        if DebugMode then writelog('NOTICE : debugmode is On');
         if MetaData <> nil then begin
-            if debugmode then writeln('ServerID=', MetaData.ServerID);        // only show after first manifest.
-            writeln(' Revision=', Serv.Revision.tostring + ' Found notes = ', MetaData.Count.ToString);
+            if debugmode then writelog('ServerID=' + MetaData.ServerID);        // only show after first manifest.
+            writelog(' Revision=' + Serv.Revision.tostring + ' Found notes = ' + MetaData.Count.ToString);
         end;
         //writeln('   Use Ctrl-C to stop server');
         //writeln(Serv.CertificateData.HostName);

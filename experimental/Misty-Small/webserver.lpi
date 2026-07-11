@@ -67,6 +67,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
+            <Libraries Value="/usr/lib/gcc-cross/arm-linux/;/usr/arm-linux-gnueabihf/lib/"/>
           </SearchPaths>
           <CodeGeneration>
             <SmartLinkUnit Value="True"/>

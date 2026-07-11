@@ -220,8 +220,11 @@ end;
 
 function GetRevisionDirPath(ServerPath: string; Rev: integer; NoteID : string = ''): string;
 begin
+    // I understand this rather complicated dir scheme relates to Windows's inability
+    // to handle dir with lots of files. Probably unnecessary now but its the Tomboy way.
     result := ServerPath
         + inttostr(Rev div 100) + pathDelim + inttostr(rev) + pathDelim;
+    // eg /home/dbannon/Misty/0/56
     if NoteID <> '' then begin
         result := result + NoteID;
         if not result.EndsWith('note') then

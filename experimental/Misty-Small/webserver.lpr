@@ -50,7 +50,7 @@ uses
     {$endif}
     Classes, SysUtils, CustApp, IniFiles, base64,
     TWebserver,
-    ssync_utils, LazUTF8, LazFileUtils
+    ssync_utils , LazUTF8, LazFileUtils                       // Note : Lazarus dependency was here.
     {$ifdef UNIX}, termIO{$endif};                              // use in the GetPassword function
 
 
@@ -108,18 +108,26 @@ end;
 function TMyApplication.BuildServer : boolean;
 begin
     if Sett.UsingSSL() then
-        writeln('NOTICE, secure mode but please be aware of security issues!')
-    else writeln('WARNING, insecure, be aware of issues if not on a secure home network!');
+        WriteLog('NOTICE, secure mode but please be aware of security issues!')
+    else WriteLog('WARNING, insecure, be aware of issues if not on a secure home network!');
     Serv:=TMistyHTTPServer.Create(Nil);
     Serv.BaseDir := Sett.Repo;
     Serv.Port := Sett.Port;                 // defaults to 8088
-    if Sett.UsingSSL then begin
-        Serv.UseSSL := True;
-        Serv.CertificateData.PrivateKey.FileName := Sett.Key;
-        Serv.CertificateData.Certificate.FileName := Sett.Cert;
-        Serv.PW := Sett.PW;
+    try
+        if Sett.UsingSSL then begin
+            Serv.UseSSL := True;
+            Serv.CertificateData.PrivateKey.FileName := Sett.Key;
+            Serv.CertificateData.Certificate.FileName := Sett.Cert;
+            Serv.PW := Sett.PW;
+        end;
+        Serv.Startup;
+    except on ES: exception do begin     // need to find where ESSL is declared
+            writelog('Detected Exception exception BuildServer : ' + ES.Message);
+            writelog('Trying to capture ESSL.');
+            raise ES;
+        end;
     end;
-    Serv.Startup;
+
     Result := True;
 end;
 
@@ -165,14 +173,15 @@ begin
         Sett.Repo := GetUserDir() + Sett.Repo;
     end;
     if not DirectoryIsWritable(Sett.Repo) then begin               // ToDo : can I use FPAccess() ?
-        if DebugMode then writeln('TMyApplication.CommandLineOK - repo directory needs checking');
+    //if (fpAccess(Sett.Repo, W_OK) <> 0) then begin
+        if DebugMode then writelog('TMyApplication.CommandLineOK - repo directory needs checking');
         if DirectoryExists(Sett.Repo) then begin                   // sysutils, must be unwritable
             writeln('ERROR Dir [' + Sett.Repo + '] exists but cannot be written to.');
             WriteHelp;
             exit(false);
         end else begin                                           // it does not exist
             if DebugMode then writeln('TMyApplication.CommandLineOK - trying to create ', Sett.Repo);
-            ForceDirectoriesUTF8(Sett.Repo);       // systils does not recurse // ToDo : might generate EInOutError
+            ForceDirectories(Sett.Repo);       // Note : no UTF8 here // ToDo : might generate EInOutError
             if DebugMode then writeln('TMyApplication.CommandLineOK - tried to create ', Sett.Repo);
             if not DirectoryExists(Sett.Repo) then begin
                 writeln('ERROR Dir [' + Sett.Repo + '] cannot be created');
@@ -262,7 +271,7 @@ begin
 end;
 
 procedure TMyApplication.DoRun;      // reads and checks options first
-begin
+begin                                // writeln() ok here, always exit after.
 
     if CommandLineOK() then
         try
@@ -274,7 +283,7 @@ begin
                 Terminate;                   // maybe redundant ?
             end;
             on E: Exception do begin
-                writeln('Exception reported, beats me ! ', E.message);
+                writeln('Exception reported in DoRun, beats me ! ', E.message);
                 ExitNow := True;
                 Terminate;
             end;
@@ -295,7 +304,7 @@ begin
     inherited Destroy;
 end;
 
-procedure TMyApplication.WriteHelp;
+procedure TMyApplication.WriteHelp;     // writeln() ok here, always exit after.
 begin
     writeln('tomboy-ng Sync Webserver - Options :');
     writeln('  -r Dir | --repo=Dir   Repo Dir to store sync files. Default ~/Misty');
@@ -316,7 +325,7 @@ begin
 end;
 
 {$ifdef Linux}     // not in Windows so an exception, https://fpc-pascal.freepascal.narkive.com/TBXENFF1/econtrolc-exception
-procedure HandleSigInt(aSignal: LongInt); cdecl;
+procedure HandleSigInt(aSignal: LongInt); cdecl;                                // writeln() ok here, always exit after.
 begin
         case aSignal of
             SigInt : Writeln('Ctrl + C used, will clean up and shutdown.');
@@ -329,15 +338,17 @@ begin
 end;
 {$endif}
 
+
+
 begin
     //writeln(GetHostName(), '.', GetDomainName());
     {$ifdef LINUX}
     if FpSignal(SigInt, @HandleSigInt) = signalhandler(SIG_ERR) then begin
-        Writeln('Failed to install signal error: ', fpGetErrno);
+        Writeln('Failed to install signal error: ', fpGetErrno);                // writeln() ok here, always exit after.
         exit;
     end;
     if FpSignal(SigTerm, @HandleSigInt) = signalhandler(SIG_ERR) then begin
-        Writeln('Failed to install signal error: ', fpGetErrno);
+        Writeln('Failed to install signal error: ', fpGetErrno);                // writeln() ok here, always exit after.
         exit;
     end;
     {$endif}
