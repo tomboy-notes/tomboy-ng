@@ -16,7 +16,7 @@ unit sync;
 
     This unit is used by : SearchUnit but only for access to local manifest file;
     Settings where its run, in a thread, to do auto sync; SyncGUI where it runs in
-    min thread interactivly. At all levels, msgs might be dropped to console
+    main thread interactivly. At all levels, msgs might be dropped to console
     but only in SyncGUI can we show the user a msg.
 
     Syncutils will probably be needed in Interface Uses
@@ -1261,6 +1261,9 @@ begin
     if not WriteLocalManifest(true, NewRev) then
         WriteLocalManifest(false, false);   // write a recovery local manifest. Downloads only noted.
 
+    if TransportMode = SyncMisty then TMistySync(Transport).ReleaseLock();
+
+
 (*    if DoDownLoads() then
         if TransPortMode <> SyncGitHub then
             if WriteRemoteManifest(NewRev) then
@@ -1307,10 +1310,23 @@ function TSync.AutoSetUp(Mode : TSyncTransport) : boolean;
     ConfigDir
     Password
     UserName  }
+var
+    SyncAvail : TSyncAvailable;
+    Cnt : integer = 0;
 begin
     Threaded := True;
     RepoAction:= RepoUse;
-    if SyncReady <> SetTransport(Mode) then
+    SyncAvail := SetTransport(Mode);
+    while SyncAvail = SyncNotJustNow do begin      // we wait, trying again every second
+        inc(Cnt);
+        if Cnt > 60 then begin
+            SyncAvail := SyncNetworkError;
+            debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, 'Failed to get Server Lock');
+            break;
+        end;
+        sleep(1000);
+    end;
+    if SyncAvail <> SyncReady then
         exit(False);
     //debugln({$I %FILE%}, ', ', {$I %CURRENTROUTINE%}, '(), line:', {$I %LINE%}, ' : Testing Connection.');
     if TestConnection() <> SyncReady then begin

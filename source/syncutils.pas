@@ -88,7 +88,8 @@ type TSyncAvailable=(SyncNotYet,        // Initial state.
                     SyncNetworkError,
                     SyncDNSError,       // Only for Misty as of April 2026
                     SyncOpenSSLError,   // Either OpenSSL is unavailable or too old
-		            SyncCredentialError);       // Unsuitable user:password
+		    SyncCredentialError,       // Unsuitable user:password
+                    SyncNotJustNow);    // Misty only, possibly another system syncing, wait a bit
 
 type TRepoAction = (
                 RepoJoin,               // Join (and use) an existing Repo

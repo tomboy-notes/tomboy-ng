@@ -1,13 +1,13 @@
 object SearchForm: TSearchForm
-  Left = 408
+  Left = 519
   Height = 401
-  Top = 434
+  Top = 423
   Width = 794
   ActiveControl = EditSearch
   Caption = 'Search'
   ClientHeight = 401
   ClientWidth = 794
-  LCLVersion = '4.99.0.0'
+  LCLVersion = '4.8.0.0'
   OnActivate = FormActivate
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -43,13 +43,13 @@ object SearchForm: TSearchForm
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = StatusBar1
     Left = 0
-    Height = 340
+    Height = 345
     Top = 33
     Width = 794
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderSpacing.Top = 1
     Caption = 'Panel1'
-    ClientHeight = 340
+    ClientHeight = 345
     ClientWidth = 794
     TabOrder = 0
     object Splitter1: TSplitter
@@ -57,7 +57,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 224
-      Height = 338
+      Height = 343
       Top = 1
       Width = 5
       Align = alNone
@@ -86,7 +86,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 1
-      Height = 275
+      Height = 280
       Hint = 'Right Click to manage Notebooks'
       Top = 64
       Width = 223
@@ -126,7 +126,7 @@ object SearchForm: TSearchForm
       AnchorSideBottom.Control = Panel1
       AnchorSideBottom.Side = asrBottom
       Left = 232
-      Height = 338
+      Height = 343
       Top = 1
       Width = 561
       Anchors = [akTop, akLeft, akRight, akBottom]
@@ -163,8 +163,8 @@ object SearchForm: TSearchForm
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Height = 28
-    Top = 373
+    Height = 23
+    Top = 378
     Width = 794
     AutoHint = True
     Panels = <    
@@ -301,10 +301,10 @@ object SearchForm: TSearchForm
     AnchorSideRight.Control = ButtonSearchOptions
     AnchorSideBottom.Control = ButtonSearchOptions
     AnchorSideBottom.Side = asrCenter
-    Left = 476
-    Height = 23
-    Top = 4
-    Width = 162
+    Left = 521
+    Height = 18
+    Top = 7
+    Width = 117
     Anchors = [akRight, akBottom]
     BorderSpacing.Right = 10
     Caption = 'Search on title only'

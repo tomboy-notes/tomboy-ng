@@ -13,6 +13,26 @@ unit transmisty;
   2025-06-23  First working version.
   2025-05-28  Added code to get mDNS as, apparently, FPC resolver does not do so.
 
+
+      ========= Process (eg one locally edited note to upload) ===========
+
+    0. Proposed - asks server to lock this IP
+    1. -ng makes contact with server and offers credentials, getsback same page you
+       see if connecting with a browser.
+       SetTransport speaks to server (with credentials). If successful, it speaks
+       again, with /LOCKSESSION. If it is successful (ie gets 200 back) all good.
+       If it gets 503 Service Unavailable back, SetTransport will return SyncNoyJustNow
+       indicating retry in a few seconds. (SyncGUI can handle this, not auto yet.)
+
+    2. -ng asks for a copy of the manifest. Server sends it back.
+       ReadRemoteManifest() downoads remote manifest
+       Its called by TestTransport
+
+    3. -ng decides what needs to be done using Tomboy sync rules.
+    4. -ng sends the server a new copy of manifest.
+    5. -ng sends updated note, server increments revision number and saves note.
+    6. Proposed - asks server to release lock.
+    if there are no changed notes at either end, only steps 1,2 and 3 happen.
 }
 
 {$mode objfpc}{$H+}
@@ -21,15 +41,15 @@ interface
 
 uses
     Classes, SysUtils, trans, SyncUtils, tb_utils, process,
-    ResourceStr;    // we share resources with GithubSync
-
+    ResourceStr,    // we share resources with GithubSync
+    cnetdb;
 type
 
   { TMistySync }
 
   TMistySync = Class(TTomboyTrans)
     private
-
+        DownloaderResponseCode : integer;          // set after every call to Downloader()
                     // This is the downloader, pass a URL such as -
                     // For a note download, http://localhost:8080/DOWNLOAD/26D6EDFD-B518-472A-985B-AEF0B266D00F.note
                     // For the manifest, http://localhost:8080/DOWNLOAD/MANIFEST
@@ -65,6 +85,8 @@ type
 
         RMetaData : TNoteInfoList;   // only present in TransMisty, need to allow TestTransport to call ReadRemoteManifest()
 
+        procedure ReleaseLock();
+
         // ------ I n h e r i t e d   M e t h o d s  ------
 
                     // Misty, public inherited. Establish we can talk to Server unathenticated, start by testing
@@ -97,7 +119,7 @@ type
 implementation
 
 uses laz2_DOM, laz2_XMLRead, LazFileUtils, FileUtil, LazLogger, fphttpclient,
-    ssockets, fpopenssl, resolve ;
+    ssockets, sockets, fpopenssl, resolve ;
 
 { TMistySync }
 
@@ -160,10 +182,43 @@ end;
 
 function TMistySync.PreResolve(URL : string) : string;
 var
+      i, j : integer;
+      h_addr: in_addr;
+      host : PHostEnt;
+      S : string;
+begin
+      // here we assume that the host name starts after :// and finishes just before the first ':' or '/'
+      i := URL.IndexOf('://', 0);
+      if i = -1 then begin
+          i := 0;
+          Result := '';
+      end else begin
+          inc(i, 3);
+          Result := URL.Substring(0, i);      // ie http://  and i points to start of name
+      end;
+      j := URL.IndexOf(':', i);
+      if j = -1 then
+        j := URL.IndexOf('/', i);
+      if j = -1 then j := length(URL);        // J marks end of name
+      S := URL.Substring(i, j-i);
+      host := gethostbyname(pansichar(s));
+      if not assigned(host) then begin
+          Result := URL;            // for reporting, we assume cannot continue
+          ErrorString := 'Failed to resolve Sync Server Address ' + URL;
+      end else begin
+          h_addr.s_addr:= pcardinal(host^.h_addr_list[0])^;
+          Result := Result + NetAddrToStr(h_addr) + URL.Substring(j, 999);
+      end;
+end;
+
+(*
+function TMistySync.PreResolve(URL : string) : string;     // ToDo : remove this.
+var
       i, j, k : integer;
       Resolv: THostResolver;
       IsAdd : boolean = false;
 begin
+
       // here we assume that the host name starts after :// and finishes just before the first ':' or '/'
       i := URL.IndexOf('://', 0);
       if i = -1 then begin
@@ -181,10 +236,13 @@ begin
             if not (URL[k+1] in ['.', '0'..'9']) then
               IsAdd := True;
       if not IsAdd then exit(URL);      // already resolved IP
+      writeln('Resolve Start  ', DateTimeToStr(now()));
       Resolv := ThostResolver.Create(nil);
       if Resolv.NameLookup(URL.Substring(i, j-i)) then
             Result := Result + Resolv.AddressAsString + URL.Substring(j, 999)
       else begin
+          // Above takes about 5 second (on a fail ?)
+          writeln('Resolve Done  ', DateTimeToStr(now()));
           {$ifdef LINUX}
           if AskGetEnt(URL.Substring(i, j-i), Result) then                      // try to resolve mDNS too
               Result := URL.Substring(0, i) + Result + URL.Substring(j, 999)
@@ -193,8 +251,9 @@ begin
               ErrorString := 'Failed to resolve Sync Server Address ' + URL;
           {$ifdef Linux}end; {$endif}
       end;
+       writeln('PreResolve Done  ', DateTimeToStr(now()));
       Resolv.free;
-end;
+end;    *)
 
 function TMistySync.Downloader(    URL : string; out SomeString : String; const ConType : TContentType; const Header : string = '') : boolean;
 var
@@ -223,9 +282,13 @@ begin
     try
         try                                  // it appears that this fails if resolution depends on mDNS, ie *.local ??
             SomeString := Client.Get(URL);
+            DownloaderResponseCode := Client.ResponseStatusCode;
             // SayDebugSafe('TMistySync.Downloader Code:' + inttostr(Client.ResponseStatusCode) + ' - ' + SomeString);
         except
             on E: EHTTPClient do begin                                          // eg, File Not Found, we have asked for an unavailable file
+                DownloaderResponseCode := Client.ResponseStatusCode;
+                if Client.ResponseStatusCode = 201 then                         // 201 = lock created, good answer.
+                    exit(True);
                 ErrorString := 'TMistySync.Downloader - EHTTPClient Error ' + E.Message
                     + ' ResultCode ' + inttostr(Client.ResponseStatusCode);
                 exit(SayDebugSafe(ErrorString));
@@ -234,26 +297,32 @@ begin
                 ErrorString := 'TMistySync.Downloader - SocketError ' + E.Message     // eg failed dns, timeout etc
                     + ' ResultCode ' + inttostr(Client.ResponseStatusCode);
                 SomeString := 'Fatal, is server available ?';
+                DownloaderResponseCode := Client.ResponseStatusCode;
                 exit(SayDebugSafe(ErrorString));
                 end;
             on E: EInOutError do begin
                 ErrorString := 'TMistySync Downloader - InOutError ' + E.Message;
                 // might generate "TGithubSync Downloader - InOutError Could not initialize OpenSSL library"
                 SomeString := 'Failed to initialise OpenSSL';           // is error message translated ?
+                DownloaderResponseCode := Client.ResponseStatusCode;
                 exit(SayDebugSafe(ErrorString));
                 end;
             on E: ESSL do begin
                 ErrorString := 'TMistySync.Downloader - SSLError ' + E.Message;         // eg openssl problem, maybe FPC cannot work with libopenssl
                 SomeString := 'Failed to work with OpenSSL';
+                DownloaderResponseCode := Client.ResponseStatusCode;
                 exit(SayDebugSafe(ErrorString));
                 end;
             on E: Exception do begin
+                DownloaderResponseCode := Client.ResponseStatusCode;
+
                 ErrorString := 'TMistySync.Downloader Unexpected Exception ' + E.Message + ' downloading ' + URL;
                 ErrorString := ErrorString + ' HTTPS error no ' + inttostr(Client.ResponseStatusCode);
                 exit(SayDebugSafe(ErrorString));
                 end;
         end;
-        Result := Client.ResponseStatusCode = 200;
+        DownloaderResponseCode := Client.ResponseStatusCode;
+        Result := Client.ResponseStatusCode in [200,201];           // eg 201 if we have a LOCKSESSION, 503 if not, normal 200
         // My version of this in GitHubSync then did some processing of Client.ResponseHeaders, apparently not necessary here.
     finally
         Client.Free;
@@ -296,6 +365,17 @@ begin
     end;
 end;
 
+procedure TMistySync.ReleaseLock();
+var SomeString : string;
+begin
+    // Call downloader with /RELEASELOCK hoping for a 200 result. Anything else is
+    // perhaps, an unmanagable error.  Must come from same IP as lock call did.
+    if not Downloader(RemoteAddress + 'RELEASELOCK', SomeString, ctXML) then begin
+        ErrorString := 'ERROR, failed to release Sync Server Lock';
+        debugln(ErrorString);
+    end;
+end;
+
 // =================== I n h e r i t e d   M e t h o d s  ======================
 // -----------------------------------------------------------------------------
 
@@ -326,6 +406,12 @@ begin
    if Downloader(RemoteAddress,  SomeString, ctHTML) then    // all we care about is the 200 status Downloader found
         Result := SyncReady
    else Result := SyncNetworkError;
+
+   if not (Downloader(RemoteAddress + 'LOCKSESSION', SomeString, ctXML)  and (DownloaderResponseCode = 201)) then
+        Result := SyncNotJustNow;
+
+   // debugln('TMistySync.SetTransport DownloaderResponseCode is ' + inttostr(DownloaderResponseCode));
+
 
 // following are some tests used during development, clean it out !
 
@@ -358,7 +444,6 @@ begin
         if DebugMode then writeln('TMistySync.TestTransport - intending to make new repo');
         exit(SyncReady);
     end;
-
     ManExists :=  ReadRemoteManifest();
     if (pos('404', ErrorString) > 0) then
         ErrorString := 'Remote dir does not contain a manifest ' + RemoteAddress;  // not always an error !
@@ -367,9 +452,7 @@ begin
         ErrorString := 'Invalid Password : ' + ErrorString;
         exit(SyncCredentialError);
     end;
-
     if not ManExists then exit(SyncNoRemoteRepo);
-
     if 36 <> length(ServerID) then begin
         ErrorString := 'Invalid ServerID';
         exit(SyncXMLError);
@@ -464,12 +547,6 @@ begin
       CloseFile(F);
     end;
 end;
-
-(* function TMistySync.GetNoteLastChange(const FullFileName : string) : string;
-begin
-    Result := GetNoteLastChangeSt(FullFileName, ErrorString);   // syncutils function
-    // Is this something I should replace with a call to MetaData ?  LastChange ?
-end;  *)
 
 function TMistySync.DownloadNotes(const DownLoads: TNoteInfoList): boolean;
 var

@@ -87,6 +87,7 @@ type
 				Panel2: TPanel;
 				Panel3: TPanel;
 				Splitter3: TSplitter;
+                Timer1: TTimer;
                                         { Runs a sync without showing form. Ret False if error or its not setup.
                                           Caller must ensure that Sync is config and that the Sync dir is available.
                                           If clash, user will see dialog. }
@@ -101,10 +102,11 @@ type
                 { At Show, depending on SetUpSync, we'll either go ahead and do it, any
                   error is fatal or, if True, walk user through process. }
 				procedure FormShow(Sender: TObject);
+                procedure Timer1Timer(Sender: TObject);
 		private
                 // FormShown : boolean;                    // todo : remove ?
                 // LocalTimer : TTimer;
-
+                TimeOutCount : integer;
                 procedure AddLVItem(Act, Title, ID: string);
                 procedure AdjustNoteList();
  //               procedure AfterShown(Sender : TObject);
@@ -197,6 +199,7 @@ end;
 
 procedure TFormSync.SyncProgress(const St: string);
 begin
+        //debugln(St);
         LabelProgress.Caption := St;
         Application.ProcessMessages;
 end;
@@ -257,7 +260,16 @@ begin
     ASync.SyncAddress := RemoteAddress;                       // because this must have come from Sett, it will have given us this address, join only !
 // debugln('TFormSync.JoinSync RemoteAddress = ' + RemoteAddress);
 
-    SyncAvail := Async.SetTransport(TransPort);
+    SyncAvail := Async.SetTransport(TransPort);               // in Misty, SetTransport aquires a lock on server, SyncNotJustNow if it fails
+    if SyncAvail = SyncNotJustNow then begin                                // only Misty returns that at present.
+        Timer1.Interval := 1000;
+        SyncProgress('Trying to get Server Lock');
+        Timer1.Enabled := True;
+        freeandnil(Async);
+        ButtonCancel.Enabled := True;
+        exit;
+    end;
+
     if SyncAvail in [SyncNetworkError, SyncDNSError, SyncOpenSSLError] then begin   // What about an SSL error ?
     // if (Async.SetTransport(TransPort) = SyncNetworkError) then begin
         debugln('TFormSync.JoinSync FAILED in SetTransport, network or remote server not available ?');
@@ -307,6 +319,7 @@ end;    *)
 
 procedure TFormSync.FormActivate(Sender: TObject);
 begin
+    SyncProgress('FormActivate');
     if ReadyToRun then begin
          ReadyToRun := False;
          Label2.Caption := rsNextBitSlow;
@@ -315,6 +328,7 @@ begin
          ButtonSave.Enabled := False;
          ButtonClose.Enabled := False;
          ButtonCancel.Enabled := False;
+         SyncProgress('Starting Sync');
          if SetUpSync then begin
             JoinSync();
          end else
@@ -349,6 +363,7 @@ begin
          ButtonSave.Color := Sett.HiColour;
     end;
     {$endif}
+    SyncProgress('FormShow');
     // We call a timer to get out of OnShow so ProcessMessages works as expected
 (*    LocalTimer := TTimer.Create(Nil);
     LocalTimer.OnTimer:= @AfterShown;
@@ -356,12 +371,29 @@ begin
     LocalTimer.Enabled := True;   *)
 end;
 
+
+
 procedure TFormSync.FormCreate(Sender: TObject);
 begin
     UserName := '';
     Password := '';
 end;
 
+// Triggered with Misty if either JoinSync or ManualSync fail to get a lock,
+// probably because another system is syncing at the time. We wait for one
+// minute because thats probably enough in most cases.
+procedure TFormSync.Timer1Timer(Sender: TObject);
+begin
+    Timer1.Enabled := false;
+    inc(TimeOutCount);
+    if TimeOutCount > 60 then
+        SyncProgress('Failed to get a Server Lock : ' + inttostr(TimeOutCount))
+    else
+        if SetUpSync then begin
+            JoinSync();
+        end else
+            ManualSync();
+end;
 
         // User is only allowed to press Close when this is finished.
 function TFormSync.ManualSync : boolean;
@@ -370,8 +402,10 @@ var
     //Notifier : TNotifier;
     SyncSummary : string;
     SyncAvail : TSyncAvailable;
+    Cnt : integer = 0;
 begin
     Label1.Caption :=  Transport.ToString + ' ' + rsTestingSync;
+sleep(20);                             // WTF ?  this seems necessary to get graphics loop to draw window ?
     Application.ProcessMessages;
 	ASync := TSync.Create;
     try
@@ -386,11 +420,18 @@ begin
         ASync.RepoAction:= RepoUse;
         ASync.Password := Sett.SyncInfo[ord(Transport)].PW;
         Async.UserName := Sett.SyncInfo[ord(Transport)].User;
-
         if ASync.DebugMode then
             debugln('TFormSync.ManualSync - U=' + Async.UserName + ' - ' + ' P=' + copy(ASync.Password, 1, 3) + '...');
-
-        if Async.SetTransport(TransPort) in [SyncNetworkError, SyncCredentialError, SyncDNSError] then begin
+        SyncAvail := Async.SetTransport(TransPort);                            // in Misty, SetTransport aquires a lock on server, SyncNotJustNow if it fails
+        if SyncAvail = SyncNotJustNow then begin                                // only Misty returns that at present.
+            Timer1.Interval := 1000;
+            SyncProgress('Trying to get Server Lock');
+            Timer1.Enabled := True;
+            freeandnil(Async);
+            ButtonCancel.Enabled := True;
+            exit(false);
+        end;
+        if SyncAvail in [SyncNetworkError, SyncCredentialError, SyncDNSError] then begin
             if not Visible then begin
                 SearchForm.UpdateStatusBar(1, rsAutoSyncNotPossible);
                 if Sett.CheckNotifications.checked then begin
@@ -525,11 +566,13 @@ end;
 
 procedure TFormSync.ButtonCancelClick(Sender: TObject);
 begin
+    Timer1.Enabled := false;
     ModalResult := mrCancel;
 end;
 
 procedure TFormSync.ButtonCloseClick(Sender: TObject);
 begin
+    Timer1.Enabled := false;
 	ModalResult := mrOK;
 end;
 

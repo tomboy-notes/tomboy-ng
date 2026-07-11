@@ -2228,7 +2228,7 @@ end;
 { Checks to see if any entry in SyncInfo thinks if needs Syncing, processes the
 first one it finds. Flushes open notes, creates a thread, sets its necessary
 data and starts it. Handles one sync, thread.execute will POST a msg when finshed
-that will trigger this method again until there are no more to pocess.
+that will trigger this method again until there are no more to process.
 }
 procedure TSett.StartSyncThread();
 var

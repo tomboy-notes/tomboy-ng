@@ -1,13 +1,13 @@
 object MainForm: TMainForm
-  Left = 634
+  Left = 383
   Height = 294
   Hint = 'If the yellow tomboy-ng icon is visible in your System Tray, you can dismiss this window.'
-  Top = 335
+  Top = 242
   Width = 565
   Caption = 'tomboy-ng'
   ClientHeight = 294
   ClientWidth = 565
-  LCLVersion = '4.99.0.0'
+  LCLVersion = '4.8.0.0'
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -80,9 +80,9 @@ object MainForm: TMainForm
     AnchorSideTop.Control = LabelNotesFound
     AnchorSideTop.Side = asrBottom
     Left = 56
-    Height = 24
-    Top = 104
-    Width = 234
+    Height = 18
+    Top = 98
+    Width = 168
     BorderSpacing.Top = 6
     Caption = 'Dictionary Config (optional)'
   end
@@ -90,9 +90,9 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label3
     AnchorSideTop.Side = asrBottom
     Left = 56
-    Height = 24
-    Top = 134
-    Width = 186
+    Height = 18
+    Top = 122
+    Width = 133
     BorderSpacing.Top = 6
     Caption = 'Sync Config (optional)'
   end
@@ -100,7 +100,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label3
     Left = 24
     Height = 18
-    Top = 104
+    Top = 98
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869631E02000089504E47
@@ -127,7 +127,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label3
     Left = 8
     Height = 18
-    Top = 104
+    Top = 98
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963F402000089504E47
@@ -161,7 +161,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label4
     Left = 24
     Height = 18
-    Top = 134
+    Top = 122
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B477261706869631E02000089504E47
@@ -188,7 +188,7 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label4
     Left = 8
     Height = 18
-    Top = 134
+    Top = 122
     Width = 18
     Picture.Data = {
       1754506F727461626C654E6574776F726B47726170686963F402000089504E47
@@ -222,7 +222,7 @@ object MainForm: TMainForm
     Left = 24
     Height = 26
     Top = 43
-    Width = 208
+    Width = 207
     Caption = 'Welcome to tomboy-ng !'
     Font.Height = -18
     Font.Name = 'Lucida Grande'
@@ -232,19 +232,19 @@ object MainForm: TMainForm
     AnchorSideTop.Control = Label5
     AnchorSideTop.Side = asrBottom
     Left = 56
-    Height = 24
+    Height = 18
     Top = 74
-    Width = 11
+    Width = 8
     BorderSpacing.Top = 5
     Caption = 'X'
   end
   object LabelError: TLabel
     AnchorSideTop.Control = Label4
     Left = 24
-    Height = 20
+    Height = 23
     Hint = 'Launch from commandline to see errors or see Config->SnapShot->Recover ...'
-    Top = 169
-    Width = 10
+    Top = 157
+    Width = 11
     BorderSpacing.Top = 35
     Caption = 'X'
     Font.Height = -16
@@ -260,10 +260,10 @@ object MainForm: TMainForm
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 16
-    Height = 29
+    Height = 22
     Hint = 'You can reverse this from Settings'
-    Top = 250
-    Width = 278
+    Top = 257
+    Width = 210
     Anchors = [akLeft, akBottom]
     BorderSpacing.Top = 14
     BorderSpacing.Bottom = 15
@@ -364,9 +364,9 @@ object MainForm: TMainForm
     AnchorSideTop.Control = LabelError
     AnchorSideTop.Side = asrBottom
     Left = 24
-    Height = 24
-    Top = 201
-    Width = 176
+    Height = 18
+    Top = 192
+    Width = 126
     BorderSpacing.Top = 12
     Caption = 'LabelBadNoteAdvice'
   end
@@ -410,7 +410,7 @@ object MainForm: TMainForm
     AnchorSideRight.Side = asrBottom
     Left = 360
     Height = 28
-    Top = 134
+    Top = 122
     Width = 219
     Anchors = [akTop]
     Caption = 'SysTray Help'

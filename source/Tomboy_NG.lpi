@@ -484,6 +484,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
+            <Libraries Value="/usr/lib/gcc-cross/arm-linux/;/usr/arm-linux-gnueabihf/lib/"/>
             <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -738,6 +739,9 @@
               <StackChecks Value="True"/>
             </Checks>
             <VerifyObjMethodCallValidity Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
           </CodeGeneration>
           <Linking>
             <Debugging>
@@ -1175,13 +1179,13 @@
     </PublishOptions>
     <RunParams>
       <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-test --debug-sync"/>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng"/>
       </local>
       <FormatVersion Value="2"/>
       <Modes Count="1">
         <Mode0 Name="default">
           <local>
-            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng-test --debug-sync"/>
+            <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng"/>
           </local>
           <environment>
             <UserOverrides Count="1">
@@ -1457,4 +1461,11 @@
       <CustomOptions Value="-dTOMBOY_NG"/>
     </Other>
   </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="1">
+      <Item1>
+        <Name Value="EHTTPClient"/>
+      </Item1>
+    </Exceptions>
+  </Debugging>
 </CONFIG>
