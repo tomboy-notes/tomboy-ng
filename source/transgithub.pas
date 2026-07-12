@@ -628,6 +628,7 @@ begin
                 if ProgressProcedure <> nil then progressProcedure(rsScanRemote);
                 if not ScanRemoteRepo() then begin
                     debugln('TGithubSync.TestTransport - Failed to Scan the Remote Repo');
+                    ErrorString := 'Failed to scan remote repo';
                     exit(SyncBadRemote);               // puts only remote filenames and sha in RemoteNotes
                 end;
                 if (not ReadRemoteManifest()) then begin
@@ -1309,15 +1310,16 @@ var
             debugln('TGithubSync.ScanRemoteRepo requesting ' + ContentsURL(True) + '/' + Dir);
         // Aug 2025, below line has not had the '/' since sept 2021 ??  How has it been working ?
         if DownloaderSafe(ContentsURL(True) + '/' + Dir, ST) then begin  // St now contains a full dir listing as JSON array
+            // July 2026, seeing errors here where github sends back an empty St. Seems network error ?
             Node := TJsonNode.Create;
             try
                 if Node.TryParse(St) then begin
                     for ANode in Node do
                         if ANode.Exists('name') and ANode.Exists('sha') then
                             RemoteNotes.AddNewItem(Dir + ANode.Find('name').asString, ANode.Find('sha').asString)
-                        else exit(SayDebugSafe('TGitHubSync.ScanRemoteRepo - ERROR Invalid J data = ' + St));
+                        else exit(SayDebugSafe('TGitHubSync.ScanRemoteRepo - ERROR Invalid J data = [' + St '] 1'));
                 end else
-                    exit(SayDebugSafe('TGitHubSync.ScanRemoteRepo - ERROR Invalid J data = ' + St));
+                    exit(SayDebugSafe('TGitHubSync.ScanRemoteRepo - ERROR Invalid J data = [' + St '] 2'));
             finally
                 Node.Free;
             end;
@@ -1550,8 +1552,8 @@ begin
     Client.AddHeader('User-Agent','Mozilla/5.0 (compatible; fpweb)');
     Client.AddHeader('Content-Type','application/json; charset=UTF-8');
     Client.AllowRedirect := true;
-    Client.ConnectTimeout := 8000;      // mS ?  was 3000, I find initial response from github very slow ....
-    Client.IOTimeout := 4000;           // mS ? was 0
+    Client.ConnectTimeout := 12000;      // mS ?  was 3k, then 8k, I find initial response from github very slow ....
+    Client.IOTimeout := 8000;           // mS ? was 0, then 4k.
     SomeString := '';
 
     // debugln('TGithubSync.Downloader ----------------- User is [', UserName, ']');
@@ -1633,6 +1635,7 @@ begin
     Client.UserName:=UserName;
     Client.Password:=Password;
     client.RequestBody := TRawByteStringStream.Create(BodyJSt);
+    client.ConnectTimeout := 6000;         // seems default is 3000 (see TFPCustomHTTPClient.Create), github is getting very slow.
     Response := TStringStream.Create('');
     try
         try
