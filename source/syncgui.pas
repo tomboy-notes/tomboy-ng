@@ -402,7 +402,7 @@ var
     //Notifier : TNotifier;
     SyncSummary : string;
     SyncAvail : TSyncAvailable;
-    Cnt : integer = 0;
+    // Cnt : integer = 0;
 begin
     Label1.Caption :=  Transport.ToString + ' ' + rsTestingSync;
 sleep(20);                             // WTF ?  this seems necessary to get graphics loop to draw window ?

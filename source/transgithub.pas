@@ -1317,9 +1317,9 @@ var
                     for ANode in Node do
                         if ANode.Exists('name') and ANode.Exists('sha') then
                             RemoteNotes.AddNewItem(Dir + ANode.Find('name').asString, ANode.Find('sha').asString)
-                        else exit(SayDebugSafe('TGitHubSync.ScanRemoteRepo - ERROR Invalid J data = [' + St '] 1'));
+                        else exit(SayDebugSafe('TGitHubSync.ScanRemoteRepo - ERROR Invalid J data = [' + St + '] 1'));
                 end else
-                    exit(SayDebugSafe('TGitHubSync.ScanRemoteRepo - ERROR Invalid J data = [' + St '] 2'));
+                    exit(SayDebugSafe('TGitHubSync.ScanRemoteRepo - ERROR Invalid J data = [' + St + '] 2'));
             finally
                 Node.Free;
             end;

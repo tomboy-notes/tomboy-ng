@@ -98,6 +98,9 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
        	ReleaseQt6)
 	    echo "amd64Qt6"
 	    ;;
+	ReleaseGTK3)
+	    echo "amd64GTK3"
+	    ;;
 	ReleaseLin32Qt5)
 	    echo "i386Qt5"
 	;;
@@ -132,6 +135,9 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ReleaseQt6)
             echo "$PRODUCT"-qt6
         ;;        
+	ReleaseGTK3)
+	    echo "$PRODUCT"-gtk3
+	;;
         ReleaseRasPi)
             echo "$PRODUCT"-armhf
         ;;
@@ -299,6 +305,11 @@ function DebianPackage () {
 	cp $SOURCE_DIR/$BIN BUILD/usr/bin/$PRODUCT
 	# ----------- Some Special Cases ----------------
 	case "$1" in
+	"ReleaseGTK3")
+		CTRL_ARCH="amd64"
+		CTRL_DEPENDS="libc6 (>= 2.14), libnotify-bin"
+		CTRL_RELEASE="GTK3 release."
+		;;
 	"ReleaseQT5")
 		# echo "++++++++++ Setting QT5 +++++++++"
 		CTRL_ARCH="amd64"
@@ -518,8 +529,9 @@ rm tom*.deb
 # tomboy-ng-32-qt5 (ReleaseLin32Qt5)
 # tomboy-ng-arm64  (ReleaseRasPi64)
 # tomboy-ng-arm64-qt5 (ReleaseRasPi64Qt5)
+# tomboy-ng-gtk3 (ReleaseGTK3)
 
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQt6 ReleaseRasPi64 ReleaseRasPi64Qt5 ReleaseLin32Qt5; # Always package ReleaseLin64 first to update changelog once
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQt6 ReleaseRasPi64 ReleaseRasPi64Qt5 ReleaseLin32Qt5 ReleaseGTK3; # Always package ReleaseLin64 first to update changelog once
 	do 
 		DebianPackage $BIN ; 
 done
