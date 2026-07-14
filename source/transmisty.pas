@@ -41,8 +41,8 @@ interface
 
 uses
     Classes, SysUtils, trans, SyncUtils, tb_utils, process,
-    ResourceStr,    // we share resources with GithubSync
-    cnetdb;
+    ResourceStr    // we share resources with GithubSync
+    {$ifdef UNIX}, cnetdb{$endif};
 type
 
   { TMistySync }
@@ -151,14 +151,14 @@ begin
         // ToDo : This should raise an exception.
 end;
 
-{$ifdef LINUX}
+{$ifdef LINUX}    // ToDo : this should be removed. PreResolve() does not use it anymore because gethostname() resolves .local
 function TMistySync.AskGetEnt(HostName : string; out IPAdd : string) : boolean;
 var
     AProcess: TProcess;
     AList : Tstringlist = nil;
 begin
     result := false;
-    AProcess := TProcess.Create(nil);
+    AProcess := TProcess.Create(nil);          // Ents are slow but very knowledgable, powerful when provoked.
     AProcess.Executable:= 'getent';            // getent does a better job of resolving mDNS or .local addresses.
     AProcess.Parameters.Add('hosts');
     AProcess.Parameters.Add(HostName);
@@ -180,12 +180,17 @@ begin
 end;
 {$endif}
 
-function TMistySync.PreResolve(URL : string) : string;
+function TMistySync.PreResolve(URL : string) : string;         // ToDo : untested on Windows and Mac
 var
       i, j : integer;
       h_addr: in_addr;
-      host : PHostEnt;
       S : string;
+      {$ifdef UNIX}
+      host : PHostEnt;
+      {$else}           // ie Windows
+      Resolv: THostResolver;
+      {$endif}
+
 begin
       // here we assume that the host name starts after :// and finishes just before the first ':' or '/'
       i := URL.IndexOf('://', 0);
@@ -201,6 +206,7 @@ begin
         j := URL.IndexOf('/', i);
       if j = -1 then j := length(URL);        // J marks end of name
       S := URL.Substring(i, j-i);
+      {$ifdef UNIX}
       host := gethostbyname(pansichar(s));
       if not assigned(host) then begin
           Result := URL;            // for reporting, we assume cannot continue
@@ -209,6 +215,18 @@ begin
           h_addr.s_addr:= pcardinal(host^.h_addr_list[0])^;
           Result := Result + NetAddrToStr(h_addr) + URL.Substring(j, 999);
       end;
+      {$else UNIX}     // ie windows
+      Resolv := ThostResolver.Create(nil);
+      if Resolv.NameLookup(S) then
+            Result := Result + Resolv.AddressAsString + URL.Substring(j, 999)
+      else begin
+          // does this resolve .local addresses, does NOT under Linux
+          // Above takes about 5 second (on a fail on my Linux box)
+          Result := URL;            // for reporting, we assume cannot continue
+          ErrorString := 'Failed to resolve Sync Server Address ' + URL;
+      end;
+      Resolv.free;
+      {$endif UNIX}
 end;
 
 (*
