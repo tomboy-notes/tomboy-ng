@@ -494,7 +494,7 @@ resourcestring
 function TMainForm.CheckGnomeExtras() : boolean;
 
 var
-    {$ifdef LCLGTK2}H : TLibHandle;{$endif}         // should hide for gtk3, Qt6 too. So, gtk2 only ?
+    {$if defined(LCLGTK2) or defined(LCLGTK3)} H : TLibHandle;{$endif}          // should hide for Qt5, Qt6 too.
     MayBeNotGnome : boolean = false;
     PlugInName : string = '';           // holds name if CheckPlugIn found it.
 
@@ -560,7 +560,7 @@ begin
     // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk post 22/05/2021, r65122
     // Does no harm to check here but if its not in Lazarus, its won't be used when needed.
     result := false;
-    {$ifdef LCLGTK2}  // It appears QT5 can talk direct to gnome-shell-extension-appindicator ??
+    {$if defined(LCLGTK2) or defined(LCLGTK3)}  // It appears QT5 can talk direct to gnome-shell-extension-appindicator ?? but both gtk2 and gtk3 need appindic
     H := LoadLibrary('libappindicator3.so.1');
     if ('' <> getEnvironmentVariable('LAZUSEAPPIND')) and (H = NilHandle) then
         debugln('===== libappindicator3 is not present');
@@ -572,12 +572,12 @@ begin
     end;
     {$endif}
     if H = NilHandle then begin
-        debugln('Failed to Find an AppIndicator Library, SysTray may not work.');
+        debugln('Failed to Find an AppIndicator Library, SysTray may not work.');   // when does this become libayayana-appindicator-glib ??
         exit(False);    // nothing to see here folks.
-	end else if ('' <> getEnvironmentVariable('LAZUSEAPPIND')) then
+    end else if ('' <> getEnvironmentVariable('LAZUSEAPPIND')) then
          debugln('===== We have an AppIndicator Library');
-	unloadLibrary(H);
-    {$endif not lclgtk2}                            // end of if not QT5
+    unloadLibrary(H);                               // we don't get to here is library is not loaded.
+    {$endif not lclgtk2}                            // end of if not QT5, Qt6
     Result := CheckPlugIn(True);
     if not Result then
         if MaybeNotGnome then
@@ -724,8 +724,14 @@ begin
             SearchForm.OpenNote(NoteTitle, Sett.NoteDirectory + NoteID);
         until TheMainNoteLister.FindNextOOSNote(NoteTitle, NoteID) = false;
     FormResize(self);   // Qt5 apparently does not call FormResize at startup.
-    if ButtSysTrayHelp.Visible then debugln('You cannot see me');
-    if ButtSysTrayHelp.Visible then debugln('On Gnome, install gnome-shell-extension-appindicator, logout, logon and start tomboy-ng again, "yes" to prompt.');
+//    if ButtSysTrayHelp.Visible then debugln('You cannot see me');
+
+    if ButtSysTrayHelp.Visible then begin
+       debugln('>> On Gnome, you must have installed libayatana-appindicator3-1 and');
+       debugln('>> gnome-shell-extension-appindicator. Logout, logon and start tomboy-ng');
+       debugln('>> again, "yes" to prompt. The restart IS necessary if you installed');
+       debugln('>> gnome-shell-extension-appindicator, please don''t skip');
+    end;
     if OpenNewNotePlease then begin
         OpenNewNotePlease := False;
         SearchForm.OpenNote('');
