@@ -307,7 +307,9 @@ function DebianPackage () {
 	case "$1" in
 	"ReleaseGTK3")
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libc6 (>= 2.14), libnotify-bin"
+		# note that we see warnings about using libayatana-appindicator-glib instead, not in distro yet
+		# Maybe, libayatana-appindicator3-1 belongs in Recommeds rather than Depends ? apt will install if available.
+		CTRL_DEPENDS="libc6 (>= 2.34), libnotify-bin, libayatana-appindicator3-1"     # because I build it to that libc6, not on U2004 box, not necessary...
 		CTRL_RELEASE="GTK3 release."
 		;;
 	"ReleaseQT5")
