@@ -1163,7 +1163,106 @@
           </Other>
         </CompilerOptions>
       </Item>
-      <SharedMatrixOptions Count="7">
+      <Item Name="GTK4">
+        <MacroValues Count="1">
+          <Macro8 Name="LCLWidgetType" Value="gtk4"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-gtk4-dbg"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dDisableLCLGIF
+-dDisableLCLJPEG
+-dDisableLCLPNM
+-dDisableLCLTIFF
+-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="ReleaseGTK4">
+        <MacroValues Count="1">
+          <Macro8 Name="LCLWidgetType" Value="gtk4"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-gtk4"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="x86_64"/>
+            <TargetOS Value="linux"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dDisableLCLGIF
+-dDisableLCLJPEG
+-dDisableLCLPNM
+-dDisableLCLTIFF
+-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <SharedMatrixOptions Count="8">
         <Item1 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64,LeakCheckWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
         <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseLin64,ReleaseLin32,ReleaseRasPi64" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
         <Item3 ID="429153174386" Modes="ReleaseGTK3,GTK3Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
@@ -1171,6 +1270,7 @@
         <Item5 ID="341789512381" Modes="CocoaDebug,CocoaRelease,CocoaArmRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
         <Item6 ID="231441956052" Modes="CarbonRelease,CarbonDebug" Type="IDEMacro" MacroName="LCLWidgetType" Value="carbon"/>
         <Item7 ID="372825449782" Modes="DebugQt6,ReleaseQt6" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt6"/>
+        <Item8 ID="518374026915" Modes="GTK4,ReleaseGTK4" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk4"/>
       </SharedMatrixOptions>
     </BuildModes>
     <PublishOptions>
