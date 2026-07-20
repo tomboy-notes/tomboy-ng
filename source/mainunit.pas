@@ -537,16 +537,16 @@ begin
 end;
 
 function TMainForm.CheckForSysTray() : boolean;
-{$ifndef LCLGTK3}
+{$if not (defined(LCLGTK3) or defined(LCLGTK4))}
 var
     A : TAtom;
     XDisplay: PDisplay;
-    ForceAppInd : string; {$endif LCLGTK3}
+    ForceAppInd : string; {$endif not modern LCL}
 begin
     Result := False;
     if (pos('GNOME', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0) then
         UglyGnome := True;
-    // Don't test for SysTray under GTK3, will never be there.  One or other AppIndicator
+    // Don't test for SysTray when this widgetset cannot provide one. One or other AppIndicator
     // is your only chance. And XInternAtom() function SegVs on Gnome DTs so don't try it.
     // Ayatana is supported instead of Cannonical's appindicator in Laz Trunk
     // post 22/05/2021, r65122 and in Lazarus 2.2.0. Important in Bullseye, not Ubuntu < 21.10
@@ -565,7 +565,7 @@ begin
         // So far, every KDE I have tested has a SysTray, but some work badley with left click
         // under wayland in 2023, Deb 13 KDE does not need this but too hard to tell reliably
 //    {$ifdef LCLQT6}exit(true);{$endif}                 // Sept '24, noted that Qt6 also has SysTray issues on Gnome, why was this here ?
-    {$IFnDEF LCLGTK3}
+    {$if not (defined(LCLGTK3) or defined(LCLGTK4))}
     // Interestingly, by testing we seem to ensure it does work on U2004, even though the test fails !
     {$ifdef LCLGTK2}XDisplay := gdk_display; {$endif}
     {$if defined(LCLQT5) OR defined(LCLQT6)}
@@ -583,8 +583,8 @@ begin
             debugln('Tradition Systray Available = ' + booltostr(result, True));
 //    if ForceAppInd = 'YES' then
 //            result := false;
-    {$ENDIF not LCLGTK3}
-    // if we are false here, its probably because its a recent Gnome Desktop or GTK3, no SysTray.
+    {$ENDIF not modern LCL}
+    // if we are false here, its probably because its a recent Gnome Desktop or this widgetset has no SysTray.
     // However, if libappindicator3 or Ayatana is installed and the Gnome Shell Extension,
     // appindicators is installed and enabled, it will 'probably' be OK.
 
@@ -592,7 +592,7 @@ begin
     if UglyGnome and (result = false) then
             Result := CheckGnomeExtras()
             // Thats libappindicator3 and an installed and enabled gnome-shell-extension-appindicator
-     else Result := True;        // Now, that is a hope for the best, GTK3 but non Gnome
+     else Result := True;        // Now, that is a hope for the best on non Gnome desktops.
 end;
 {$endif}                            // hides CheckForSystemTray() and CheckGnomeExtras() from non Linux
 
@@ -918,4 +918,3 @@ begin
 end;
 
 end.
-

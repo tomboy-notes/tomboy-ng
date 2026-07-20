@@ -99,7 +99,7 @@ unit tbundo;
 interface
 
 uses
-    Classes, SysUtils, KMemo, KControls;
+    Classes, SysUtils, KMemo, KControls, LazLogger;
 
 
 
@@ -264,11 +264,23 @@ begin
     if TheKMemo.Blocks.RealSelLength > 0 then begin
         AStream := TMemoryStream.Create;
         try
-            TheKMemo.SaveToRTFStream(AStream, True);
-            if AStream.Size > 0 then begin
-                AStream.Seek(0, soBeginning);
-                SetLength(Result, AStream.Size);
-                AStream.ReadBuffer(Pointer(Result)^, AStream.Size);
+            try
+                TheKMemo.SaveToRTFStream(AStream, True);
+                if AStream.Size > 0 then begin
+                    AStream.Seek(0, soBeginning);
+                    SetLength(Result, AStream.Size);
+                    AStream.ReadBuffer(Pointer(Result)^, AStream.Size);
+                end;
+            except
+                on E: Exception do begin
+                    debugln('TUndo_Redo.GetSelectedRTF: RTF snapshot failed, using plain text. ',
+                        E.ClassName, ': ', E.Message,
+                        ' SelStart=', IntToStr(TheKMemo.Blocks.RealSelStart),
+                        ' SelLength=', IntToStr(TheKMemo.Blocks.RealSelLength));
+                    // KMemo's RTF writer can fail while GTK4/IME text is being edited.
+                    // Undo can safely fall back to plain text instead of interrupting typing.
+                    Result := TheKMemo.Blocks.SelText;
+                end;
             end;
         finally
             AStream.Free;
@@ -553,4 +565,3 @@ begin
 end;
 
 end.
-
