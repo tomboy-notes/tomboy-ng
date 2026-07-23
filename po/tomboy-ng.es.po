@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: tomboy-ng v0.43c\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2026-06-06 13:55+0200\n"
+"PO-Revision-Date: 2026-07-21 14:21+0200\n"
 "Last-Translator: RWR\n"
 "Language-Team: \n"
 "Language: es\n"
@@ -13,7 +13,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.9\n"
 
 #: editbox.rsunabletoevaluate
 msgid "Unable to find an expression to evaluate"
@@ -358,10 +358,6 @@ msgstr "Sincronizar"
 msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
 msgstr "Recuerde que para tener una sincronización fiable, no deba cambiar archivos en el directorio Meta."
 
-#: resourcestr.rsmistyswitch
-msgid "EXPERIMENTAl Misty Sync, danger !"
-msgstr ""
-
 #: resourcestr.rsmistysyncinfo1
 msgid "tomboy-ng can sync to a network server called Misty, sync and edit notes"
 msgstr "tomboy-ng puede sincronizarse al servidor llamado Misty, sincronizar y editar notas"
@@ -396,11 +392,9 @@ msgid "No other notes link to this one"
 msgstr "Ninguna nota vinculada a ésta"
 
 #: resourcestr.rsnotavailable
-#, fuzzy
-#| msgid "Not Available"
 msgctxt "resourcestr.rsnotavailable"
 msgid "Not Found"
-msgstr "No disponible"
+msgstr "No encontrada"
 
 #: resourcestr.rsnotealreadyinrepo
 msgctxt "resourcestr.rsnotealreadyinrepo"
@@ -525,8 +519,6 @@ msgid "Set the Notebooks this note is a member of"
 msgstr "Establezca los cuadernos de esta nota"
 
 #: resourcestr.rssetup
-#, fuzzy
-#| msgid "Setup"
 msgctxt "resourcestr.rssetup"
 msgid "Set Up"
 msgstr "Configurar"
@@ -868,11 +860,11 @@ msgstr "Imprimir"
 
 #: teditboxform.menuitemsearchhere.caption
 msgid "Search Here"
-msgstr ""
+msgstr "Buscar aquí"
 
 #: teditboxform.menuitemsearchnotes.caption
 msgid "Search Notes"
-msgstr ""
+msgstr "Buscar notas"
 
 #: teditboxform.menuitemselectall.caption
 msgctxt "teditboxform.menuitemselectall.caption"
@@ -1665,18 +1657,15 @@ msgid "If you have previously taken a snapshot ..."
 msgstr "Si has hecho una instantánia antes ..."
 
 #: tsett.buttsetupsync.caption
-#, fuzzy
-#| msgid "Setup"
 msgctxt "tsett.buttsetupsync.caption"
 msgid "Set Up"
 msgstr "Configurar"
 
 #: tsett.buttsetupsync.hint
 msgid "Setup or Change a Sync Repository"
-msgstr ""
+msgstr "Configurar o Cambiar el repositorio"
 
 #: tsett.butttokenactions.caption
-#, fuzzy
 msgctxt "tsett.butttokenactions.caption"
 msgid "Actions"
 msgstr "Acciones"
@@ -1763,7 +1752,7 @@ msgstr "Sincronización de Archivos o Github"
 
 #: tsett.editpw.hint
 msgid "Use Actions button to set this field"
-msgstr ""
+msgstr "Pulse 'Acciones' para configurar el campo"
 
 #: tsett.editpw.text
 msgid "EditPW"
@@ -1775,7 +1764,7 @@ msgstr "EditRepo"
 
 #: tsett.editusername.hint
 msgid "Your Github User Name"
-msgstr ""
+msgstr "Su nombre de usuario de GitHub"
 
 #: tsett.groupbox5.caption
 msgid "Font Size"
@@ -1786,7 +1775,6 @@ msgid "  Sync  "
 msgstr " Sincronizar "
 
 #: tsett.groupboxsyncopt.caption
-#, fuzzy
 msgctxt "tsett.groupboxsyncopt.caption"
 msgid "When a conflict is detected between a local note and remote one :"
 msgstr "Al detectar un conflicto entre una nota local y una remota:"

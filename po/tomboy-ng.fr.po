@@ -370,10 +370,6 @@ msgstr "Synchronisation"
 msgid "Please remember that to ensure a reliable sync, you must not change files in the Meta directory."
 msgstr "Rappel: pour une synchro fiable, ne pas changer les fichiers dans le Meta répertoire"
 
-#: resourcestr.rsmistyswitch
-msgid "EXPERIMENTAl Misty Sync, danger !"
-msgstr ""
-
 #: resourcestr.rsmistysyncinfo1
 msgid "tomboy-ng can sync to a network server called Misty, sync and edit notes"
 msgstr ""
