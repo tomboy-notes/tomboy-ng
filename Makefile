@@ -15,8 +15,8 @@ MAN_DIR = $(PREFIX)/share/man/man1
 SHARE_DIR = $(PREFIX)/share
 DOC_DIR = $(SHARE_DIR)/$(PROGRAM_NAME)
 # Debian and AppImage have seperate meta data file names ! Here I copy both, AppImage is happy ....
-METAINFOFILE=io.github.tomboy_notes.tomboy_ng_notes.metainfo.xml
-METAAPPIMAGE=io.github.tomboy_notes.tomboy_ng_notes.appdata.xml
+METAINFOFILE=io.github.tomboy_notes.tomboy_ng_notes.metainfo.xml   # this is what Debian expects
+#            io.github.tomboy_notes.tomboy_ng_notes.appdata.xml    # what app image expects, see below
 # ---- Help Notes, it just replicates existing dir/note structure.
 HELP_DIR = $(DOC_DIR)/HELP
 RM      = rm -f
@@ -62,7 +62,6 @@ install: installdirs
 	$(CP)			doc/HELP		$(DESTDIR)$(HELP_DIR)/
 	$(CP)			doc/overrides		$(DESTDIR)$(SHARE_DIR)/lintian/overrides/tomboy-ng
 	$(CP)           doc/$(METAINFOFILE) $(DESTDIR)$(SHARE_DIR)/metainfo/$(METAINFOFILE)
-	$(CP)           doc/$(METAINFOFILE) $(DESTDIR)$(SHARE_DIR)/metainfo/$(METAAPPIMAGE)
 	$(CP)			glyphs/icons		$(DESTDIR)$(SHARE_DIR)/
 	$(INSTALL_DATA)	glyphs/tomboy-ng.desktop	$(DESTDIR)$(SHARE_DIR)/applications/tomboy-ng.desktop
 	$(foreach LANG, $(LANGUAGES), $(CPLANG);)
@@ -85,5 +84,8 @@ installdirs:
 
 #appimage: set_appimage_dir install 
 
-appimage: tomboy-ng install
+set_appimage_meta:
+	$(eval METAINFOFILE = io.github.tomboy_notes.tomboy_ng_notes.appdata.xml)    # what app image expects
+
+appimage: set_appimage_meta tomboy-ng install
 

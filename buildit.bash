@@ -75,6 +75,7 @@ function ShowHelp () {
     echo "David Bannon, July 2020" 
     echo "-h   print help message"
     echo "-c   specify CPU, default is $HOSTTYPE - supported x86_64, i386, arm"
+    echo "-w   widget set, gtk2, qt5, qt6, gtk3"
     echo "-Q   build a Qt5 version (default gtk2)"
     echo "-T   build a Qt6 version"
     echo "-n   no hardening, not for Debian build"
@@ -146,15 +147,18 @@ function CheckLazBuild () {
 }
 
 		# We default to GTK2 but if a file is left in working dir called
-		# Qt5 or Qt6 then we build that. Note a -q does the same thing for qt5.
+		# Qt5 or Qt6 or GTK3 then we build that. Note a -q does the same thing for qt5.
 		# We also check for a NOHARDENING semaphore here. Cannot use it in AppImage
-function CheckForQt5 () {
+function CheckForWidgetSemophore () {
 	echo "----------- Looking for widget semophore in $PWD"
 	if [ -f "Qt5" ]; then
 		WIDGET="qt5"
 	fi
 	if [ -f "Qt6" ]; then
 	    WIDGET="qt6"
+	fi
+	if [ -f "GTK3" ]; then
+	    WIDGET="gtk3"
 	fi
 	if [ -f "NOHARDENING" ]; then
             FPCHARD=""
@@ -165,7 +169,7 @@ function CheckForQt5 () {
 # ------------ It all starts here ---------------------
 
 
-while getopts "hQTc:" opt; do
+while getopts "hw:c:" opt; do
   case $opt in
     h)
       ShowHelp
@@ -174,12 +178,15 @@ while getopts "hQTc:" opt; do
 	CPU="$OPTARG"
 	TARGET="$CPU-$OS"
 	;;
-    Q)
-	WIDGET="qt5"
+    w)
+	WIDGET="$OPTARG"
 	;;
-    T)
-	WIDGET="qt6"
-	;;
+#    Q)
+#	WIDGET="qt5"
+#	;;
+#    T)
+#	WIDGET="qt6"
+#	;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
       ShowHelp
@@ -198,11 +205,11 @@ fi
 TARGET="$CPU-$OS"
 CheckFPC
 CheckLazBuild
-CheckForQt5
+CheckForWidgetSemophore
 
 # OK, if to here, we have a fpc and lazbuild, but which FPC ?
 FPCVERSION=$($COMPILER -iV)
-if [ "$FPCVERSION" = "3.0.4" ]; then
+if [ "$FPCVERSION" = "3.2.0" ]; then
 	echo "Sorry, need a later version of FPC later than $FPCVERSION"
 	exit 1
 fi
@@ -244,7 +251,7 @@ cd "$K_DIR"		# WARNING, kcontrols is not part of the github zip file, its added 
 
 # Here we build just the kmemo.pas part of kcontrols.
 
-mkdir -p "lib/$TARGET"			# this is where kcontrols object files end up.
+mkdir -p "lib/$TARGET"		# this is where kcontrols object files end up.
 rm -f "lib/$CPU-$OS/kmemo.o"    # make sure we try to build a new one, but probably not there.
 
 FPCKOPT=" -B -MObjFPC -Scgi -Cg -O1 -g -gl -l -vewnibq -vh- $EXCLUDEMESSAGES -Fi$K_DIR"

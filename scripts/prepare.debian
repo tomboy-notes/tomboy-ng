@@ -52,7 +52,7 @@ VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
 CLEAN="NO"	# debug tool, remove files from previous run, assume same ver.
-WIDGET=""	# empty says make a GTK2, only other possibility is Qt5
+WIDGET="gtk2"	# default GTK2, else Qt5, Qt6, GTK3
 REPACK_REASON=""    # set with -r, few words about why repackaging necessary
 
 	# Looks for fpc and lazbuild on PATH, if in root space, do nothing,
@@ -148,8 +148,9 @@ function ShowHelp () {
     echo "-D   distro, defaults to unstable"
     echo "-n   New orig file, required for fresh release"
     echo "-r   Reason for repackage, use inverted commas, only if not -n"
-    echo "-q   Make a Qt5 version instead of GTK2, ignored in repackage mode."
-    echo "-p   Pause before creating Orig, make changes in annother terminal."
+    echo "-w   Widget set, default gtk2, else Qt5, Qt6, GTK3 ignored in repackage mode"
+#    echo "-q   Make a Qt5 version instead of GTK2, ignored in repackage mode."
+    echo "-p   Pause before creating Orig, make changes in another terminal."
     echo ""
     echo "  Typically, new release     bash ./prepare.debian -n -q"
     exit
@@ -223,7 +224,7 @@ exit                                                    # My work here is done
 }       # End of function
 
 
-while getopts "hUCl:D:nqQt:r:p" opt; do
+while getopts "hUCl:D:nw::r:p" opt; do
   case $opt in
     h)
       ShowHelp
@@ -250,12 +251,15 @@ while getopts "hUCl:D:nqQt:r:p" opt; do
 	t)
 	TB_SOURCE="$OPTARG"
 	;;
-	Q)
-	WIDGET="Qt5"
-	;;
-    q)
-	WIDGET="Qt5"
-	;;
+	w)
+	    WIDGET="$OPTARG"
+	    ;;
+#	Q)
+#	WIDGET="Qt5"
+#	;;
+#    q)
+#	WIDGET="Qt5"
+#	;;
     p)
 	PAUSE="YES"
         ;;
@@ -358,16 +362,32 @@ if [ -f tomboy-ng-master.zip ]; then
 	# Remove the above line when Debian moves to Laz300
 	
 	cd "$APP"_"$VER""$DEBVER"	# This is orig tomboy-ng dir made from zip
-	if [ "$WIDGET" = "Qt5" ]; then
-	    touch Qt5			# leave semaphore file
-	    scripts/mkcontrol.bash debian/ "$DISTRO1" qt5
+	case "$WIDGET" in
+	    gtk2|GTK2)
+		scripts/mkcontrol.bash debian/ "$DISTRO1"
+		;;
+	    Qt5)
+		touch Qt5
+		scripts/mkcontrol.bash debian/ "$DISTRO1" qt5
+		;;
+	    Qt6)
+		touch Qt6
+		scripts/mkcontrol.bash debian/ "$DISTRO1" qt6
+		;;
+	    GTK3|gtk3)
+		touch GTK3
+		scripts/mkcontrol.bash debian/ "$DISTRO1" gtk3
+	    	;;
+	    *)
+		echo "ERROR, cannot match widget $WIDGET exiting"
+		exit
+		;;
+	esac
+
 	    # we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
 	    #sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" "glyphs"/"$APP".desktop
 	    # sed -i "s/Exec=tomboy-ng %f/Exec=QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" "glyphs"/"$APP".desktop
 	    # NO, we don't. Bug is not present in L226 or L300, only intermediate ones.
-	else
-		scripts/mkcontrol.bash debian/ "$DISTRO1"
-	fi
 
         if [ "$PAUSE" = "YES" ]; then
 		read -p "Edit things in another terminal, press Enter here."
@@ -394,10 +414,6 @@ if [ -f tomboy-ng-master.zip ]; then
 	dch --append "Please see github for further change details."
 	sed -i "s/  \*  Release of new version./  * Release of new version./" debian/changelog
 
-	#cp debian/control.debian debian/control			# thats the GTK2 version
-	#if [ "$WIDGET" = "Qt5" ]; then
-	#	cp debian/control.qt5-DEBIAN debian/control	# thats the Qt5 version
-	#fi
 	rm -f debian/control.qt5
 	rm -f debian/rules.qt5		# never need that here, its for PPA where qt5 has different name
 	rm -f debian/control.qt5-DEBIAN

@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-# Usage : mkcontrol.bash [bionic focal unstable] [qt5 qt6]
+# Usage : mkcontrol.bash [bionic focal unstable] [qt5 qt6 gtk2 gtk3]
 
 # A small script to replace critical parameters in control.template
 # With every target release/distro requiring a different control
@@ -12,28 +12,46 @@
 WDIR="../"
 PACKAGE="tomboy-ng"         # note, in debian QT5 its still called tomboy-ng
 FPCVER=">=3.2.2"
-LAZVER=">=2.2.2"
+LAZVER=">=4.6"
 DEBHVER="=13"
-STDVER="4.7.0"              # updated due to advice on debian package tracker, Apr 2024
-                            # https://www.debian.org/doc/debian-policy/upgrading-checklist.html says 4.7.0
+STDVER="4.7.4"              # updated due to advice on debian package tracker, July 2026
+                            # https://www.debian.org/doc/debian-policy/upgrading-checklist.html says 4.7.4
 DESC="This is the GTK2 based version."
 DEPENDS="libgtk2.0-0 (>= 2.6), libcanberra-gtk-module"
 BUILDDEPENDS="libgtk2.0-dev"
 
 function AdjustValues () {
-    if [ "$2" == "qt5" ]; then          # Note : we ignore anything other than qt5 and qt6
+	case "$2" in
+		qt5)
         DESC="This is the QT5 based version."   
         DEPENDS="libqt5pas1"
         BUILDDEPENDS="libqt5pas-dev, lcl-qt5, libcairo2-dev, libpango1.0-dev" 
         PACKAGE="tomboy-ng-qt5"         # but reverse that in Debian (don't do yet anyway)     
-    fi
-     if [ "$2" == "qt6" ]; then
+		;;
+		qt6)
         DESC="This is the QT6 based version."
         DEPENDS="libc6 (>= 2.34), libnotify-bin, libqt6pas6 (>= 6.2.7)"
         BUILDDEPENDS="libqt6pas6-dev, lcl-qt6, libcairo2-dev, libpango1.0-dev"
         PACKAGE="tomboy-ng-qt6"         # but reverse that in Debian (don't do yet anyway)
-    fi
-    case $1 in
+		;;
+		gtk3)
+        DESC="This is the GTK3  based version."
+        DEPENDS="libc6 (>= 2.34), libnotify-bin"
+        BUILDDEPENDS="lcl-qt6, libcairo2-dev, libpango1.0-dev"
+        PACKAGE="tomboy-ng-gtk3"        # but reverse that in Debian (don't do yet anyway)
+		;;
+		gtk2)
+		DESC="This is the GTK2 based version."
+		DEPENDS="libgtk2.0-0 (>= 2.6), libcanberra-gtk-module"
+		BUILDDEPENDS="libgtk2.0-dev"
+		;;
+		*)
+		echo "Unknown widget set specificed $WIDGET exiting ..."
+		exit
+		;;
+	esac
+    
+    case $1 in						# note I don't do PPA anymore
         "bionic")
             FPCVER=">=3.2.0"
             LAZVER=">=2.0.10c"
@@ -46,7 +64,7 @@ function AdjustValues () {
             ;;
         "unstable")                     # ie Debian, as set above
             PACKAGE="tomboy-ng"         # in case its a Debian QT5 build, always tomboy-ng in Debian
-            DEPENDS="libqt5pas1, libssl-dev, libfontconfig-dev"  # Ugly hack necessary until next FPC release, maybe longer
+#            DEPENDS="libqt5pas1, libssl-dev, libfontconfig-dev"  # Ugly hack necessary until next FPC release, maybe longer
             ;;
     esac
 }
@@ -80,7 +98,7 @@ if [ -f "$1""control.template" ]; then
 else
     echo "ERROR - $0 did not find ""$1""control.template"
 fi
-echo "Usage : $0 Valid_Working_Dir [bionic focal unstable] [qt5]"
+echo "Usage : $0 Valid_Working_Dir [bionic focal unstable] [qt5 qt6 gtk2 gtk3]"
 echo "   eg : $0  ../  focal" 
 
 
