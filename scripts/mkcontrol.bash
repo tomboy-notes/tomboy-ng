@@ -36,8 +36,8 @@ function AdjustValues () {
 		;;
 		gtk3)
         DESC="This is the GTK3  based version."
-        DEPENDS="libc6 (>= 2.34), libnotify-bin"
-        BUILDDEPENDS="lcl-qt6, libcairo2-dev, libpango1.0-dev"
+        DEPENDS="libc6 (>= 2.34), libnotify-bin, libayatana-appindicator3-1"
+        BUILDDEPENDS="libcairo2-dev, libpango1.0-dev"
         PACKAGE="tomboy-ng-gtk3"        # but reverse that in Debian (don't do yet anyway)
 		;;
 		gtk2)
