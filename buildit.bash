@@ -252,6 +252,11 @@ LAZUNITSRC=" -Fu$LAZ_DIR/lcl -Fi$LAZ_DIR/lcl/include -Fu$LAZ_DIR/components/lazu
 LAZUNITSRC="$LAZUNITSRC -Fu$LAZ_DIR/components/printers -Fi$LAZ_DIR/components/printers/unix "
 LAZUNITSRC="$LAZUNITSRC -Fu$LAZ_DIR/components/printers/unix -Fu$LAZ_DIR/components/cairocanvas "
 LAZUNITSRC="$LAZUNITSRC -Fu$LAZ_DIR/lcl/interfaces/$WIDGET -Fu$LAZ_DIR/lcl/forms -Fu$LAZ_DIR/lcl/nonwin32 "
+if [ "$WIDGET" = "gtk3" ]; then
+	# LazGtk3 (the gtk3 binding unit gtk3int.pas needs) lives one level
+	# deeper than the other widgetsets' interface units.
+	LAZUNITSRC="$LAZUNITSRC -Fu$LAZ_DIR/lcl/interfaces/gtk3/gtk3bindings "
+fi
 LAZUNITSRC="$LAZUNITSRC -Fu$LAZ_DIR/packager/registration "
  
 K_DIR="$PWD/kcontrols/source"
