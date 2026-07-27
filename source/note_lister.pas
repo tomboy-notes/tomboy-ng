@@ -1655,8 +1655,17 @@ var
                         DateSearchIndex.Add(i);
                         inc(Result);
                     end;
-                    inc(j);
                 end;
+                // Must advance regardless of whether FindID found a match - a
+                // notebook's membership list (NBStrL) can reference a note ID
+                // that NoteList no longer has (eg a stale/out-of-sync notebook
+                // index after a sync). inc(j) used to live inside the FindID
+                // branch above, so a single unmatched ID left j stuck forever,
+                // spinning FindID on the same missing ID indefinitely - the
+                // main thread hang observed via a live gdb backtrace (stuck in
+                // FindID, called from here, searching for a GUID NoteList
+                // didn't have).
+                inc(j);
             end;
         end;
     end;
