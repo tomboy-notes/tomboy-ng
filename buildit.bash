@@ -115,23 +115,32 @@ function CheckLazBuild () {
 			echo "Sorry, WHICHLAZ is not a viable lazarus install"
             echo "The path and 'lazbuild' is required"
 			echo "---------------------  EXITING ---------------------"
-			exit 1		 
+			exit 1
 		fi
 		PATH="$LAZ_DIR":"$PATH"
-		export PATH		
+		export PATH
+		USED_WHICHLAZ=true
 	else
 		LAZ_DIR=`which lazbuild | rev | cut -c -9 --complement | rev`
+		USED_WHICHLAZ=false
 	fi
 	if [ ! -x "$LAZ_DIR""/lazbuild" ]; then
 		echo "---------- ERROR, cannot find lazbuild ----------"
 		exit 1
-	fi 
+	fi
 	# if LAZ_DIR starts with /usr then its installed in root space and we should
 	# assume that the lcl components are not 'along side' lazbuild.  In fact
 	# might be somewhere like /usr/lib/lazarus/2.0.8, should we assume its
 	# /etc/alternatives/lazarus ?
+	# Skip this guess entirely if WHICHLAZ already gave us an explicit,
+	# already-verified path - needed for the official (non-distro-packaged)
+	# Lazarus .deb from lazarus-ide.org, which installs under
+	# /usr/share/lazarus/<ver>/ with lcl alongside lazbuild, not at either of
+	# the locations guessed below (both of which also happen to start with
+	# /usr, so without this guard a perfectly good WHICHLAZ path gets
+	# clobbered by a wrong guess).
 	PREFIX="${LAZ_DIR:0:4}"
-	if [ "$PREFIX" = "/usr" ]; then
+	if [ "$PREFIX" = "/usr" ] && [ "$USED_WHICHLAZ" = "false" ]; then
 		LAZ_DIR="/etc/alternatives/lazarus"
 		# but thats wrong on non debian things, ones without the silly /etc/alternative
 		if [ ! -d "$LAZ_DIR" ]; then
@@ -243,6 +252,11 @@ LAZUNITSRC=" -Fu$LAZ_DIR/lcl -Fi$LAZ_DIR/lcl/include -Fu$LAZ_DIR/components/lazu
 LAZUNITSRC="$LAZUNITSRC -Fu$LAZ_DIR/components/printers -Fi$LAZ_DIR/components/printers/unix "
 LAZUNITSRC="$LAZUNITSRC -Fu$LAZ_DIR/components/printers/unix -Fu$LAZ_DIR/components/cairocanvas "
 LAZUNITSRC="$LAZUNITSRC -Fu$LAZ_DIR/lcl/interfaces/$WIDGET -Fu$LAZ_DIR/lcl/forms -Fu$LAZ_DIR/lcl/nonwin32 "
+if [ "$WIDGET" = "gtk3" ]; then
+	# LazGtk3 (the gtk3 binding unit gtk3int.pas needs) lives one level
+	# deeper than the other widgetsets' interface units.
+	LAZUNITSRC="$LAZUNITSRC -Fu$LAZ_DIR/lcl/interfaces/gtk3/gtk3bindings "
+fi
 LAZUNITSRC="$LAZUNITSRC -Fu$LAZ_DIR/packager/registration "
  
 K_DIR="$PWD/kcontrols/source"
