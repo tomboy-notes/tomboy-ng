@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="13"/>
+    <Version Value="12"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
       <Title Value="tomboy-ng"/>
@@ -1178,9 +1178,6 @@
       <DestinationDirectory Value="$(ProjPath)/published/"/>
     </PublishOptions>
     <RunParams>
-      <local>
-        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng"/>
-      </local>
       <FormatVersion Value="2"/>
       <Modes>
         <Mode Name="default">

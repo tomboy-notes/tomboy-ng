@@ -20,11 +20,11 @@ uses
     {$DEFINE UseCThreads}
     {$IFDEF UNIX}{$IFDEF UseCThreads}
     // works correctly but codetools always shows 'greyed out'
-    {$if not declared(UseHeapTrace)}cmem, {$endIf}               // TRons's trick, nice !
+    {$if not declared(UseHeapTrace)}cmem, {$Note "CMEM in use"}{$endIf}               // TRons's trick, nice !
     cthreads,
-    {$ENDIF}
+    {$ENDIF UseCThreads}
     qtWorkAround,  // does nothing except in Qt inserts an env var QT_QPA_PLATFORM=xcb into app
-    {$ENDIF}
+    {$ENDIF Unix}
     Interfaces,    // this includes the LCL widgetset
     LCLProc, Forms, Dialogs, printer4lazarus, SearchUnit, settings, SyncGUI,
     Notebook, Spelling, Mainunit, BackupView, recover, Index, autostart,
