@@ -319,21 +319,31 @@ end;    *)
 
 procedure TFormSync.FormActivate(Sender: TObject);
 begin
+    // ReadyToRun must be cleared BEFORE anything that can pump the message
+    // queue (SyncProgress calls Application.ProcessMessages). Clearing it
+    // after the SyncProgress('FormActivate') call below left a window where
+    // a re-entrant Activate - triggered by that very pump, seen in practice
+    // as GTK sending a redundant activate/focus event for this window -
+    // would still see ReadyToRun = True and re-enter JoinSync/ManualSync
+    // while the first call was still running, racing two syncs against each
+    // other and, in one observed case (a remote delete of a note that was
+    // also a notebook member), spinning the main thread indefinitely inside
+    // the resulting recursive note-list search.
+    if not ReadyToRun then exit;
+    ReadyToRun := False;
+
     SyncProgress('FormActivate');
-    if ReadyToRun then begin
-         ReadyToRun := False;
-         Label2.Caption := rsNextBitSlow;
-         Memo1.Clear;
-         ListViewReport.Clear;
-         ButtonSave.Enabled := False;
-         ButtonClose.Enabled := False;
-         ButtonCancel.Enabled := False;
-         SyncProgress('Starting Sync');
-         if SetUpSync then begin
-            JoinSync();
-         end else
-            ManualSync();
-    end;
+    Label2.Caption := rsNextBitSlow;
+    Memo1.Clear;
+    ListViewReport.Clear;
+    ButtonSave.Enabled := False;
+    ButtonClose.Enabled := False;
+    ButtonCancel.Enabled := False;
+    SyncProgress('Starting Sync');
+    if SetUpSync then begin
+        JoinSync();
+    end else
+        ManualSync();
 end;
 
 procedure TFormSync.FormShow(Sender: TObject);
