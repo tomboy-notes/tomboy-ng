@@ -56,3 +56,19 @@ experimental/Misty-Small/domain.*
 experimental/LazFiles.tgz
 experimental/Misty-Small/misty-server
 
+# buildit.bash intermediate output and log (built alongside /source/tomboy-ng)
+/source/Tomboy_NG
+/source/tomboy-ng.log
+
+# dpkg-buildpackage staging (when run directly in a working checkout rather
+# than prepare.debian's temp directory)
+/debian/tomboy-ng/
+/debian/.debhelper/
+/debian/debhelper-build-stamp
+/debian/files
+/debian/tomboy-ng.substvars
+
+# Local build scaffolding, not something to commit
+/kcontrols
+/NOHARDENING
+
