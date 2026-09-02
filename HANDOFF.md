@@ -1,7 +1,8 @@
 # HANDOFF
 
 Date: 2026-09-02 (supersedes the 2026-07-21 handoff)
-Last updated after the GTK4 close-request fix and the `onion2` rebuild.
+Last updated 2026-09-02 evening, after the GTK4 close-request fix, the
+`onion2` rebuild, and the commits recording both.
 
 ## Current State
 
@@ -10,13 +11,15 @@ Last updated after the GTK4 close-request fix and the `onion2` rebuild.
   with the sibling trees `../KControls` and `../LCL_GTK4/lazarus`)
 - Branch: `gtk4-build-editor-fallback`
 - PR: https://github.com/tomboy-notes/tomboy-ng/pull/350 (still at `a63001e`)
-- Local work on top of `a63001e` is committed (`8a91339` LPI, `db0ace9`
-  build script, `2724b1b` packaging, `a330957` checklist, `c9cb258` build
-  script fixes, plus the docs commit carrying this file) but **not pushed**
-  to `fork` yet.
+- Seven commits on top of `a63001e`, **not pushed** to `fork` yet:
+  `8a91339` LPI (GTK3 restored, GTK4 added), `db0ace9` build script,
+  `2724b1b` packaging, `a330957` regression checklist, `c9cb258` build
+  script fixes, `4f9e6fb` docs, plus the commit carrying this update.
+- Working tree clean. No traced tomboy-ng instance is running; the last gdb
+  session was stopped after the fix was confirmed.
 
-Local GTK4 and Qt5 `.deb` packages have been rebuilt against the fixed
-KControls. Reproduction details are in `BUILD_MANIFEST.md`; the manual test
+Current local packages: GTK4 `0.42+onion2` and Qt5 `0.42+onion1`, both in
+`package/`. Reproduction details are in `BUILD_MANIFEST.md`; the manual test
 list is `doc/widgetset-regression-checklist.md`.
 
 ## What changed since the PR was opened
@@ -136,10 +139,14 @@ carries the LCL bug; delete it once nothing needs it.
   `doc/widgetset-regression-checklist.md` have not been walked through one by
   one, so treat individual KControls fixes (Qt5 hit-test drift, GTK4 first key
   after Ctrl+V) as untested until someone ticks them off.
-- The older ad hoc `package/tomboy-ng_0.42-0_amd64-gtk4.deb` has been removed;
-  only the two current packages remain. `package/*.deb` is git-ignored.
-- The four local commits are not pushed. PR #350 needs the GTK3 restoration
-  pushed before maintainers look at it.
+- `package/tomboy-ng_0.42+onion1-0_amd64Gtk4.deb` (dfsg-3 LCL, has the
+  close-request bug) is still on disk next to the good `onion2` package.
+  Delete it so nobody installs it by mistake. `package/*.deb` is git-ignored.
+- Qt5 is still `onion1`. It does not need the LCL GTK4 fix, but if a single
+  suffix per drop is wanted, rebuild it with `LOCAL_VERSION_SUFFIX=onion2`
+  (see `BUILD_MANIFEST.md`) and update the manifest table.
+- The seven local commits are not pushed. PR #350 still shows the GTK3
+  build mode removed; push before maintainers look at it.
 - **PR #350 conflicts with upstream.** `origin/master` moved 86 commits
   (v0.42b, v0.42c). Only `source/Tomboy_NG.lpi` conflicts, but structurally:
   upstream re-saved the LPI in the Lazarus 4 format (`<Item Name="...">`,
@@ -154,5 +161,14 @@ carries the LCL bug; delete it once nothing needs it.
   print a backtrace and continue, plus a 10 s loop logging the process's X
   windows. `ptrace_scope=1` means gdb must start the process; it cannot
   attach later.
-- KControls fixes are still unmerged upstream, so these packages are
-  unofficial local builds.
+- KControls fixes and the LCL GTK4 close-request fix are both unmerged
+  upstream, so these packages are unofficial local builds.
+
+## Suggested next steps, in order
+
+1. Delete the stale `onion1` GTK4 package.
+2. Push the branch to `fork` (`git push fork gtk4-build-editor-fallback`).
+3. Rebase onto `origin/master` (v0.42c) and re-add the GTK4 build modes in
+   the new LPI format; re-verify with `WIDGETSET=gtk4 ./build_widgetset_clean.sh`.
+4. Walk `doc/widgetset-regression-checklist.md` on both packages and record
+   the result here.
