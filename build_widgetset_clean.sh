@@ -38,6 +38,26 @@ esac
 
 BUILD_MODES="${BUILD_MODES:-$DEFAULT_BUILD_MODES}"
 
+# Only expect the binaries of the modes actually being built, so a partial
+# build (e.g. BUILD_MODES=GTK4) is not reported as a failure.
+mode_binary() {
+  case "$1" in
+    GTK4)        echo "tomboy-ng-gtk4-dbg" ;;
+    ReleaseGTK4) echo "tomboy-ng-gtk4" ;;
+    ReleaseQT5)  echo "tomboy-ng-qt5" ;;
+    *) echo "ERROR: no binary name known for build mode '$1'" >&2; exit 1 ;;
+  esac
+}
+EXPECT_BINARIES=""
+for mode in $BUILD_MODES; do
+  EXPECT_BINARIES="$EXPECT_BINARIES $(mode_binary "$mode")"
+done
+EXPECT_BINARIES="${EXPECT_BINARIES# }"
+case " $EXPECT_BINARIES " in
+  *" $SMOKE_BINARY "*) ;;
+  *) SMOKE_BINARY="${EXPECT_BINARIES##* }" ;;
+esac
+
 # ---------------------------------------------------------------- toolchain
 # Prefer an explicitly supplied tree. Otherwise look in the usual places.
 # The GTK4 LCL fixes now ship in the distribution packages (lcl-gtk4 4.4), so
@@ -49,7 +69,8 @@ find_lazarus_dir() {
       "/usr/lib/lazarus/4.4" \
       "/usr/lib/lazarus/default" \
       "/usr/lib/lazarus" \
-      "/mnt/USERS/onion/DATA_ORIGN/Workspace/LCL_GTK4/lazarus"; do
+      "$PROJECT_ROOT/../LCL_GTK4/lazarus" \
+      "/mnt/STORAGE16T/Workspace_STORAGE16T/LCL_GTK4/lazarus"; do
     if [[ -d "$candidate/lcl/interfaces/$WIDGETSET" ]]; then
       echo "$candidate"
       return 0
@@ -61,9 +82,9 @@ find_lazarus_dir() {
 find_kcontrols_dir() {
   local candidate
   for candidate in \
-      "/mnt/USERS/onion/DATA_ORIGN/Workspace/KControls" \
       "$PROJECT_ROOT/../KControls" \
-      "$PROJECT_ROOT/../../KControls"; do
+      "$PROJECT_ROOT/../../KControls" \
+      "/mnt/STORAGE16T/Workspace_STORAGE16T/KControls"; do
     if [[ -f "$candidate/packages/lazarus/kcontrolslaz.lpk" ]]; then
       (cd "$candidate" && pwd)
       return 0
