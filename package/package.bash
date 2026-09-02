@@ -22,6 +22,12 @@
 
 PRODUCT="tomboy-ng"
 VERSION=`cat version`
+# Local, unofficial builds carry a suffix so that dpkg and the About dialog can
+# tell them apart from an upstream release. Empty for a normal upstream build.
+LOCAL_VERSION_SUFFIX="${LOCAL_VERSION_SUFFIX:-}"
+if [ -n "$LOCAL_VERSION_SUFFIX" ]; then
+	VERSION="$VERSION+$LOCAL_VERSION_SUFFIX"
+fi
 
 SOURCE_DIR="../source"
 ICON_DIR="../glyphs"
@@ -86,6 +92,9 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
         ReleaseQT5)
             echo "amd64Qt5"
         ;;
+        ReleaseGTK4)
+            echo "amd64GTK4"
+        ;;
         ReleaseRasPi)
             echo "armhf"
         ;;
@@ -131,6 +140,9 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ;;
         ReleaseQT5)
             echo "$PRODUCT"-qt5
+        ;;
+        ReleaseGTK4)
+            echo "$PRODUCT"-gtk4
         ;;
         ReleaseQt6)
             echo "$PRODUCT"-qt6
@@ -323,6 +335,12 @@ function DebianPackage () {
 	    #sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --platformtheme qt5ct/" BUILD/usr/share/applications/"$PRODUCT".desktop
 		;;
 
+	"ReleaseGTK4")
+		CTRL_ARCH="amd64"
+		CTRL_DEPENDS="libgtk-4-1 (>= 4.6), libnotify4 (>= 0.7), libc6 (>= 2.34)"
+		CTRL_RELEASE="GTK4 release."
+		;;
+
 	"ReleaseLin32Qt5")
 		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
 	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it.
@@ -352,6 +370,12 @@ function DebianPackage () {
 		CTRL_RELEASE="aarch64 Qt5 release."	    
 		;;
     esac
+	# The libc6 floor is read off the binary we are about to ship rather than
+	# guessed, so it stays correct whatever host this is built on.
+	GLIBC_MIN=`objdump -T "$SOURCE_DIR/$BIN" 2>/dev/null | grep -oE "GLIBC_[0-9]+\.[0-9]+" | sed "s/GLIBC_//" | sort -V | tail -1`
+	if [ -n "$GLIBC_MIN" ]; then
+		CTRL_DEPENDS=`echo "$CTRL_DEPENDS" | sed -E "s/libc6 \(>= [0-9.]+\)/libc6 (>= $GLIBC_MIN)/"`
+	fi
 	chmod 755 BUILD/usr/bin/tomboy-ng
 	
 	# -------------------- Changelog -----------------
@@ -480,6 +504,20 @@ function MkWinPreInstaller() {
 	# ls -la "$WIN_DIR"
 }
 
+
+# Package one already built binary and stop. The GTK4 and Qt5 binaries are
+# produced by ../build_widgetset_clean.sh, which rebuilds KControls per
+# widgetset in an isolated Lazarus config, so nothing is rebuilt here. No
+# Lazarus config is needed for packaging, so this runs before that lookup.
+#   ./package.bash /path/to/lazarus DebOnly:ReleaseGTK4
+case "${2:-}" in
+	DebOnly:*)
+		rm -f changelog
+		DebianPackage "${2#DebOnly:}"
+		echo "ERROR REPORT = $ERROR"
+		exit
+	;;
+esac
 
 	# ------- OK, lets find Laz Config ---------------------------------
 

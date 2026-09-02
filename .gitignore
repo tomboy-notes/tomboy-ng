@@ -56,3 +56,12 @@ experimental/Misty-Small/domain.*
 experimental/LazFiles.tgz
 experimental/Misty-Small/misty-server
 
+
+# Locally built packages (not upstream artifacts)
+package/*.deb
+package/*.tgz
+package/*.rpm
+package/BUILD/
+/source/tomboy-ng-gtk4
+/source/tomboy-ng-gtk4-dbg
+package/changelog
