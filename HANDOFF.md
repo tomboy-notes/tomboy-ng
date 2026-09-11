@@ -22,8 +22,8 @@ Current local packages, both in `package/`:
 
 | Package | Built from | Depends |
 | --- | --- | --- |
-| `tomboy-ng_0.42c+onion3-0_amd64GTK4.deb` | KControls `3770e33`, LCL 4.4+dfsg-4 | `libgtk-4-1 (>= 4.6), libnotify4 (>= 0.7), libc6 (>= 2.34)` |
-| `tomboy-ng_0.42c+onion3-0_amd64Qt5.deb` | KControls `3770e33`, LCL 4.4+dfsg-4 | `libqt5pas1 (>= 2.15), libc6 (>= 2.34), libnotify-bin` |
+| `tomboy-ng_0.42c+onion3-0_amd64GTK4.deb` | KControls `36ffeec`, LCL 4.4+dfsg-4 | `libgtk-4-1 (>= 4.6), libnotify4 (>= 0.7), libc6 (>= 2.34)` |
+| `tomboy-ng_0.42c+onion3-0_amd64Qt5.deb` | KControls `36ffeec`, LCL 4.4+dfsg-4 | `libqt5pas1 (>= 2.15), libc6 (>= 2.34), libnotify-bin` |
 
 Reproduction details are in `BUILD_MANIFEST.md`; the manual test list is
 `doc/widgetset-regression-checklist.md`. The older `0.42+onion2` GTK4 and
@@ -78,8 +78,11 @@ both packages: correct toolkit linkage inside the package, `--version`
 reports the package version, 82 entries, packaged binary byte-identical to
 the one in `source/`, headless smoke test passed.
 
-KControls was at `3770e33` on disk (the 2026-09-02 packages used `74d3257`).
-The commits in between are KMemo fixes: grapheme-cluster stepping across
+Both packages were rebuilt once more at 11:17 from KControls `36ffeec`,
+which only adds a HANDOFF.md commit over `3770e33`; all three binaries came
+out byte-identical to the 11:04 build, so the packages differ only in
+timestamps. The 2026-09-02 packages used KControls `74d3257`; the commits in
+between are KMemo fixes: grapheme-cluster stepping across
 block boundaries, absolute word-movement targets, UTF-16 surrogate handling,
 a KGrid editor measurement, and tests/docs. They were only verified here by
 build and smoke test.

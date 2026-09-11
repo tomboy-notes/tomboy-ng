@@ -4,7 +4,7 @@
 빌드됐는지 고정한다. KControls 수정본이 아직 업스트림에 머지되지 않았으므로,
 이 리비전이 없으면 패키지를 재현할 수 없다.
 
-빌드 일자: 2026-09-11 (`onion3`, 업스트림 v0.42c 위로 리베이스한 트리)
+빌드 일자: 2026-09-11 (`onion3`, 업스트림 v0.42c 위로 리베이스한 트리; 11:17 KControls `36ffeec` 에서 재빌드, 바이너리는 11:04 빌드와 바이트 단위로 동일)
 
 ## Version
 
@@ -29,7 +29,7 @@ About 다이얼로그와 `--version` 출력에도 `0.42c+onion3`이 표시된다
 | 저장소 | 경로 | 브랜치 | 커밋 |
 | --- | --- | --- | --- |
 | tomboy-ng | `/mnt/STORAGE16T/Workspace_STORAGE16T/tomboy-ng` | `gtk4-build-editor-fallback` (base `origin/master` `08de213`, v0.42c) | 문서 커밋 직전 HEAD (`git log --oneline origin/master..` 의 첫 8 개) |
-| KControls | `/mnt/STORAGE16T/Workspace_STORAGE16T/KControls` (`../KControls`) | `integration-fixes` | `3770e33` (onion2 의 `74d3257` 이후 KMemo 자소 클러스터·단어 이동·UTF-16 수정과 테스트/문서가 추가됨) |
+| KControls | `/mnt/STORAGE16T/Workspace_STORAGE16T/KControls` (`../KControls`) | `integration-fixes` | `36ffeec` (소스는 `3770e33` 과 동일, 그 위 커밋은 HANDOFF.md 뿐. onion2 의 `74d3257` 이후 KMemo 자소 클러스터·단어 이동·UTF-16 수정과 테스트/문서가 추가됨) |
 
 KControls 는 GTK4/Qt5 수정(PR 76/77/78 및 Phase 1~7 작업)의 합집합이며 업스트림 미머지다.
 **설치되어 있지 않다.** 빌드 스크립트가 위젯셋마다 이 트리를 `/tmp` 로 복사해
