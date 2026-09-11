@@ -124,6 +124,15 @@ It must list a relocation to `TWINCONTROL_..._HANDLEALLOCATED`. Plain
 
 ## Open items
 
+- **GTK4: Enter in the in-note find box does nothing.** Traced on
+  2026-09-11: LCL GTK4 never delivers `OnKeyDown` for `Return` to a `TEdit`
+  (the inner GtkText claims it via its `activate` binding before the
+  LCL bubble-phase key controller sees it). F3, Ctrl+G and the arrow
+  buttons still work. The same pattern affects the notebook-name Enter in
+  `notebook.pas`. Fix request with root cause, proposed change and a
+  reproduction script: `../LCL_GTK4/REQUEST_2026-09-11_ENTRY_RETURN_KEYDOWN.md`
+  and `../LCL_GTK4/test_entry_return/`. Needs an LCL rebuild (`dfsg-5`),
+  then a tomboy-ng `onion4` rebuild.
 - **Regression testing has not been walked item by item.** Build,
   linkage, packaging and an 8 second headless start are verified. The
   Korean IME and selection checks in `doc/widgetset-regression-checklist.md`
