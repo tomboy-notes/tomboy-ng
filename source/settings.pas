@@ -920,6 +920,7 @@ var
 begin
     DebugSync := Application.HasOption('s', 'debug-sync');
     // gTTFontCache.ReadStandardFonts;         // we do this in Kmemo2PDR now.
+    MaskSettingsChanged := true;              // GTK4 may fire combo OnChange while controls are being initialised.
     fSearchTitleOnly := False;
     Caption := 'tomboy-ng Settings';
     ButtonSetNotePath.Enabled := False;
@@ -964,7 +965,6 @@ begin
 
     DefaultFixedFont := GetFixedFont();     // Tests a list of likely suspects.
     PageControl1.ActivePage := TabBasic;
-    MaskSettingsChanged := true;            // don't trigger save while doing setup
     ExportPath := '';
     LabelLibrary.Caption := '';
     //HaveConfig := false;
@@ -1759,6 +1759,7 @@ end;
 
 procedure TSett.ComboHelpLanguageChange(Sender: TObject);
 begin
+    if MaskSettingsChanged then exit;
     if ComboHelpLanguage.ItemIndex > -1 then begin
         HelpNotesLang:= copy(ComboHelpLanguage.Items[ComboHelpLanguage.ItemIndex], 1, 2);
         WriteConfigFile();
