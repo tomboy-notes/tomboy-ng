@@ -103,13 +103,13 @@ cp "$RDIR"/"$RDIR"-"$PACKVER".spec "$1".spec
 	cd ..
 	# if its a Qt5 one, rename it so it does not get overwritten subsquently
 	if [ "$1" = amd64Qt5 ]; then
-		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"Qt5-"$VERS"-"$PACKVER"."$ARCH".rpm
+		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"-Qt5-"$VERS"-"$PACKVER"."$ARCH".rpm
 	fi
 	if [ "$1" = amd64Qt6 ]; then
-		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"Qt6-"$VERS"-"$PACKVER"."$ARCH".rpm
+		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"-Qt6-"$VERS"-"$PACKVER"."$ARCH".rpm
 	fi
 	if [ "$1" = amd64GTK3 ]; then
-		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"GTK3-"$VERS"-"$PACKVER"."$ARCH".rpm
+		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"-GTK3-"$VERS"-"$PACKVER"."$ARCH".rpm
 	fi
 }
 
