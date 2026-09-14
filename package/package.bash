@@ -89,6 +89,9 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
         ReleaseQT5)
             echo "amd64Qt5"
         ;;
+        ReleaseRasPiGTK3)
+            echo "armhfGTK3"
+        ;;
         ReleaseRasPi)
             echo "armhf"
         ;;
@@ -125,7 +128,7 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ReleaseLin32)
             echo "$PRODUCT"-32
         ;;
-        ReleaseLin32Qt5)
+        ReleaseLin32QT5)
             echo "$PRODUCT"-32-qt5
         ;;
         ReleaseLin32GTK3)
@@ -143,9 +146,12 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ReleaseQt6)
             echo "$PRODUCT"-qt6
         ;;        
-		ReleaseGTK3)
-			echo "$PRODUCT"-gtk3
+	ReleaseGTK3)
+		echo "$PRODUCT"-gtk3
 		;;
+        ReleaseRasPiGTK3)
+            echo "$PRODUCT"-armhf
+        ;;
         ReleaseRasPi)
             echo "$PRODUCT"-armhf
         ;;
@@ -176,6 +182,7 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
 # Modes (as defined in IDE) ReleaseLin64 ReleaseLin32 ReleaseLin32GTK3 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseQT5 ReleaseGTK3
 
 function BuildAMode () {
+    echo ""
     echo "------------- Building Mode $1 --------"
     cd ../source
     BIN=$(ModeParamBin "$1")
@@ -361,10 +368,15 @@ function DebianPackage () {
 		CTRL_RELEASE="Qt5 release."
 	    ;;
 
-	"ReleaseRasPi")             # we must also make an "old" version of this ?
+	"ReleaseRasPi")             # we must also make an "old" version of this gtk2 ?
 		CTRL_RELEASE="Raspberry Pi 32bit release."
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
+		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin"
 		;;
+	"ReleaseRasPiGTK3")
+		CTRL_RELEASE="Raspberry Pi 32bit gtk3 release."
+		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin"
+		;;
+
 	"ReleaseRasPiQt5")          # we must also make an "old" version of this ?
 		CTRL_RELEASE="Raspberry Pi 32bit release, Qt5"
 		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
@@ -374,7 +386,7 @@ function DebianPackage () {
 		CTRL_RELEASE="Raspberry Pi 64bit release, gtk2"
 		;;
 	"ReleaseRasPi64GTK3")                                    # 64bit gtk3
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
+		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin"
 		CTRL_RELEASE="Raspberry Pi 64bit release, GTK3."
 		;;
 	"ReleaseRasPi64Qt5")                                     # 64bit Qt5
@@ -547,7 +559,7 @@ if [ "$2" != "" ]; then
 fi 
 
 
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseQT5 ReleaseQt6; 
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseLin32QT5 ReleaseGTK3 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPiGTK3  ReleaseRasPi64Qt5 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseQT5 ReleaseQt6; 
 	do BuildAMode $BIN; 
 done
 
@@ -565,7 +577,7 @@ rm tom*.deb
 # tomboy-ng-gtk3 (ReleaseGTK3)
 
 # This for the new in 2026 build model.
-for BIN in ReleaseLin64 ReleaseGTK3 ReleaseQT5 ReleaseQt6 ReleaseLin32 ReleaseLin32Qt5 ReleaseRasPi ReleaseRasPiQt5 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseRasPi64Qt5;
+for BIN in ReleaseLin64 ReleaseGTK3 ReleaseQT5 ReleaseQt6 ReleaseLin32 ReleaseLin32Qt5 ReleaseRasPi ReleaseRasPiGTK3 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseRasPi64Qt5;
 # for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQt6 ReleaseRasPi64 ReleaseRasPi64Qt5 ReleaseLin32Qt5 ReleaseGTK3;
 	# Always package ReleaseLin64 first to update changelog once
 	do 

@@ -591,7 +591,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="tomboy-ng-32-qt5"/>
+            <Filename Value="tomboy-ng-32-qt5-gtk3"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -757,6 +757,47 @@
           </Other>
         </CompilerOptions>
       </Item>
+      <Item Name="ReleaseRasPiGTK3">
+        <MacroValues Count="1">
+          <Macro3 Name="LCLWidgetType" Value="gtk3"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-armhf"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <Libraries Value="/usr/lib/gcc-cross/arm-linux/;/usr/arm-linux-gnueabihf/lib/"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <TargetCPU Value="arm"/>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True" idx5024="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
       <Item Name="ReleaseRasPi64">
         <MacroValues Count="1">
           <Macro2 Name="LCLWidgetType" Value="gtk2"/>
@@ -844,7 +885,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="tomboy-ng-arm64-qt5"/>
+            <Filename Value="tomboy-ng-arm64-gtk3"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -1251,7 +1292,7 @@
       <SharedMatrixOptions Count="7">
         <Item1 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64,LeakCheckWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
         <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseLin64,ReleaseLin32,ReleaseRasPi64,ReleaseRasPi" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
-        <Item3 ID="429153174386" Modes="ReleaseGTK3,GTK3Debug,ReleaseLin32GTK3,ReleaseRasPi64GTK3" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
+        <Item3 ID="429153174386" Modes="ReleaseGTK3,GTK3Debug,ReleaseLin32GTK3,ReleaseRasPi64GTK3,ReleaseRasPiGTK3" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
         <Item4 ID="950048283013" Modes="QT5Debug,ReleaseQT5,ReleaseLin32Qt5,ReleaseRasPi64Qt5" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
         <Item5 ID="341789512381" Modes="CocoaDebug,CocoaRelease,CocoaArmRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
         <Item6 ID="231441956052" Modes="CarbonRelease,CarbonDebug" Type="IDEMacro" MacroName="LCLWidgetType" Value="carbon"/>
