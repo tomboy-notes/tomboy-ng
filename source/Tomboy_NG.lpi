@@ -255,6 +255,60 @@
           </Other>
         </CompilerOptions>
       </Item>
+      <Item Name="QT5Debug">
+        <MacroValues Count="1">
+          <Macro4 Name="LCLWidgetType" Value="qt5"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-qt5"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dDisableLCLGIF
+-dDisableLCLJPEG
+-dDisableLCLPNM
+-dDisableLCLTIFF
+-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
       <Item Name="ReleaseQt6">
         <MacroValues Count="1">
           <Macro7 Name="LCLWidgetType" Value="qt6"/>
@@ -290,6 +344,153 @@
               <IgnoredMessages idx6058="True" idx5092="True" idx5024="True" idx4056="True" idx4055="True"/>
             </CompilerMessages>
             <CustomOptions Value="-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="DebugQt6">
+        <MacroValues Count="1">
+          <Macro7 Name="LCLWidgetType" Value="qt6"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <Parsing>
+            <SyntaxOptions>
+              <IncludeAssertionCode Value="True"/>
+            </SyntaxOptions>
+          </Parsing>
+          <CodeGeneration>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf2Set"/>
+              <UseHeaptrc Value="True"/>
+              <TrashVariables Value="True"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True" idx5092="True" idx5024="True" idx4056="True" idx4055="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="ReleaseGTK3">
+        <MacroValues Count="1">
+          <Macro3 Name="LCLWidgetType" Value="gtk3"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-gtk3"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf3"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dDisableLCLGIF
+-dDisableLCLJPEG
+-dDisableLCLPNM
+-dDisableLCLTIFF
+-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="GTK3Debug">
+        <MacroValues Count="1">
+          <Macro3 Name="LCLWidgetType" Value="gtk3"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Checks>
+              <IOChecks Value="True"/>
+              <RangeChecks Value="True"/>
+              <OverflowChecks Value="True"/>
+              <StackChecks Value="True"/>
+            </Checks>
+            <VerifyObjMethodCallValidity Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <DebugInfoType Value="dsDwarf3"/>
+              <UseHeaptrc Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dDisableLCLGIF
+-dDisableLCLJPEG
+-dDisableLCLPNM
+-dDisableLCLTIFF
+-dTOMBOY_NG"/>
           </Other>
         </CompilerOptions>
       </Item>
@@ -341,6 +542,51 @@
       <Item Name="ReleaseLin32Qt5">
         <MacroValues Count="1">
           <Macro4 Name="LCLWidgetType" Value="qt5"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-32-qt5"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetProcessor Value="80386"/>
+            <TargetCPU Value="i386"/>
+            <TargetOS Value="linux"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowTriedFiles Value="True"/>
+            </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="ReleaseLin32GTK3">
+        <MacroValues Count="1">
+          <Macro3 Name="LCLWidgetType" Value="gtk3"/>
         </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
@@ -472,7 +718,7 @@
       </Item>
       <Item Name="ReleaseRasPi">
         <MacroValues Count="1">
-          <Macro4 Name="LCLWidgetType" Value="qt5"/>
+          <Macro2 Name="LCLWidgetType" Value="gtk2"/>
         </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
@@ -551,6 +797,86 @@
           </Other>
         </CompilerOptions>
       </Item>
+      <Item Name="ReleaseRasPi64Qt5">
+        <MacroValues Count="1">
+          <Macro4 Name="LCLWidgetType" Value="qt5"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-arm64-qt5"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <TargetCPU Value="aarch64"/>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True" idx5024="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="ReleaseRasPi64GTK3">
+        <MacroValues Count="1">
+          <Macro3 Name="LCLWidgetType" Value="gtk3"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-arm64-qt5"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <TargetCPU Value="aarch64"/>
+            <Optimizations>
+              <OptimizationLevel Value="0"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True" idx5024="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
       <Item Name="CocoaRelease">
         <MacroValues Count="1">
           <Macro5 Name="LCLWidgetType" Value="cocoa"/>
@@ -576,6 +902,50 @@
             <Debugging>
               <GenerateDebugInfo Value="False"/>
               <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <Verbosity>
+              <ShowHints Value="False"/>
+            </Verbosity>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
+      <Item Name="CocoaArmRelease">
+        <MacroValues Count="1">
+          <Macro5 Name="LCLWidgetType" Value="cocoa"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-aarch64"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="aarch64"/>
+            <TargetOS Value="darwin"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
               <DebugInfoType Value="dsDwarf2Set"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -670,107 +1040,9 @@
           </Other>
         </CompilerOptions>
       </Item>
-      <Item Name="CocoaArmRelease">
+      <Item Name="CarbonDebug">
         <MacroValues Count="1">
-          <Macro5 Name="LCLWidgetType" Value="cocoa"/>
-        </MacroValues>
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="tomboy-ng-aarch64"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <TargetCPU Value="aarch64"/>
-            <TargetOS Value="darwin"/>
-            <Optimizations>
-              <OptimizationLevel Value="3"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-              <DebugInfoType Value="dsDwarf2Set"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-            <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
-            </Options>
-          </Linking>
-          <Other>
-            <Verbosity>
-              <ShowHints Value="False"/>
-            </Verbosity>
-            <CompilerMessages>
-              <IgnoredMessages idx6058="True"/>
-            </CompilerMessages>
-            <CustomOptions Value="-dTOMBOY_NG"/>
-          </Other>
-        </CompilerOptions>
-      </Item>
-      <Item Name="QT5Debug">
-        <MacroValues Count="1">
-          <Macro4 Name="LCLWidgetType" Value="qt5"/>
-        </MacroValues>
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="tomboy-ng-qt5"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <Checks>
-              <IOChecks Value="True"/>
-              <RangeChecks Value="True"/>
-              <OverflowChecks Value="True"/>
-              <StackChecks Value="True"/>
-            </Checks>
-            <VerifyObjMethodCallValidity Value="True"/>
-            <Optimizations>
-              <OptimizationLevel Value="0"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <DebugInfoType Value="dsDwarf3"/>
-              <UseHeaptrc Value="True"/>
-              <TrashVariables Value="True"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-            <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
-            </Options>
-          </Linking>
-          <Other>
-            <Verbosity>
-              <ShowHints Value="False"/>
-            </Verbosity>
-            <CompilerMessages>
-              <IgnoredMessages idx6058="True"/>
-            </CompilerMessages>
-            <CustomOptions Value="-dDisableLCLGIF
--dDisableLCLJPEG
--dDisableLCLPNM
--dDisableLCLTIFF
--dTOMBOY_NG"/>
-          </Other>
-        </CompilerOptions>
-      </Item>
-      <Item Name="DebugQt6">
-        <MacroValues Count="1">
-          <Macro7 Name="LCLWidgetType" Value="qt6"/>
+          <Macro6 Name="LCLWidgetType" Value="carbon"/>
         </MacroValues>
         <CompilerOptions>
           <Version Value="11"/>
@@ -794,15 +1066,14 @@
               <StackChecks Value="True"/>
             </Checks>
             <VerifyObjMethodCallValidity Value="True"/>
-            <Optimizations>
-              <OptimizationLevel Value="0"/>
-            </Optimizations>
+            <TargetCPU Value="i386"/>
           </CodeGeneration>
           <Linking>
             <Debugging>
               <DebugInfoType Value="dsDwarf2Set"/>
               <UseHeaptrc Value="True"/>
               <TrashVariables Value="True"/>
+              <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <Options>
               <Win32>
@@ -812,7 +1083,7 @@
           </Linking>
           <Other>
             <CompilerMessages>
-              <IgnoredMessages idx6058="True" idx5092="True" idx5024="True" idx4056="True" idx4055="True"/>
+              <IgnoredMessages idx5024="True"/>
             </CompilerMessages>
             <CustomOptions Value="-dTOMBOY_NG"/>
           </Other>
@@ -977,197 +1248,11 @@
           </Other>
         </CompilerOptions>
       </Item>
-      <Item Name="ReleaseGTK3">
-        <MacroValues Count="1">
-          <Macro3 Name="LCLWidgetType" Value="gtk3"/>
-        </MacroValues>
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="tomboy-ng-gtk3"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <Optimizations>
-              <OptimizationLevel Value="3"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-              <RunWithoutDebug Value="True"/>
-              <DebugInfoType Value="dsDwarf3"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-            <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
-            </Options>
-          </Linking>
-          <Other>
-            <Verbosity>
-              <ShowHints Value="False"/>
-            </Verbosity>
-            <CompilerMessages>
-              <IgnoredMessages idx6058="True"/>
-            </CompilerMessages>
-            <CustomOptions Value="-dDisableLCLGIF
--dDisableLCLJPEG
--dDisableLCLPNM
--dDisableLCLTIFF
--dTOMBOY_NG"/>
-          </Other>
-        </CompilerOptions>
-      </Item>
-      <Item Name="GTK3Debug">
-        <MacroValues Count="1">
-          <Macro3 Name="LCLWidgetType" Value="gtk3"/>
-        </MacroValues>
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="tomboy-ng"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <SmartLinkUnit Value="True"/>
-            <Checks>
-              <IOChecks Value="True"/>
-              <RangeChecks Value="True"/>
-              <OverflowChecks Value="True"/>
-              <StackChecks Value="True"/>
-            </Checks>
-            <VerifyObjMethodCallValidity Value="True"/>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <DebugInfoType Value="dsDwarf3"/>
-              <UseHeaptrc Value="True"/>
-            </Debugging>
-            <LinkSmart Value="True"/>
-            <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
-            </Options>
-          </Linking>
-          <Other>
-            <Verbosity>
-              <ShowHints Value="False"/>
-            </Verbosity>
-            <CompilerMessages>
-              <IgnoredMessages idx6058="True"/>
-            </CompilerMessages>
-            <CustomOptions Value="-dDisableLCLGIF
--dDisableLCLJPEG
--dDisableLCLPNM
--dDisableLCLTIFF
--dTOMBOY_NG"/>
-          </Other>
-        </CompilerOptions>
-      </Item>
-      <Item Name="CarbonDebug">
-        <MacroValues Count="1">
-          <Macro6 Name="LCLWidgetType" Value="carbon"/>
-        </MacroValues>
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="tomboy-ng"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <Parsing>
-            <SyntaxOptions>
-              <IncludeAssertionCode Value="True"/>
-            </SyntaxOptions>
-          </Parsing>
-          <CodeGeneration>
-            <Checks>
-              <IOChecks Value="True"/>
-              <RangeChecks Value="True"/>
-              <OverflowChecks Value="True"/>
-              <StackChecks Value="True"/>
-            </Checks>
-            <VerifyObjMethodCallValidity Value="True"/>
-            <TargetCPU Value="i386"/>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <DebugInfoType Value="dsDwarf2Set"/>
-              <UseHeaptrc Value="True"/>
-              <TrashVariables Value="True"/>
-              <UseExternalDbgSyms Value="True"/>
-            </Debugging>
-            <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
-            </Options>
-          </Linking>
-          <Other>
-            <CompilerMessages>
-              <IgnoredMessages idx5024="True"/>
-            </CompilerMessages>
-            <CustomOptions Value="-dTOMBOY_NG"/>
-          </Other>
-        </CompilerOptions>
-      </Item>
-      <Item Name="ReleaseRasPi64Qt5">
-        <MacroValues Count="1">
-          <Macro4 Name="LCLWidgetType" Value="qt5"/>
-        </MacroValues>
-        <CompilerOptions>
-          <Version Value="11"/>
-          <Target>
-            <Filename Value="tomboy-ng-arm64-qt5"/>
-          </Target>
-          <SearchPaths>
-            <IncludeFiles Value="$(ProjOutDir)"/>
-            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-          </SearchPaths>
-          <CodeGeneration>
-            <TargetCPU Value="aarch64"/>
-            <Optimizations>
-              <OptimizationLevel Value="0"/>
-            </Optimizations>
-          </CodeGeneration>
-          <Linking>
-            <Debugging>
-              <GenerateDebugInfo Value="False"/>
-              <RunWithoutDebug Value="True"/>
-              <DebugInfoType Value="dsDwarf2Set"/>
-              <UseLineInfoUnit Value="False"/>
-            </Debugging>
-            <Options>
-              <Win32>
-                <GraphicApplication Value="True"/>
-              </Win32>
-            </Options>
-          </Linking>
-          <Other>
-            <CompilerMessages>
-              <IgnoredMessages idx6058="True" idx5024="True"/>
-            </CompilerMessages>
-            <CustomOptions Value="-dTOMBOY_NG"/>
-          </Other>
-        </CompilerOptions>
-      </Item>
       <SharedMatrixOptions Count="7">
         <Item1 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64,LeakCheckWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
-        <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseLin64,ReleaseLin32,ReleaseRasPi64" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
-        <Item3 ID="429153174386" Modes="ReleaseGTK3,GTK3Debug" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
-        <Item4 ID="950048283013" Modes="QT5Debug,ReleaseQT5,ReleaseRasPi,ReleaseLin32Qt5,ReleaseRasPi64Qt5" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
+        <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseLin64,ReleaseLin32,ReleaseRasPi64,ReleaseRasPi" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
+        <Item3 ID="429153174386" Modes="ReleaseGTK3,GTK3Debug,ReleaseLin32GTK3,ReleaseRasPi64GTK3" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
+        <Item4 ID="950048283013" Modes="QT5Debug,ReleaseQT5,ReleaseLin32Qt5,ReleaseRasPi64Qt5" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
         <Item5 ID="341789512381" Modes="CocoaDebug,CocoaRelease,CocoaArmRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
         <Item6 ID="231441956052" Modes="CarbonRelease,CarbonDebug" Type="IDEMacro" MacroName="LCLWidgetType" Value="carbon"/>
         <Item7 ID="372825449782" Modes="DebugQt6,ReleaseQt6" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt6"/>

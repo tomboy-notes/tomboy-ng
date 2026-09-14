@@ -83,6 +83,9 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
         ReleaseLin32)
             echo "i386"
         ;;
+        ReleaseLin32GTK3)
+            echo "i386GTK3"
+        ;;
         ReleaseQT5)
             echo "amd64Qt5"
         ;;
@@ -91,6 +94,9 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
         ;;
         ReleaseRasPi64)
             echo "arm64"
+        ;;
+        ReleaseRasPi64GTK3)
+            echo "arm64GTK3"
         ;;
         ReleaseRasPi64Qt5)
             echo "arm64Qt5"
@@ -120,8 +126,10 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
             echo "$PRODUCT"-32
         ;;
         ReleaseLin32Qt5)
-        
             echo "$PRODUCT"-32-qt5
+        ;;
+        ReleaseLin32GTK3)
+            echo "$PRODUCT"-32-gtk3
         ;;
         ReleaseWin32)
             echo "$PRODUCT"-32.exe
@@ -135,34 +143,37 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ReleaseQt6)
             echo "$PRODUCT"-qt6
         ;;        
-	ReleaseGTK3)
-	    echo "$PRODUCT"-gtk3
-	;;
+		ReleaseGTK3)
+			echo "$PRODUCT"-gtk3
+		;;
         ReleaseRasPi)
             echo "$PRODUCT"-armhf
         ;;
-       ReleaseRasPi64)
+		ReleaseRasPi64)
             echo "$PRODUCT"-arm64
         ;;
-       ReleaseRasPi64Qt5)
+		ReleaseRasPi64Qt5)
             echo "$PRODUCT"-arm64-qt5
         ;;
-	MistyReleaseX86_64)
-		echo "misty-server-x86_64"
-	;;
-	MistyReleaseRasPi32)
-		echo "misty-server-arm32"
-	;;
-	MistyReleaseRasPi64)
-		echo "misty-server-arm64"	
-	;;
-	MistyReleaseWin64)
-		echo "misty-server.exe"
-	;;
+		ReleaseRasPi64GTK3)
+            echo "$PRODUCT"-arm64-gtk3
+        ;;
+		MistyReleaseX86_64)
+			echo "misty-server-x86_64"
+		;;
+		MistyReleaseRasPi32)
+			echo "misty-server-arm32"
+		;;
+		MistyReleaseRasPi64)
+			echo "misty-server-arm64"
+		;;
+		MistyReleaseWin64)
+			echo "misty-server.exe"
+		;;
     esac
 }
 
-# Modes (as defined in IDE) ReleaseLin64 ReleaseLin32 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseQT5
+# Modes (as defined in IDE) ReleaseLin64 ReleaseLin32 ReleaseLin32GTK3 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseQT5 ReleaseGTK3
 
 function BuildAMode () {
     echo "------------- Building Mode $1 --------"
@@ -309,22 +320,17 @@ function DebianPackage () {
 		CTRL_ARCH="amd64"
 		# note that we see warnings about using libayatana-appindicator-glib instead, not in distro yet
 		# Maybe, libayatana-appindicator3-1 belongs in Recommeds rather than Depends ? apt will install if available.
-		CTRL_DEPENDS="libc6 (>= 2.34), libnotify-bin, libayatana-appindicator3-1"     # because I build it to that libc6, not on U2004 box, not necessary...
-		CTRL_RELEASE="GTK3 release."
+		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin, libayatana-appindicator3-1"     # because I build it to that libc6, not on U2004 box, not necessary...
+		CTRL_RELEASE="Linux 64bit, GTK3 release."
+		# remove reference to xcb from the gtk3 build .desktop file, maybe its causing Roy's problem ??
+		sed -i "s/Exec=env QT_QPA_PLATFORM=xcb tomboy-ng %f/Exec=tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop
 		;;
 	"ReleaseQT5")
 		# echo "++++++++++ Setting QT5 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), libnotify-bin"
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
 		CTRL_RELEASE="Qt5 release."
 		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog - no longer !
-	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it.
-	    # sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop 
-	    #sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --platformtheme qt5ct/" BUILD/usr/share/applications/"$PRODUCT".desktop
-		;;
-
-	"ReleaseLin32Qt5")
-		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
 	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it.
 	    # sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop 
 	    #sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --platformtheme qt5ct/" BUILD/usr/share/applications/"$PRODUCT".desktop
@@ -333,22 +339,47 @@ function DebianPackage () {
 	"ReleaseQt6")
 		# echo "++++++++++ Setting QT6 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libc6 (>= 2.34), libnotify-bin, libqt6pas6 (>= 6.2.7)"
-		CTRL_RELEASE="Qt6 release."
+		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin, libqt6pas6 (>= 6.2.7)"
+		CTRL_RELEASE="Linux 64bit Qt6 release."
 		# we must force qt6 app to use qt6ct because of a bug in qt6.tsavedialog, no, not using Laz300
-	    # note ugly syntax, qt6 strips it off (and anything after it) before app sees it. 
-	    # sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt6ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop	
-		;;		
-	"ReleaseRasPi")
+	    # note ugly syntax, qt6 strips it off (and anything after it) before app sees it.
+	    # sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt6ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop
+		;;
+
+	"ReleaseLin32Qt5")           # we must also make an "old" version of this ?
+		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog
+	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it.
+	    # sed -i "s/Exec=tomboy-ng %f/Exec=env QT_QPA_PLATFORMTHEME=qt5ct tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop 
+	    #sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --platformtheme qt5ct/" BUILD/usr/share/applications/"$PRODUCT".desktop
+	    CTRL_ARCH="i386"
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
+		CTRL_RELEASE="Qt5 release."
+	    ;;
+	"ReleaseLin32")              # we must also make an "old" version of this ?
+	    CTRL_ARCH="i386"
+		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin"
+		CTRL_RELEASE="Qt5 release."
+	    ;;
+
+	"ReleaseRasPi")             # we must also make an "old" version of this ?
 		CTRL_RELEASE="Raspberry Pi 32bit release."
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), libnotify-bin"		
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
 		;;
-	"ReleaseRasPi64")
-		CTRL_RELEASE="Raspberry Pi 64bit release."
+	"ReleaseRasPiQt5")          # we must also make an "old" version of this ?
+		CTRL_RELEASE="Raspberry Pi 32bit release, Qt5"
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
 		;;
-	"ReleaseRasPi64Qt5")
+	"ReleaseRasPi64")                                        # 64bit gtk2
+		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin"
+		CTRL_RELEASE="Raspberry Pi 64bit release, gtk2"
+		;;
+	"ReleaseRasPi64GTK3")                                    # 64bit gtk3
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
+		CTRL_RELEASE="Raspberry Pi 64bit release, GTK3."
+		;;
+	"ReleaseRasPi64Qt5")                                     # 64bit Qt5
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.14), libnotify-bin"
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
 		CTRL_RELEASE="aarch64 Qt5 release."	    
 		;;
     esac
@@ -533,10 +564,15 @@ rm tom*.deb
 # tomboy-ng-arm64-qt5 (ReleaseRasPi64Qt5)
 # tomboy-ng-gtk3 (ReleaseGTK3)
 
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQt6 ReleaseRasPi64 ReleaseRasPi64Qt5 ReleaseLin32Qt5 ReleaseGTK3; # Always package ReleaseLin64 first to update changelog once
+# This for the new in 2026 build model.
+for BIN in ReleaseLin64 ReleaseGTK3 ReleaseQT5 ReleaseQt6 ReleaseLin32 ReleaseLin32Qt5 ReleaseRasPi ReleaseRasPiQt5 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseRasPi64Qt5;
+# for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQt6 ReleaseRasPi64 ReleaseRasPi64Qt5 ReleaseLin32Qt5 ReleaseGTK3;
+	# Always package ReleaseLin64 first to update changelog once
 	do 
 		DebianPackage $BIN ; 
 done
+
+
 
 rm tom*.tgz
 for MODE in ReleaseLin64 ReleaseLin32 ;

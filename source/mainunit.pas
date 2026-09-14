@@ -713,7 +713,7 @@ begin
     (* if Application.HasOption('no-splash') or (not Sett.CheckShowSplash.Checked) then begin
          {if AllowDismiss then} ButtonDismissClick(Self);
      end;  *)
-    Left := 10;
+    Left := 20;     // Sept 2026, LinuxMint Cinn plays up if less than about 15 !  No idea why.
     Top := 40;
 
     CheckBoxDontShow.checked := not Sett.CheckShowSplash.Checked;
@@ -949,11 +949,15 @@ var
         Stg : string;
         TheDate : string;
 begin
+        if GetEnvironmentVariable('TEST_SHOWABOUT') <> '' then
+            debugln('Starting Main.About, Visible = ' + booltostr(MainForm.Visible=True, True));
         if AboutFrm <> Nil then begin
+            if GetEnvironmentVariable('TEST_SHOWABOUT') <> '' then
+               debugln('In Main.About AboutForm <> Nil, Visible = ' + booltostr(MainForm.Visible=True, True));
             AboutFrm.Show;
             AboutFrm.EnsureVisible();
             exit;
-		end;
+	end;
         // This is about Debian's quest for repeatability, may contain eg '2024/10/25' or ''
         // The file MUST exist and contain either a date stamp or just two single inverted commas
         // $> date +\'%Y/%m/%d\' > SOURCE_DATE.txt   or  $> echo "''" > SOURCE_DATE.txt
@@ -979,10 +983,16 @@ begin
             + #10 + 'QT_QPA_PLAFORM : ' + GetEnvironmentVariable('QT_QPA_PLATFORM');
         {$endif}
         Stg := Stg + #10 + 'https://github.com/tomboy-notes/tomboy-ng';
+        if GetEnvironmentVariable('TEST_SHOWABOUT') <> '' then
+            debugln('Main.About creating About, Visible = ' + booltostr(MainForm.Visible=True, True));
         AboutFrm := CreateMessageDialog(Stg, mtInformation, [mbClose]);
         AboutFrm.ShowModal;
+        if GetEnvironmentVariable('TEST_SHOWABOUT') <> '' then
+            debugln('Main.About closed About, Visible = ' + booltostr(MainForm.Visible=True, True));
         AboutFrm.free;
         AboutFrm := Nil;
+        if GetEnvironmentVariable('TEST_SHOWABOUT') <> '' then
+            debugln('Main.About freed About, Visible = ' + booltostr(MainForm.Visible=True, True));
         //Showmessage(Stg);
 end;
 
