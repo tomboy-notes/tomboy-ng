@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="12"/>
+    <Version Value="13"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
       <Title Value="tomboy-ng"/>
@@ -205,7 +205,7 @@
           </Other>
         </CompilerOptions>
       </Item>
-      <Item Name="ReleaseQT5">
+      <Item Name="ReleaseQt5">
         <MacroValues Count="1">
           <Macro4 Name="LCLWidgetType" Value="qt5"/>
         </MacroValues>
@@ -591,7 +591,7 @@
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="tomboy-ng-32-qt5-gtk3"/>
+            <Filename Value="tomboy-ng-32-gtk3"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
@@ -1293,7 +1293,7 @@
         <Item1 ID="036726732034" Modes="ReleaseWin32,LeakCheckWin32,ReleaseWin64,LeakCheckWin64" Type="IDEMacro" MacroName="LCLWidgetType" Value="win32"/>
         <Item2 ID="418982182673" Modes="LeakCheckLin64,ReleaseLin64,ReleaseLin32,ReleaseRasPi64,ReleaseRasPi" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk2"/>
         <Item3 ID="429153174386" Modes="ReleaseGTK3,GTK3Debug,ReleaseLin32GTK3,ReleaseRasPi64GTK3,ReleaseRasPiGTK3" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
-        <Item4 ID="950048283013" Modes="QT5Debug,ReleaseQT5,ReleaseLin32Qt5,ReleaseRasPi64Qt5" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
+        <Item4 ID="950048283013" Modes="QT5Debug,ReleaseQt5,ReleaseLin32Qt5,ReleaseRasPi64Qt5" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt5"/>
         <Item5 ID="341789512381" Modes="CocoaDebug,CocoaRelease,CocoaArmRelease" Type="IDEMacro" MacroName="LCLWidgetType" Value="cocoa"/>
         <Item6 ID="231441956052" Modes="CarbonRelease,CarbonDebug" Type="IDEMacro" MacroName="LCLWidgetType" Value="carbon"/>
         <Item7 ID="372825449782" Modes="DebugQt6,ReleaseQt6" Type="IDEMacro" MacroName="LCLWidgetType" Value="qt6"/>
@@ -1304,6 +1304,9 @@
       <DestinationDirectory Value="$(ProjPath)/published/"/>
     </PublishOptions>
     <RunParams>
+      <local>
+        <CommandLineParams Value="--config-dir=/home/dbannon/.config/tomboy-ng"/>
+      </local>
       <FormatVersion Value="2"/>
       <Modes>
         <Mode Name="default">

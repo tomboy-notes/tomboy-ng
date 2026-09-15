@@ -86,7 +86,7 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
         ReleaseLin32GTK3)
             echo "i386GTK3"
         ;;
-        ReleaseQT5)
+        ReleaseQt5)
             echo "amd64Qt5"
         ;;
         ReleaseRasPiGTK3)
@@ -128,7 +128,7 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ReleaseLin32)
             echo "$PRODUCT"-32
         ;;
-        ReleaseLin32QT5)
+        ReleaseLin32Qt5)
             echo "$PRODUCT"-32-qt5
         ;;
         ReleaseLin32GTK3)
@@ -140,7 +140,7 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ReleaseWin64)
             echo "$PRODUCT"-64.exe
         ;;
-        ReleaseQT5)
+        ReleaseQt5)
             echo "$PRODUCT"-qt5
         ;;
         ReleaseQt6)
@@ -324,18 +324,20 @@ function DebianPackage () {
 	# ----------- Some Special Cases ----------------
 	case "$1" in
 	"ReleaseGTK3")
+	    # NOTE : 32bit version needed libharfbuzz-gobject0 - is that NEEDED here ?
 		CTRL_ARCH="amd64"
 		# note that we see warnings about using libayatana-appindicator-glib instead, not in distro yet
-		# Maybe, libayatana-appindicator3-1 belongs in Recommeds rather than Depends ? apt will install if available.
-		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin, libayatana-appindicator3-1"     # because I build it to that libc6, not on U2004 box, not necessary...
+		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin, libharfbuzz-gobject0, libayatana-appindicator3-1"     # because I build it to that libc6, not on U2004 box, not necessary...
 		CTRL_RELEASE="Linux 64bit, GTK3 release."
 		# remove reference to xcb from the gtk3 build .desktop file, maybe its causing Roy's problem ??
 		sed -i "s/Exec=env QT_QPA_PLATFORM=xcb tomboy-ng %f/Exec=tomboy-ng %f/" BUILD/usr/share/applications/"$PRODUCT".desktop
+		# Adding libayanata-appindicator3-1 addes 630K of libraries to deb trixie KDE, just acceptable
+		# Older distros seem to also need libharfbuzz-gobject0, 130k. Newer ones already have it.
 		;;
-	"ReleaseQT5")
+	"ReleaseQt5")
 		# echo "++++++++++ Setting QT5 +++++++++"
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
+		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libayatana-appindicator3-1, libc6 (>= 2.36), libnotify-bin"
 		CTRL_RELEASE="Qt5 release."
 		# we must force qt5 app to use qt5ct because of a bug in qt5.tsavedialog - no longer !
 	    # note ugly syntax, qt5 strips it off (and anything after it) before app sees it.
@@ -374,7 +376,9 @@ function DebianPackage () {
 		;;
 	"ReleaseRasPiGTK3")
 		CTRL_RELEASE="Raspberry Pi 32bit gtk3 release."
-		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin"
+		CTRL_DEPENDS="libgtk-3-0, libayayana-appindicator3-1, libharfbuzz-gobject0, libc6 (>= 2.36), libnotify-bin"
+		# libayanata is needed for system tray, it depends on libgtk-3.0 so should be OK
+		# gives us a functioning ST Icon for gtk3 and Qt5 (qt5 right click)
 		;;
 
 	"ReleaseRasPiQt5")          # we must also make an "old" version of this ?
@@ -386,12 +390,13 @@ function DebianPackage () {
 		CTRL_RELEASE="Raspberry Pi 64bit release, gtk2"
 		;;
 	"ReleaseRasPi64GTK3")                                    # 64bit gtk3
-		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin"
+		CTRL_DEPENDS="libgtk-3-0, libayayana-appindicator3-1, libharfbuzz-gobject0, libc6 (>= 2.36), libnotify-bin"
 		CTRL_RELEASE="Raspberry Pi 64bit release, GTK3."
+
 		;;
 	"ReleaseRasPi64Qt5")                                     # 64bit Qt5
 		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
+		CTRL_DEPENDS="libayayana-appindicator3-1, libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
 		CTRL_RELEASE="aarch64 Qt5 release."	    
 		;;
     esac
@@ -559,7 +564,7 @@ if [ "$2" != "" ]; then
 fi 
 
 
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseLin32QT5 ReleaseGTK3 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPiGTK3  ReleaseRasPi64Qt5 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseQT5 ReleaseQt6; 
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseLin32Qt5 ReleaseGTK3 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPiGTK3  ReleaseRasPi64Qt5 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseQt5 ReleaseQt6; 
 	do BuildAMode $BIN; 
 done
 
@@ -577,7 +582,8 @@ rm tom*.deb
 # tomboy-ng-gtk3 (ReleaseGTK3)
 
 # This for the new in 2026 build model.
-for BIN in ReleaseLin64 ReleaseGTK3 ReleaseQT5 ReleaseQt6 ReleaseLin32 ReleaseLin32Qt5 ReleaseRasPi ReleaseRasPiGTK3 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseRasPi64Qt5;
+# Note : Leaving out : ReleaseLin32 (appind issues)
+for BIN in ReleaseLin64 ReleaseGTK3 ReleaseQt5 ReleaseQt6  ReleaseLin32Qt5 ReleaseRasPi ReleaseRasPiGTK3 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseRasPi64Qt5;
 # for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQt6 ReleaseRasPi64 ReleaseRasPi64Qt5 ReleaseLin32Qt5 ReleaseGTK3;
 	# Always package ReleaseLin64 first to update changelog once
 	do 
