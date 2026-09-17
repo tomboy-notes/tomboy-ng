@@ -304,6 +304,7 @@ function DebianTemplate () {        # the common to all versions things
 	cp ../debian/copyright BUILD/usr/share/doc/"$PRODUCT"/.
 }
 
+
 	# gets called with the Lazarus Build Mode name for each one we are packaging ...
 	# not all binaries will have been build here is some errors can be expected
 function DebianPackage () {
@@ -314,15 +315,17 @@ function DebianPackage () {
     BIN=$(ModeParamBin "$1")
     if [ ! -f ../source/"$BIN" ]; then
     	echo "--------- WARNING $BIN not present in ../source BIN=[$BIN] and Mode=[$1] and ARCH=[$ARCH] ----------------"
-    	ERROR="$ERROR ; $BIN not present"
-    	return 1
+    	ERROR="$ERROR ; $BIN not present. "
+    	return 1                                # As I build all on a cross compile VM, maybe exit ??
     fi
-    CTRL_ARCH=$ARCH
-	CTRL_DEPENDS="libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libnotify-bin"
-	CTRL_RELEASE="GTK2 release."
 	cp $SOURCE_DIR/$BIN BUILD/usr/bin/$PRODUCT
-	# ----------- Some Special Cases ----------------
 	case "$1" in
+	"ReleaseLin64")
+		CTRL_ARCH="amd64"
+		CTRL_DEPENDS="libgtk2.0-0 (>= 2.6), libc6 (>= 2.14), libnotify-bin"      # default for gtk2
+		CTRL_RELEASE="GTK2 release."
+		CTRL_ARCH="amd64"
+	;;
 	"ReleaseGTK3")
 	    # NOTE : 32bit version needed libharfbuzz-gobject0 - is that NEEDED here ?
 		CTRL_ARCH="amd64"
@@ -371,35 +374,44 @@ function DebianPackage () {
 	    ;;
 
 	"ReleaseRasPi")             # we must also make an "old" version of this gtk2 ?
+		CTRL_ARCH="armhf"
 		CTRL_RELEASE="Raspberry Pi 32bit release."
 		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin"
 		;;
 	"ReleaseRasPiGTK3")
+		CTRL_ARCH="armhf"
 		CTRL_RELEASE="Raspberry Pi 32bit gtk3 release."
-		CTRL_DEPENDS="libgtk-3-0, libayayana-appindicator3-1, libharfbuzz-gobject0, libc6 (>= 2.36), libnotify-bin"
+		CTRL_DEPENDS="libgtk-3-0, libayatana-appindicator3-1, libharfbuzz-gobject0, libc6 (>= 2.36), libnotify-bin"
 		# libayanata is needed for system tray, it depends on libgtk-3.0 so should be OK
 		# gives us a functioning ST Icon for gtk3 and Qt5 (qt5 right click)
 		;;
-
 	"ReleaseRasPiQt5")          # we must also make an "old" version of this ?
+		CTRL_ARCH="armhf"
 		CTRL_RELEASE="Raspberry Pi 32bit release, Qt5"
 		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
 		;;
 	"ReleaseRasPi64")                                        # 64bit gtk2
+		CTRL_ARCH="arm64"
 		CTRL_DEPENDS="libc6 (>= 2.36), libnotify-bin"
 		CTRL_RELEASE="Raspberry Pi 64bit release, gtk2"
 		;;
-	"ReleaseRasPi64GTK3")                                    # 64bit gtk3
-		CTRL_DEPENDS="libgtk-3-0, libayayana-appindicator3-1, libharfbuzz-gobject0, libc6 (>= 2.36), libnotify-bin"
+	"ReleaseRasPi64GTK3")          # 64bit gtk3
+		CTRL_ARCH="arm64"
+		CTRL_DEPENDS="libgtk-3-0, libayatana-appindicator3-1, libharfbuzz-gobject0, libc6 (>= 2.36), libnotify-bin"
 		CTRL_RELEASE="Raspberry Pi 64bit release, GTK3."
 
 		;;
 	"ReleaseRasPi64Qt5")                                     # 64bit Qt5
-		CTRL_ARCH="amd64"
-		CTRL_DEPENDS="libayayana-appindicator3-1, libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
+		CTRL_ARCH="arm64"
+		CTRL_DEPENDS="libayatana-appindicator3-1, libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
 		CTRL_RELEASE="aarch64 Qt5 release."	    
 		;;
     esac
+
+    if [ "$CTRL_ARCH" == "" ]; then
+		echo "===== ERROR, CTRL_ARCH not specified for $1 ====="
+		exit
+	fi
 	chmod 755 BUILD/usr/bin/tomboy-ng
 	
 	# -------------------- Changelog -----------------
