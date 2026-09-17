@@ -11,14 +11,22 @@
 
 # ----------------------------------------------------------------------------
 # Typical usage -
-#          ./package_debian.sh $HOME"/lazarus/laz-200 <LeakCheck>
+#          bash ./package.bash <BuildMode>
            
 #  add one of [ReleaseRasPi64, ReleaseQt6, ReleaseLin32Qt5 ] after laz path
 #  to build just that binary, no packaging done.
 #  or add one of the Misty package names (assuming right platform)
 
-# Note we assume laz config has same name as Laz directory, ie .lazarus_4_6
+# Note we assume laz config has same name as Laz directory, ie .lazarus_4_8
+#
+# --- Must be updated from time to time
 # ----------------------------------------------------------------------------
+LAZ_CURRENT="$HOME/bin/Lazarus/lazarus-main"
+LAZ_MAIN="$HOME/bin/Lazarus/lazarus-main"
+# A fatal error if either the Laz install or its config dir does not exist.
+# no reason why they don't both point to same install by the way !
+# ----------------------------------------------------------------------------
+
 
 PRODUCT="tomboy-ng"
 VERSION=`cat version`
@@ -34,26 +42,16 @@ BUILDOPTS=" -B --quiet --quiet"
 # BUILDOPTS=" -B --verbose"
 BUILDDATE=`date -R`
 LPI="Tomboy_NG.lpi"
-LAZ_FULL_DIR="$1"
-LAZ_DIR=`basename "$LAZ_FULL_DIR"`
+
 WIN_DIR=WinPre_"$VERSION"
 LEAKCHECK="NO"
-
-if [ -z "$LAZ_DIR" ]; then
-    echo "Need a full path to configured Lazarus dir, add a build mode to just compile a binary"
-	echo "Usage : $0 /Full/Path/Lazarus/dir [ReleaseQt6|ReleaseRasPi64|ReleaseLin32Qt5|default]"
-	echo "eg    : $0 /home/dbannon/bin/Lazarus/lazarus-fixes_3_0"
-	echo "or"
-	echo "      : $0 clean"
-	exit
-fi
 
 if [ "$2" == "LeakCheck" ]; then
 	LEAKCHECK="YES"
 fi
 
 
-if [ $1 == "clean" ]; then
+if [ "$1" == "clean" ]; then
 	rm  -f *.deb
 	rm  -f *.tgz
 	rm  -f *.rpm
@@ -63,6 +61,36 @@ if [ $1 == "clean" ]; then
 fi
 
 # ----------------------
+
+function ChooseLazarus () {    # passed the current Lazarus Build Mode
+	# returns either $LAZ_CURRENT or $LAZ_MAIN depending on passed Lazarus Build MODE
+	if [[ "$1" =~ "GTK" ]]; then
+		echo "$LAZ_MAIN"
+	else
+		echo "$LAZ_CURRENT"
+	fi
+}
+
+
+function ConfigString () {          # passed a path to a Lazarus install, rets ""--pcp=/path/to/config""
+	# ----- OK, lets find Laz Config -----
+	LAZ_CONFIG=""
+	if [ -d "$1" ]; then
+		if [ -f "$1"/lazarus.cfg ]; then
+			# Assume if we have a cfg, it specifies pcp ?? Will fail otherwise
+			LAZ_CONFIG=`grep -i pcp "$1"/lazarus.cfg`
+		else
+			echo "----- ERROR, dont have a $1/lazarus.cfg file -----"
+			exit
+		fi
+	fi
+	if [ -z "$LAZ_CONFIG" ]; then
+		echo "----- ERROR, dont have a Laz Config mentioned in $1/lazarus.cfg ----"
+		exit
+	fi
+    echo "$LAZ_CONFIG"			# note LAZ_CONFIG is not global
+}
+
 
 
 function LookForBinary () {
@@ -150,7 +178,7 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
 		echo "$PRODUCT"-gtk3
 		;;
         ReleaseRasPiGTK3)
-            echo "$PRODUCT"-armhf
+            echo "$PRODUCT"-armhf-gtk3
         ;;
         ReleaseRasPi)
             echo "$PRODUCT"-armhf
@@ -181,14 +209,17 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
 
 # Modes (as defined in IDE) ReleaseLin64 ReleaseLin32 ReleaseLin32GTK3 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseQT5 ReleaseGTK3
 
-function BuildAMode () {
+function BuildAMode () {       # passed a build mode string as used by Lazarus
     echo ""
     echo "------------- Building Mode $1 --------"
     cd ../source
     BIN=$(ModeParamBin "$1")
+    LAZ_FULL_DIR=$(ChooseLazarus "$1")     # note, LAZ_FULL_DIR is now a local var here !
+    LAZ_CONFIG=$(ConfigString "$LAZ_FULL_DIR")       # as is LAZ_CONFIG
     rm -f "$BIN"
     #CMD="TOMBOY_NG_VER=$VERSION $LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode=$1 $LPI"
-    #echo "CMD is $CMD"
+    echo "----- Config is $LAZ_CONFIG"
+
     TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode="$1" "$LPI"
     if [ -f "$BIN" ]; then
 		echo "----------------- Have compiled $BIN ---------------------"
@@ -204,6 +235,9 @@ function BuildAMode () {
 function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $1 here), does NOT return
 	# Only, at present, doing the ones we cannot build in default Build VM, but could do all I guess.
 	echo " ----------------- JustMakeBinary $1 --------------"
+	LAZ_FULL_DIR=$(ChooseLazarus "$1")     # note, LAZ_FULL_DIR is now a local var here !
+    LAZ_CONFIG=$(ChooseLazarus "$1")       # as is LAZ_CONFIG
+
    case $1 in 
    		Default)
    			BuildAMode "$1"
@@ -267,9 +301,10 @@ function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $
 
 
 
-function DebianTemplate () {        # the common to all versions things
+function DebianTemplate () {        # the common to all versions things, but pass Build Mode
 	# We build a debian tree in BUILD and call dpkg-deb -b 
 	#  BUILD/DEBIAN control,debian-binary and any scripts
+	LAZ_FULL_DIR=$(ChooseLazarus "$1")     # note, LAZ_FULL_DIR is now a local var here !
 	rm -rf BUILD
 	mkdir -p BUILD/DEBIAN
 	mkdir -p BUILD/usr/bin
@@ -310,7 +345,7 @@ function DebianTemplate () {        # the common to all versions things
 function DebianPackage () {
 	echo "-----Packaging $1 "
     rm -Rf BUILD
-    DebianTemplate
+    DebianTemplate $1
     ARCH=$(ModeParamArch "$1")
     BIN=$(ModeParamBin "$1")
     if [ ! -f ../source/"$BIN" ]; then
@@ -495,9 +530,10 @@ function DoGZipping {
 	rm -Rf "$GZIP_DIR"	
 }
 
-function MkWinPreInstaller() {
+function MkWinPreInstaller() {            # Pass Lazarus Build mode
 	# Make a dir containing everything we need to make a 32/64bit Inno Setup installer for Windows
-	rm -Rf "$WIN_DIR"
+	LAZ_FULL_DIR=$(ChooseLazarus "$1")     # note, LAZ_FULL_DIR is now a local var here !
+ 	rm -Rf "$WIN_DIR"
 	mkdir "$WIN_DIR"
 	cp "$SOURCE_DIR"/tomboy-ng-64.exe "$WIN_DIR"/tomboy-ng64.exe
 	cp "$SOURCE_DIR"/tomboy-ng-32.exe "$WIN_DIR"/tomboy-ng32.exe
@@ -541,30 +577,26 @@ function MkWinPreInstaller() {
 }
 
 
-	# ------- OK, lets find Laz Config ---------------------------------
 
-# It all starts here
-if [ -f "$LAZ_FULL_DIR"/lazarus.cfg ]; then
-	# Assume if we have a cfg, it specifies pcp ?? Will fail otherwise
-    	LAZ_CONFIG=`grep -i pcp "$LAZ_FULL_DIR"/lazarus.cfg`
-else
-if [ -d "$HOME/.Laz_$LAZ_DIR" ]; then     # try my way of naming config first
-    LAZ_CONFIG="$HOME/.Laz_$LAZ_DIR";
-else
-    echo "------ Testing for the .Laz config $HOME------"
-    if [ -d "$HOME/.$LAZ_DIR" ]; then
-        LAZ_CONFIG="$HOME/.$LAZ_DIR";
-        fi
-    fi
+echo "----- Checking both Lazarus installs, exist and have config dir."
+A_LAZ=$(ConfigString "$LAZ_MAIN")
+if [[ "$A_LAZ" =~ "ERROR" ]]; then
+	echo "$A_LAZ"
+	exit
 fi
-
-if [ -z "$LAZ_CONFIG" ]; then
-    echo "--------- ERROR, dont have a Laz Config -------"
-    exit
+echo "$A_LAZ $LAZ_MAIN"
+A_LAZ=$(ConfigString "$LAZ_CURRENT")
+if [[ "$A_LAZ" =~ "ERROR" ]]; then
+	echo "$A_LAZ"
+	exit
 fi
+echo "$A_LAZ $LAZ_MAIN"
 
-echo "-----  LAZ_CONFIG is $LAZ_CONFIG ------"
+A_LAZ=$(ChooseLazarus "ReleaseRasPi64GTK3")
+echo "$A_LAZ"
 
+A_LAZ=$(ChooseLazarus "ReleaseRasPi64")
+echo "$A_LAZ"
 
 
 # Note: as of Oct 2024, we can build our Qt6 one here and now too.
@@ -609,7 +641,7 @@ for MODE in ReleaseLin64 ReleaseLin32 ;
 	do DoGZipping $MODE;
 done	
 
-MkWinPreInstaller
+MkWinPreInstaller ReleaseWin64
 # ls -ltr
 fakeroot bash ./mk_rpm.sh
 # echo "OK, if that looks OK, run   fakeroot bash ./mk_rpm.sh"
