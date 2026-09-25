@@ -104,7 +104,7 @@ function LookForBinary () {
 }
 
 function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch ReleaseLin64)
-    case $1 in              # Only useful in debian packaging, used in package name
+    case $1 in              # Only useful in debian packaging, only used in package name
         ReleaseLin64)
             echo "amd64"
         ;;
@@ -123,6 +123,9 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
         ReleaseRasPi)
             echo "armhf"
         ;;
+        ReleaseRasPiQt5)
+			echo "armhfQt5"
+		;;
         ReleaseRasPi64)
             echo "arm64"
         ;;
@@ -183,6 +186,9 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ReleaseRasPi)
             echo "$PRODUCT"-armhf
         ;;
+        ReleaseRasPiQt5)
+			echo "$PRODUCT"-armhf-qt5
+		;;
 		ReleaseRasPi64)
             echo "$PRODUCT"-arm64
         ;;
@@ -378,7 +384,7 @@ function DebianPackage () {
 	"ReleaseRasPiQt5")          # we must also make an "old" version of this ?
 		CTRL_ARCH="armhf"
 		CTRL_RELEASE="Raspberry Pi 32bit release, Qt5"
-		CTRL_DEPENDS="libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
+		CTRL_DEPENDS="libayatana-appindicator3-1, libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
 		;;
 	"ReleaseRasPi64")                                        # 64bit gtk2
 		CTRL_ARCH="arm64"
@@ -565,7 +571,7 @@ fi
 
 # if false; then   # start of poor mans goto
 
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseLin32Qt5 ReleaseGTK3 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPiGTK3  ReleaseRasPi64Qt5 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseQt5 ReleaseQt6; 
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseLin32Qt5 ReleaseGTK3 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPiGTK3 ReleaseRasPiQt5 ReleaseRasPi64Qt5 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseQt5 ReleaseQt6;
 	do BuildAMode $BIN; 
 done
 
@@ -573,7 +579,7 @@ rm tom*.deb
 
 # This for the new in 2026 build model.
 # Note : Leaving out : ReleaseLin32 (appind issues)
-for BIN in ReleaseLin64 ReleaseGTK3 ReleaseQt5 ReleaseQt6  ReleaseLin32Qt5 ReleaseRasPi ReleaseRasPiGTK3 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseRasPi64Qt5;
+for BIN in ReleaseLin64 ReleaseGTK3 ReleaseQt5 ReleaseQt6  ReleaseLin32Qt5 ReleaseRasPi ReleaseRasPiGTK3 ReleaseRasPiQt5 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseRasPi64Qt5;
 # for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQt6 ReleaseRasPi64 ReleaseRasPi64Qt5 ReleaseLin32Qt5 ReleaseGTK3;
 	# Always package ReleaseLin64 first to update changelog once
 	do 
