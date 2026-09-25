@@ -119,7 +119,7 @@ begin
        {$endif}
        {$if defined(LCLQT5) or defined(LCLQt6)}
        debugln('   --strict-theme                ' + rsStrictThemeColors);
-       debugln('   --disableaccurateframe        ' + 'stop annoying little window in RasPiOS')
+       debugln('   --disableaccurateframe        ' + 'stop annoying little window in RasPiOS');
        debugln('   -platform xcb                 ' + rsBypassWayland);
        debugln('   -platformtheme gnome|gtk2|qt5ct|qt6ct  ' + rsSelectColors);
        {$endif}
