@@ -21,8 +21,8 @@
 #
 # --- Must be updated from time to time
 # ----------------------------------------------------------------------------
-LAZ_CURRENT="$HOME/bin/Lazarus/lazarus-main"
-LAZ_MAIN="$HOME/bin/Lazarus/lazarus_4_8"
+LAZ_CURRENT="$HOME/bin/Lazarus/lazarus_4_8"
+LAZ_MAIN="$HOME/bin/Lazarus/lazarus-main"
 # A fatal error if either the Laz install or its config dir does not exist.
 # no reason why they don't both point to same install by the way !
 # ----------------------------------------------------------------------------
