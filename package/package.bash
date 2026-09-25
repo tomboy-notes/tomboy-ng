@@ -22,7 +22,7 @@
 # --- Must be updated from time to time
 # ----------------------------------------------------------------------------
 LAZ_CURRENT="$HOME/bin/Lazarus/lazarus-main"
-LAZ_MAIN="$HOME/bin/Lazarus/lazarus-main"
+LAZ_MAIN="$HOME/bin/Lazarus/lazarus_4_8"
 # A fatal error if either the Laz install or its config dir does not exist.
 # no reason why they don't both point to same install by the way !
 # ----------------------------------------------------------------------------
@@ -133,13 +133,13 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
             echo "arm64Qt5"
         ;;
        	ReleaseQt6)
-	    echo "amd64Qt6"
+			echo "amd64Qt6"
 	    ;;
-	ReleaseGTK3)
-	    echo "amd64GTK3"
+		ReleaseGTK3)
+			echo "amd64GTK3"
 	    ;;
-	ReleaseLin32Qt5)
-	    echo "i386Qt5"
+		ReleaseLin32Qt5)
+			echo "i386Qt5"
 	;;
     esac
 }
@@ -174,8 +174,8 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
         ReleaseQt6)
             echo "$PRODUCT"-qt6
         ;;        
-	ReleaseGTK3)
-		echo "$PRODUCT"-gtk3
+		ReleaseGTK3)
+			echo "$PRODUCT"-gtk3
 		;;
         ReleaseRasPiGTK3)
             echo "$PRODUCT"-armhf-gtk3
@@ -192,18 +192,6 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
 		ReleaseRasPi64GTK3)
             echo "$PRODUCT"-arm64-gtk3
         ;;
-		MistyReleaseX86_64)
-			echo "misty-server-x86_64"
-		;;
-		MistyReleaseRasPi32)
-			echo "misty-server-arm32"
-		;;
-		MistyReleaseRasPi64)
-			echo "misty-server-arm64"
-		;;
-		MistyReleaseWin64)
-			echo "misty-server.exe"
-		;;
     esac
 }
 
@@ -236,7 +224,7 @@ function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $
 	# Only, at present, doing the ones we cannot build in default Build VM, but could do all I guess.
 	echo " ----------------- JustMakeBinary $1 --------------"
 	LAZ_FULL_DIR=$(ChooseLazarus "$1")     # note, LAZ_FULL_DIR is now a local var here !
-    LAZ_CONFIG=$(ChooseLazarus "$1")       # as is LAZ_CONFIG
+    LAZ_CONFIG=$(ConfigString "$LAZ_FULL_DIR")       # as is LAZ_CONFIG
 
    case $1 in 
    		Default)
@@ -259,43 +247,9 @@ function JustMakeBinary () {   # Gets called if there is a $2 (which becocomes $
             BuildAMode "$1"
             exit
         ;;
-		MistyReleaseX86_64 | MistyReleaseRasPi32 | MistyReleaseRasPi64 | MistyReleaseWin64)
-			cd ../experimental/Misty-Small
-			BIN=$(ModeParamBin "$1")
-			if [ "$BIN" == "" ]; then
-				echo "ERROR - failed to get a binary name for $1"
-				exit
-			fi
-			if [ -e "$BIN" ]; then
-				rm "$BIN"
-			fi
-			$LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode="$1" webserver.lpi
-			cd ../../package
-			if [ -e "$1".zip ]; then
-				rm "$1".zip
-			fi
-			
-			rm -f misty-server
-			if [ "$BIN" == "misty-server.exe" ]; then             # Windows binary retains its name
-				zip -j  "$1".zip ../experimental/Misty-Small/"$BIN"  ../doc/misty-readme.note
-			else			
-				cp ../experimental/Misty-Small/"$BIN" misty-server
-				zip -j  "$1".zip misty-server ../doc/misty-readme.note
-			fi
-			ls -l "$1".zip
-			exit
-			
-			cp ../doc/misty-readme.note .
-			cp ../experimental/Misty-Small/"$BIN" .
-			cp ../scripts/play-misty.bash .
-			tar czf "$1".tgz "$BIN" play-misty.bash misty-readme.note
-			rm "$BIN" play-misty.bash misty-readme.note
-			exit
-		;;
-
    esac
-   echo " ============ ERROR unknown build mode as second parameter $1 ============="
-   exit
+#   echo " ============ ERROR unknown build mode as second parameter $1 ============="
+#   exit
 }
 
 
@@ -416,7 +370,8 @@ function DebianPackage () {
 	"ReleaseRasPiGTK3")
 		CTRL_ARCH="armhf"
 		CTRL_RELEASE="Raspberry Pi 32bit gtk3 release."
-		CTRL_DEPENDS="libgtk-3-0, libayatana-appindicator3-1, libharfbuzz-gobject0, libc6 (>= 2.36), libnotify-bin"
+		# technically, depends on libgtk-3-0 but t64 issue and every system I test already has it. Must fix before 2038
+		CTRL_DEPENDS="libayatana-appindicator3-1, libharfbuzz-gobject0, libc6 (>= 2.36), libnotify-bin"
 		# libayanata is needed for system tray, it depends on libgtk-3.0 so should be OK
 		# gives us a functioning ST Icon for gtk3 and Qt5 (qt5 right click)
 		;;
@@ -432,9 +387,8 @@ function DebianPackage () {
 		;;
 	"ReleaseRasPi64GTK3")          # 64bit gtk3
 		CTRL_ARCH="arm64"
-		CTRL_DEPENDS="libgtk-3-0, libayatana-appindicator3-1, libharfbuzz-gobject0, libc6 (>= 2.36), libnotify-bin"
+		CTRL_DEPENDS="libayatana-appindicator3-1, libharfbuzz-gobject0, libc6 (>= 2.36), libnotify-bin"
 		CTRL_RELEASE="Raspberry Pi 64bit release, GTK3."
-
 		;;
 	"ReleaseRasPi64Qt5")                                     # 64bit Qt5
 		CTRL_ARCH="arm64"
@@ -604,26 +558,18 @@ echo "$A_LAZ"
 rm -f changelog		# we build a new one from ../debian/changelog and ../whatsnew each run
 
 if [ "$2" != "" ]; then
-	JustMakeBinary "$2"       # Does not return.
+	JustMakeBinary "$2"       # Does return.
+	exit
 fi 
 
+
+# if false; then   # start of poor mans goto
 
 for BIN in ReleaseLin64 ReleaseLin32 ReleaseLin32Qt5 ReleaseGTK3 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPiGTK3  ReleaseRasPi64Qt5 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseQt5 ReleaseQt6; 
 	do BuildAMode $BIN; 
 done
 
-
-
-# Note we can package ReleaseQt6 ReleaseRasPi64 ReleaseLin32Qt5 but not build them, so, build
-# elsewhere and put binaries in ../source. tomboy-ng-qt6 tomboy-ng-arm64 tomboy-ng-32-qt5
-
 rm tom*.deb
-
-# Next line assumes some binaries, compiled elsewhere, have been put in the ../source directory
-# tomboy-ng-32-qt5 (ReleaseLin32Qt5)
-# tomboy-ng-arm64  (ReleaseRasPi64)
-# tomboy-ng-arm64-qt5 (ReleaseRasPi64Qt5)
-# tomboy-ng-gtk3 (ReleaseGTK3)
 
 # This for the new in 2026 build model.
 # Note : Leaving out : ReleaseLin32 (appind issues)
@@ -634,6 +580,7 @@ for BIN in ReleaseLin64 ReleaseGTK3 ReleaseQt5 ReleaseQt6  ReleaseLin32Qt5 Relea
 		DebianPackage $BIN ; 
 done
 
+# fi   # end of poor mans goto
 
 
 rm tom*.tgz
@@ -642,15 +589,16 @@ for MODE in ReleaseLin64 ReleaseLin32 ;
 done	
 
 MkWinPreInstaller ReleaseWin64
+
+bash ./mk_misty.bash "$LAZ_CURRENT"
+
 # ls -ltr
 fakeroot bash ./mk_rpm.sh
 # echo "OK, if that looks OK, run   fakeroot bash ./mk_rpm.sh"
 # Dont sign under fakeroot, its messy
 echo "OK, we will now sign the RPMs - david, use the longer passphrase !"
 for i in `ls -b *.rpm`; do rpm --addsign "$i"; echo "Signed $i"; done
-ls -l *.rpm *.deb "$WIN_DIR"/*.exe
-
-echo "Currently supported Misty packages MistyReleaseX86_64, MistyReleaseRasPi32, MistyReleaseRasPi64, MistyReleaseWin64"
+ls -l *.rpm *.deb "$WIN_DIR"/*.exe *.zip
 
 echo "ERROR REPORT = $ERROR"
 

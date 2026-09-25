@@ -31,7 +31,7 @@ PACKVER=1	# Starts at '1', rev it if we are repackaging same content
 
 function DoAlien ()  {
 	FILENAME="$PROD"_"$VERS"-0_"$1".deb     # this is the input deb file
-	echo "======== Making an RPM from $FILENAME ========"
+	echo "======== Making an RPM from $FILENAME ===== $1 ==="
 	ARCH="$1"
 	rm -Rf "$RDIR"
 	# Note, debs have a dash after initial version number, RPM an underscore
@@ -39,7 +39,7 @@ function DoAlien ()  {
 		amd64Qt5|amd64Qt6|amd64|amd64GTK3)     # Qt5, gtk2, gtk3
 			ARCH=x86_64
 			;;
-		i386)
+		i386|i386Qt5)
 			ARCH=i686
 			;;
 		*)
@@ -101,13 +101,18 @@ cp "$RDIR"/"$RDIR"-"$PACKVER".spec "$1".spec
 	cp "$RDIR"-"$PACKVER".spec ../../"$RDIR"-"$PACKVER".spec-"$1"
 	rpmbuild --target "$ARCH" --buildroot "$PWD" -bb "$RDIR"-"$PACKVER".spec
 	cd ..
-	# if its a Qt5 one, rename it so it does not get overwritten subsquently
+	# if its a non gtk2 one, rename it so it does not get overwritten subsquently
 	if [ "$1" = amd64Qt5 ]; then
 		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"-Qt5-"$VERS"-"$PACKVER"."$ARCH".rpm
 	fi
 	if [ "$1" = amd64Qt6 ]; then
 		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"-Qt6-"$VERS"-"$PACKVER"."$ARCH".rpm
 	fi
+
+	if [ "$1" = i386Qt5 ]; then
+		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"-Qt5-"$VERS"-"$PACKVER"."$ARCH".rpm
+	fi
+
 	if [ "$1" = amd64GTK3 ]; then
 		mv "$RDIR"-"$PACKVER"."$ARCH".rpm "$PROD"-GTK3-"$VERS"-"$PACKVER"."$ARCH".rpm
 	fi
@@ -118,7 +123,7 @@ rm -f tom*.rpm
 DoAlien "amd64Qt5"
 DoAlien "amd64Qt6"
 DoAlien "amd64GTK3"
-DoAlien "i386"
+DoAlien "i386Qt5"
 DoAlien "amd64"       # thats gtk2, must be last as they all get same name !
 chown "$SUDO_USER" *.rpm
 #echo "OK, we will now sign - david, use the longer passphrase !"
