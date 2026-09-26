@@ -578,10 +578,10 @@ done
 rm tom*.deb
 
 # This for the new in 2026 build model.
-# Note : Leaving out : ReleaseLin32 (appind issues)
-for BIN in ReleaseLin64 ReleaseGTK3 ReleaseQt5 ReleaseQt6  ReleaseLin32Qt5 ReleaseRasPi ReleaseRasPiGTK3 ReleaseRasPiQt5 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseRasPi64Qt5;
+# Note : Leaving out : ReleaseLin32 (appind issues) ReleaseRasPi ReleaseRasPiGTK3, ReleaseRasPi64, ReleaseRasPi64GTK3
+for BIN in ReleaseLin64 ReleaseGTK3 ReleaseQt5 ReleaseQt6  ReleaseLin32Qt5  ReleaseRasPiQt5   ReleaseRasPi64Qt5;        # seven deb packages
 # for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQt6 ReleaseRasPi64 ReleaseRasPi64Qt5 ReleaseLin32Qt5 ReleaseGTK3;
-	# Always package ReleaseLin64 first to update changelog once
+	# Always package ReleaseLin64 first to update changelog just once
 	do 
 		DebianPackage $BIN ; 
 done
