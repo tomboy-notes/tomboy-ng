@@ -20,7 +20,7 @@ uses
     {$DEFINE UseCThreads}
     {$IFDEF UNIX}{$IFDEF UseCThreads}
     // works correctly but codetools always shows 'greyed out'
-    {$if not declared(UseHeapTrace)}cmem, {$Note "CMEM in use"}{$endIf}               // TRons's trick, nice !
+    {$if not declared(UseHeapTrace)}cmem, {$Note "CMEM in use"}{$endIf}         // TRons's trick, nice ! Plus now, a note so we are sure.
     cthreads,
     {$ENDIF UseCThreads}
     qtWorkAround,  // does nothing except in Qt inserts an env var QT_QPA_PLATFORM=xcb into app
