@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <note version="0.3" xmlns:link="http://beatniksoftware.com/tomboy/link" xmlns:size="http://beatniksoftware.com/tomboy/size" xmlns="http://beatniksoftware.com/tomboy">
   <title>Contributions-and-Feature-Requests</title>
-  
-<text xml:space="preserve"><note-content version="0.1"><underline>Contributions-and-Feature-Requests</underline>
+  <text xml:space="preserve"><note-content version="0.1">Contributions-and-Feature-Requests
 
 
 <size:large><bold>Pull Requests</bold></size:large>
@@ -27,7 +26,7 @@ If you sync your notes to some site outside your control, or even just have nose
 Do you want to have pretty pictures in your notes, if so, what format would you want ?
 
 <size:large><bold>Net Sync</bold></size:large>
-By netsync, I mean to dedicated servers like Snowy, Rainy or, more practicable today, a grauphel/NextCloud/Apache stack.  A not inconsiderable effort to install such a stack but do you really need it ?   ( Be aware that tomboy-ng will now, very easily, sync to any remote server you can ssh to. )
+As of version 0.43, tomboy-ng supports a simple network sync model using a server, Misty (available from here). It is intened for 'in house' use but, if you feelbrave and have a server that is externally accessable, works like that as well. Misty is sync only, does not make your notes readable (but it might in the future) and does not make your notes writeable (probably never).  Please see the docs.
 
 And perhaps v0.34's ability to sync and then display (and edit) your notes online, via Github, on any device with a browser solves this problem ?
 
@@ -39,14 +38,14 @@ You know, badly spelt words are somehow highlighted as you type.  I know I have 
 
 
 </note-content></text>
-  <last-change-date>2022-10-30T11:16:28.5269796+11:00</last-change-date>
-  <last-metadata-change-date>2022-10-30T11:16:28.5269796+11:00</last-metadata-change-date>
+  <last-change-date>2026-09-27T12:05:40.1157260+10:00</last-change-date>
+  <last-metadata-change-date>2026-09-27T12:05:40.1157260+10:00</last-metadata-change-date>
   <create-date>2020-05-04T21:21:59.4125830+10:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>976</width>
   <height>572</height>
-  <x>621</x>
-  <y>216</y>
+  <x>0</x>
+  <y>0</y>
   <open-on-startup>False</open-on-startup>
 </note>
