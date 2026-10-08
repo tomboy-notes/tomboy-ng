@@ -879,7 +879,7 @@ end;
 
 procedure TMainForm.ButtMenuClick(Sender: TObject);
 begin
-    MainTBMenu.popup(Left + 40, Top + 40);
+    MainTBMenu.popup;    // (Left + 40, Top + 40); was confusing Qt6 on RasPi Wayland issue
 end;
 
 procedure TMainForm.BitBtnQuitClick(Sender: TObject);
@@ -902,11 +902,13 @@ procedure TMainForm.TrayIconClick(Sender: TObject);   // left click on most syst
 begin
     if not NoLeftClickOnTrayIcon then                       // At present, only KDE DE, does sweep up x11 users too !
         PopupMenuTray.PopUp()
-    else
-        if (not UglyGnome) and Sett.CheckNotifications.Checked  then
-            ShowNotification('Please Right Click TrayIcon on Wayland Systems', 2000);
+    else                                                    // next line assumes we only use Qt on RasPi, gtk2 too old, gtk3 no systray (Oct 2026)
+        if ((not UglyGnome) or (pos('rpd-labwc', GetEnvironmentVariable('XDG_CURRENT_DESKTOP')) > 0)
+           and Sett.CheckNotifications.Checked)  then
+               ShowNotification('Please Right Click TrayIcon on Wayland Systems', 2000);
     // I need to do this on Wayland using systems, KDE and xcb using Gnome else we get a two menus !
     // but on Gnome with -platform xcb the left still works ?? So, don't send msg
+    // but not on RasPi 'unique' DE, we have no left click so must send message.
 end;
 
 {procedure TMainForm.RecentMenuClicked(Sender: TObject);
