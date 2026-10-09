@@ -891,6 +891,48 @@
           </Other>
         </CompilerOptions>
       </Item>
+      <Item Name="ReleaseRasPi64GTK3">
+        <MacroValues Count="1">
+          <Macro3 Name="LCLWidgetType" Value="gtk3"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="tomboy-ng-arm64-gtk3"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <TargetCPU Value="aarch64"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <RunWithoutDebug Value="True"/>
+              <DebugInfoType Value="dsDwarf2Set"/>
+              <UseLineInfoUnit Value="False"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+          <Other>
+            <CompilerMessages>
+              <IgnoredMessages idx6058="True" idx5024="True"/>
+            </CompilerMessages>
+            <CustomOptions Value="-dTOMBOY_NG"/>
+          </Other>
+        </CompilerOptions>
+      </Item>
       <Item Name="ReleaseRasPi64Qt5">
         <MacroValues Count="1">
           <Macro4 Name="LCLWidgetType" Value="qt5"/>
@@ -933,14 +975,11 @@
           </Other>
         </CompilerOptions>
       </Item>
-      <Item Name="ReleaseRasPi64GTK3">
-        <MacroValues Count="1">
-          <Macro3 Name="LCLWidgetType" Value="gtk3"/>
-        </MacroValues>
+      <Item Name="ReleaseRasPi64Qt6">
         <CompilerOptions>
           <Version Value="11"/>
           <Target>
-            <Filename Value="tomboy-ng-arm64-gtk3"/>
+            <Filename Value="tomboy-ng-arm64-qt6"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
