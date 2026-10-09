@@ -619,8 +619,10 @@ begin
     // wayland stops user copy n pasting to other apps.
 
     if (GetEnvironmentVariable('WAYLAND_DISPLAY') <> '')                   // I believe that this is reliable
-        and (not Application.HasOption('allow-leftclick')) then
+        and (not Application.HasOption('allow-leftclick')) then begin
             NoLeftClickOnTrayIcon := True;
+            TrayIcon.Hint := 'tomboy-ng, use right click';
+        end;
 
     if (pos('KDE', upcase(GetEnvironmentVariable('XDG_CURRENT_DESKTOP'))) > 0 ) then
         exit(True);

@@ -1,1 +1,12 @@
 Closes: #985946 - FTBFS on ppc64el (actually fixed some time ago)
+Closes: #1138834 - Appstream data
+Tweaks to RasPi github version
+Support for Misty Sync Server
+Added libayana dependency to Qt5 versions
+Added experimental GTK3 packages at github
+Fix infinite loop in sync, thanks WB31HY
+Force Qt5 and Qt6 packages to use xcb, thanks Alexx2000
+Fix for #345, #336, #337, #333, #335, #331
+Revised triple click model, #325 thanks AVK
+Another attempt at reproducable build.
+

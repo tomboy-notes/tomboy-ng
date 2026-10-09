@@ -135,7 +135,10 @@ function ModeParamArch () { # expects to be called like   ARCH=$(ModeParamArch R
         ReleaseRasPi64Qt5)
             echo "arm64Qt5"
         ;;
-       	ReleaseQt6)
+        ReleaseRasPi64Qt6)
+            echo "arm64Qt6"
+        ;;
+        ReleaseQt6)
 			echo "amd64Qt6"
 	    ;;
 		ReleaseGTK3)
@@ -195,13 +198,16 @@ function ModeParamBin () { # expects to be called like   BIN=$(ModeParam Release
 		ReleaseRasPi64Qt5)
             echo "$PRODUCT"-arm64-qt5
         ;;
-		ReleaseRasPi64GTK3)
+		ReleaseRasPi64Qt6)
+            echo "$PRODUCT"-arm64-qt6
+        ;;
+        ReleaseRasPi64GTK3)
             echo "$PRODUCT"-arm64-gtk3
         ;;
     esac
 }
 
-# Modes (as defined in IDE) ReleaseLin64 ReleaseLin32 ReleaseLin32GTK3 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseQT5 ReleaseGTK3
+# Modes (as defined in IDE) ReleaseLin64 ReleaseLin32 ReleaseLin32GTK3 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseQT5 ReleaseGTK3 ReleaseRasPi64Qt6
 
 function BuildAMode () {       # passed a build mode string as used by Lazarus
     echo ""
@@ -211,9 +217,9 @@ function BuildAMode () {       # passed a build mode string as used by Lazarus
     LAZ_FULL_DIR=$(ChooseLazarus "$1")     # note, LAZ_FULL_DIR is now a local var here !
     LAZ_CONFIG=$(ConfigString "$LAZ_FULL_DIR")       # as is LAZ_CONFIG
     rm -f "$BIN"
-    #CMD="TOMBOY_NG_VER=$VERSION $LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode=$1 $LPI"
+    CMD="TOMBOY_NG_VER=$VERSION $LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode=$1 $LPI"
     echo "----- Config is $LAZ_CONFIG"
-
+	# Warning, it may not be the actual command, it is now !
     TOMBOY_NG_VER="$VERSION" $LAZ_FULL_DIR/lazbuild $BUILDOPTS $LAZ_CONFIG --build-mode="$1" "$LPI"
     if [ -f "$BIN" ]; then
 		echo "----------------- Have compiled $BIN ---------------------"
@@ -399,7 +405,16 @@ function DebianPackage () {
 	"ReleaseRasPi64Qt5")                                     # 64bit Qt5
 		CTRL_ARCH="arm64"
 		CTRL_DEPENDS="libayatana-appindicator3-1, libqt5pas1 (>= 2.15), libc6 (>= 2.36), libnotify-bin"
-		CTRL_RELEASE="aarch64 Qt5 release."	    
+		CTRL_RELEASE="aarch64 Qt5 release."
+		# we now choose to use xcb in the qtworkaround unit in source
+		sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --disableaccurateframe/" BUILD/usr/share/
+		# sed -i "s/Exec=env QT_QPA_PLATFORM=xcb tomboy-ng %f/Exec=env QT_QPA_PLATFORM=xcb tomboy-ng %f --disableaccurateframe/" BUILD/usr/share/applications/"$PRODUCT".desktop
+		;;
+	"ReleaseRasPi64Qt6")
+		CTRL_ARCH="arm64"
+		CTRL_RELEASE="Raspberry Pi 64bit release, Qt6"
+		CTRL_DEPENDS="libayatana-appindicator3-1, libqt6pas6 | libqt6pas1, libc6 (>= 2.36), libnotify-bin"    # no libqt6pas ver 'cos debian have it wrong
+		sed -i "s/Exec=tomboy-ng %f/Exec=tomboy-ng %f --disableaccurateframe/" BUILD/usr/share/applications/"$PRODUCT".desktop
 		;;
     esac
 
@@ -571,7 +586,7 @@ fi
 
 # if false; then   # start of poor mans goto
 
-for BIN in ReleaseLin64 ReleaseLin32 ReleaseLin32Qt5 ReleaseGTK3 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPiGTK3 ReleaseRasPiQt5 ReleaseRasPi64Qt5 ReleaseRasPi64 ReleaseRasPi64GTK3 ReleaseQt5 ReleaseQt6;
+for BIN in ReleaseLin64 ReleaseLin32 ReleaseLin32Qt5 ReleaseGTK3 ReleaseQt5 ReleaseQt6 ReleaseWin64 ReleaseWin32 ReleaseRasPi ReleaseRasPiGTK3  ReleaseRasPi64 ReleaseRasPiQt5 ReleaseRasPi64GTK3 ReleaseRasPi64Qt5 ReleaseRasPi64Qt6;
 	do BuildAMode $BIN; 
 done
 
@@ -579,7 +594,7 @@ rm tom*.deb
 
 # This for the new in 2026 build model.
 # Note : Leaving out : ReleaseLin32 (appind issues) ReleaseRasPi ReleaseRasPiGTK3, ReleaseRasPi64, ReleaseRasPi64GTK3
-for BIN in ReleaseLin64 ReleaseGTK3 ReleaseQt5 ReleaseQt6  ReleaseLin32Qt5  ReleaseRasPiQt5   ReleaseRasPi64Qt5;        # seven deb packages
+for BIN in ReleaseLin64 ReleaseGTK3 ReleaseQt5 ReleaseQt6  ReleaseLin32Qt5  ReleaseRasPiQt5   ReleaseRasPi64Qt5 ReleaseRasPi64Qt6;        # eight deb packages
 # for BIN in ReleaseLin64 ReleaseLin32 ReleaseRasPi ReleaseQT5 ReleaseQt6 ReleaseRasPi64 ReleaseRasPi64Qt5 ReleaseLin32Qt5 ReleaseGTK3;
 	# Always package ReleaseLin64 first to update changelog just once
 	do 
