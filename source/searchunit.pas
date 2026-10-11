@@ -876,9 +876,9 @@ begin
     end;
     //T2 := gettickcount64();
 
-    // We must iterate over the NoteLister's DateSortList getting the ten most
+    // We must iterate over the NoteLister's DateSortList getting the most
     // recent notes.  Gets called 4 times during startup, 4 menus to prepare !
-    for i := 0 to 9 do begin
+    for i := 0 to Sett.MaxRecentMenuItems - 1 do begin
 //        P := TheMainNoteLister.GetNote(i, smAllRecentUp);
         P := TheMainNoteLister.GetNote(i, smAllRecentUp);
         if P <> nil then

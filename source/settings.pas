@@ -426,6 +426,7 @@ type
      	FontHuge   : Integer;
      	FontTitle  : Integer;			// Do not set this to one of the other sizes !
      	FontNormal : Integer;
+        MaxRecentMenuItems : Integer;       // max entries shown in systray recent notes menu
         { The directory expected to hold existing or new notes }
         NoteDirectory : string;
         { The dir expected to hold config file and, possibly local manifest }
@@ -1242,6 +1243,7 @@ begin
         NextAutoSnapshot             := Configfile.ReadDateTime('Snapshot', 'NextAutoSnapshot', now());
         SpinDaysPerSnapshot.Value    := Configfile.ReadInteger('Snapshot', 'DaysPerSnapshot', 7);
         SpinMaxSnapshots.Value       := Configfile.ReadInteger('Snapshot', 'DaysMaxSnapshots', 20);
+        MaxRecentMenuItems           := Configfile.ReadInteger('BasicSettings', 'MaxRecentMenuItems', 10);
         // ------------- D A T E    S T A M P    S E T T I N G -----------------
         CheckStampItalics.Checked := Configfile.ReadBool('DateStampSettings', 'Italics', False);
         CheckStampSmall.Checked   := Configfile.ReadBool('DateStampSettings', 'Small', False);
@@ -1435,6 +1437,7 @@ begin
             configfile.WriteDateTime('Snapshot', 'NextAutoSnapshot', NextAutoSnapshot);         // Format can (?) be set in SysUtils but does not matter as long as its consistent on this machine
             configfile.WriteInteger('Snapshot',  'DaysPerSnapshot',  SpinDaysPerSnapshot.Value);
             configfile.WriteInteger('Snapshot',  'DaysMaxSnapshots', SpinMaxSnapshots.Value);
+            configfile.WriteInteger('BasicSettings', 'MaxRecentMenuItems', MaxRecentMenuItems);
 
             // --------- D A T E    S T A M P    S E T T I N G -----------------
             configfile.Writebool('DateStampSettings', 'Italics',   CheckStampItalics.Checked);
