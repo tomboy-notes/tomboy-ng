@@ -138,8 +138,11 @@ function CheckLazBuild () {
 		       LAZ_DIR="/usr/lib/lazarus"
 		       FPCHARD=""		# probably an OS that does not want hardening
 		       if [ ! -d "$LAZ_DIR""/lcl" ]; then
-			      echo "==================== SORRY, cannot find lazarus/lcl dir"
-			      exit 1
+			      LAZ_DIR="/usr/lib64/lazarus"   # Fedora path
+			      if [ ! -d "$LAZ_DIR""/lcl" ]; then
+				     echo "==================== SORRY, cannot find lazarus/lcl dir"
+				     exit 1
+			      fi
 			fi 
 		fi	       
 	fi	
