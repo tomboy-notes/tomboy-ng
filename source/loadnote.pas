@@ -306,8 +306,8 @@ begin
       '/highlight' : HighLight := false;
       'underline' : Underline := true;
       '/underline' : Underline := false;
-      'strikeout' : Strikeout := true;
-      '/strikeout' : Strikeout := false;
+      'strikeout', 'strikethrough' : Strikeout := true;
+      '/strikeout', '/strikethrough' : Strikeout := false;
       'monospace' : FixedWidth := true;
       '/monospace' : FixedWidth := false;
       'size:small' : FontSize := Sett.FontSmall;
