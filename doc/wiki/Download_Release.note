@@ -18,7 +18,9 @@ Downloads and information for specific platforms further down the page.
 <size:huge><bold>Release Notes</bold></size:huge>
 
 <list><list-item dir="ltr"><list><list-item dir="ltr">No support <bold>(unless you ask)</bold> for linux distributions earlier then 2022, that is ones using glibc 2.33 or earlier. See heading "The libc issue" below.</list-item></list></list-item></list>
-<list><list-item dir="ltr"><list><list-item dir="ltr">Allow --disableaccurateform switch to appear in Qt5/6 help page. Use in for RasPiOS (others ?) to prevent a small, non-responsive window appearing when you start tomboy-ng. Why ?  Ask the RasPiOS developers.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Linux Qt6 versions no longer depend on a <bold>versioned</bold> libqt6pas6 library. Debian has invented its own versioning system for this library in conflict with the Lazarus Developer's model. This means tomboy-ng-qt6 will install (but fail to run) on older systems, unlikely to be a problem, such older systems probably did not have an appropriate Qt6.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr">Allow --disableaccurateform switch to appear in Qt5/6 help page. Use for RasPiOS (others ?) to prevent a small, non-responsive window appearing when you start tomboy-ng. Why ?  Ask the RasPiOS developers. This switch is included in your desktop file so not needed when starting from menus.</list-item></list></list-item></list>
+<list><list-item dir="ltr"><list><list-item dir="ltr"></list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Tab key now creates Bullet or extends an existing Bullet (or extends an existing Indent).</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Shift-Tab to reduce Bullet or Indent.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">Ctrl-Tab to create Indent (but only one paragraph at a time).</list-item></list></list-item></list>
@@ -77,9 +79,8 @@ For GTK based distributions that use .deb packages, do yourself a favour, instal
 <size:large><bold>Ubuntu</bold></size:large>
 Ubuntu 26.04 has tomboy-ng v0.42 but v0.43 fixes some important bugs and has a few new minor features.
 
-Generally, all versions work fine but earlier distributions should use GTK2 and recent ones may use Qt5 based version.
-<list><list-item dir="ltr"><list><list-item dir="ltr">20.04 and earlier will not work due to the LibC Issue mentioned above.</list-item></list></list-item></list>
-
+Generally, all versions work fine but earlier distributions should use GTK2 and recent ones may use Qt6 based version.
+<list><list-item dir="ltr"><list><list-item dir="ltr">20.04 and earlier will not work due to the LibC Issue mentioned above. Let me know if this is a problem for you.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">the GTK2 [64bit]($$DEB64$$) version which needs only a couple of extra things and is probably a better choice than the Qt5  [64bit QT]($$DEB64QT$$) version which needs the Qt5 libraries</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">22.04 will work with GTK2  [64bit]($$DEB64$$) and GTK3  [64bit]($$DEB64GTK3$$) versions and with Qt5 [64bit]($$DEB64QT$$) if you manually install libQt5Pas1 as mentioned above.</list-item></list></list-item></list>
 <list><list-item dir="ltr"><list><list-item dir="ltr">24.04 and beyond, I suggest the the Qt5 [64bit QT]($$DEB64QT$$) version or Qt6 [64bit QT]($$DEB64QT6$$) version. The GTK2 [64bit]($$DEB64$$) version is probably OK too as long as you are not using Gnome. The Ubuntu repo libQt5Pas1 works fine.</list-item></list></list-item></list>
@@ -167,14 +168,14 @@ I have not made Raspberry Pi rpms, seems few users.
 
 
 </note-content></text>
-  <last-change-date>2026-09-27T11:33:01.6163023+10:00</last-change-date>
-  <last-metadata-change-date>2026-09-27T11:33:01.6163023+10:00</last-metadata-change-date>
+  <last-change-date>2026-10-09T18:42:30.5830451+11:00</last-change-date>
+  <last-metadata-change-date>2026-10-09T18:42:30.5830451+11:00</last-metadata-change-date>
   <create-date>2020-01-22T14:51:55.8970000+11:00</create-date>
   <cursor-position>1</cursor-position>
   <selection-bound-position>1</selection-bound-position>
   <width>1270</width>
   <height>800</height>
-  <x>0</x>
-  <y>0</y>
+  <x>250</x>
+  <y>85</y>
   <open-on-startup>False</open-on-startup>
 </note>

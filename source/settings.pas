@@ -175,6 +175,7 @@ type
         Label11: TLabel;
         Label16: TLabel;
         Label17: TLabel;
+        Label3: TLabel;
         LabelSyncTiming: TLabel;
         LabelSyncType: TLabel;
         Label5: TLabel;
@@ -864,10 +865,10 @@ end;
 
 procedure TSett.FormShow(Sender: TObject);
 begin
-    {$ifdef LCLGtk3}         // see  https://forum.lazarus.freepascal.org/index.php/topic,73658.msg578545/topicseen.html#new
-    width := 726;            // ToDo : temp measure ....
-    height := 530;
-    {$endif}
+//    {$ifdef LCLGtk3}         // see  https://forum.lazarus.freepascal.org/index.php/topic,73658.msg578545/topicseen.html#new
+//    width := 500;            // ToDo : temp measure ....
+//    height := 530;
+//    {$endif}
     if not assigned(Spell) then
         Spell := THunspell.Create(Application.HasOption('debug-spell'), LabelLibrary.Caption);
         // user user has 'closed' (ie hide) then Spell was freed.
@@ -926,6 +927,10 @@ begin
     AreClosing := false;
     Top := 100;
     Left := 300;
+//    {$ifdef LCLGtk3}       // don't know why this is needed but some systems go full width otherwise
+//    width := 790;
+//    height := 590;
+//    {$endif}
     LoadHelpLanguages();
 
 //    for i := Ord(Low(TSyncTransport)) to Ord(High(TSyncTransport)) do begin

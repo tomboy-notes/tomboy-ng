@@ -1,14 +1,13 @@
 object Sett: TSett
-  Left = 504
-  Height = 583
-  Top = 189
+  Left = 956
+  Height = 540
+  Top = 209
   Width = 789
-  AutoSize = True
   BorderIcons = []
   Caption = 'Form Caption'
-  ClientHeight = 583
+  ClientHeight = 540
   ClientWidth = 789
-  LCLVersion = '4.8.0.0'
+  LCLVersion = '4.99.0.0'
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -22,20 +21,20 @@ object Sett: TSett
     AnchorSideRight.Side = asrBottom
     AnchorSideBottom.Control = SpeedButHide
     Left = 0
-    Height = 541
+    Height = 498
     Top = 0
     Width = 789
-    ActivePage = TabSync
+    ActivePage = TabDisplay
     Anchors = [akTop, akLeft, akRight, akBottom]
     AutoSize = True
     BorderSpacing.Bottom = 2
-    TabIndex = 2
+    TabIndex = 1
     TabOrder = 0
     OnChange = PageControl1Change
     object TabBasic: TTabSheet
       AutoSize = True
       Caption = 'Basic'
-      ClientHeight = 506
+      ClientHeight = 463
       ClientWidth = 783
       OnResize = TabBasicResize
       object LabelSettingPath: TLabel
@@ -88,7 +87,7 @@ object Sett: TSett
         AnchorSideTop.Side = asrBottom
         Left = 20
         Height = 22
-        Top = 360
+        Top = 356
         Width = 139
         BorderSpacing.Top = 25
         Caption = 'Autostart at Logon'
@@ -101,7 +100,7 @@ object Sett: TSett
         AnchorSideTop.Control = CheckShowSplash
         Left = 204
         Height = 22
-        Top = 266
+        Top = 262
         Width = 150
         BorderSpacing.Left = 35
         Caption = 'Show Search at Start'
@@ -115,7 +114,7 @@ object Sett: TSett
         Left = 20
         Height = 22
         Hint = 'Always shown if error loading notes.'
-        Top = 266
+        Top = 262
         Width = 149
         BorderSpacing.Left = 10
         BorderSpacing.Top = 35
@@ -133,7 +132,7 @@ object Sett: TSett
         AnchorSideTop.Side = asrBottom
         Left = 20
         Height = 22
-        Top = 313
+        Top = 309
         Width = 138
         BorderSpacing.Top = 25
         Caption = 'Show Notifications'
@@ -147,7 +146,7 @@ object Sett: TSett
         AnchorSideTop.Control = CheckNotifications
         Left = 204
         Height = 22
-        Top = 313
+        Top = 309
         Width = 123
         Caption = 'ESC Closes Note'
         TabOrder = 4
@@ -159,7 +158,7 @@ object Sett: TSett
         AnchorSideRight.Control = TabBasic
         AnchorSideRight.Side = asrBottom
         Left = 10
-        Height = 96
+        Height = 92
         Top = 135
         Width = 763
         Anchors = [akTop, akLeft, akRight]
@@ -169,7 +168,7 @@ object Sett: TSett
         BorderSpacing.Right = 10
         BorderSpacing.InnerBorder = 3
         Caption = 'Notes Path'
-        ClientHeight = 66
+        ClientHeight = 65
         ClientWidth = 759
         TabOrder = 5
         object RadioChoose: TRadioButton
@@ -236,7 +235,7 @@ object Sett: TSett
     object TabDisplay: TTabSheet
       AutoSize = True
       Caption = 'Notes'
-      ClientHeight = 506
+      ClientHeight = 463
       ClientWidth = 783
       ParentShowHint = False
       ShowHint = True
@@ -250,14 +249,14 @@ object Sett: TSett
         BorderSpacing.Left = 10
         BorderSpacing.Top = 10
         Caption = 'Font Size'
-        ClientHeight = 146
+        ClientHeight = 149
         ClientWidth = 260
         TabOrder = 7
         object RadioFontBig: TRadioButton
           AnchorSideLeft.Control = GroupBox5
           Left = 19
           Height = 22
-          Top = 50
+          Top = 51
           Width = 44
           Anchors = [akLeft]
           BorderSpacing.Left = 19
@@ -271,7 +270,7 @@ object Sett: TSett
           AnchorSideLeft.Control = GroupBox5
           Left = 19
           Height = 22
-          Top = 84
+          Top = 86
           Width = 75
           Anchors = [akLeft]
           BorderSpacing.Left = 19
@@ -283,7 +282,7 @@ object Sett: TSett
           AnchorSideLeft.Control = GroupBox5
           Left = 19
           Height = 22
-          Top = 119
+          Top = 122
           Width = 58
           Anchors = [akLeft]
           BorderSpacing.Left = 19
@@ -295,7 +294,7 @@ object Sett: TSett
           AnchorSideLeft.Control = GroupBox5
           Left = 19
           Height = 22
-          Top = 16
+          Top = 17
           Width = 57
           Anchors = [akLeft]
           BorderSpacing.Left = 19
@@ -536,7 +535,7 @@ object Sett: TSett
     object TabSync: TTabSheet
       AutoSize = True
       Caption = 'Sync'
-      ClientHeight = 506
+      ClientHeight = 463
       ClientWidth = 783
       object GroupBoxSyncOpt: TGroupBox
         AnchorSideLeft.Control = TabSync
@@ -546,8 +545,8 @@ object Sett: TSett
         AnchorSideRight.Side = asrBottom
         AnchorSideBottom.Side = asrBottom
         Left = 3
-        Height = 143
-        Top = 313
+        Height = 140
+        Top = 310
         Width = 777
         Anchors = [akTop, akLeft, akRight]
         AutoSize = True
@@ -615,7 +614,7 @@ object Sett: TSett
         AnchorSideRight.Control = TabSync
         AnchorSideRight.Side = asrBottom
         Left = 3
-        Height = 241
+        Height = 238
         Top = 66
         Width = 777
         Anchors = [akTop, akLeft, akRight]
@@ -698,7 +697,7 @@ object Sett: TSett
           Anchors = [akTop, akLeft, akRight, akBottom]
           BorderSpacing.Left = 15
           Caption = 'Token'
-          ClientHeight = 30
+          ClientHeight = 33
           ClientWidth = 556
           TabOrder = 2
           object ButtTokenActions: TBitBtn
@@ -744,7 +743,7 @@ object Sett: TSett
           Width = 173
           BorderSpacing.Top = 5
           Caption = 'User'
-          ClientHeight = 30
+          ClientHeight = 33
           ClientWidth = 169
           TabOrder = 1
           object EditUserName: TEdit
@@ -855,7 +854,7 @@ object Sett: TSett
     end
     object TabBackUp: TTabSheet
       Caption = 'BackUp'
-      ClientHeight = 506
+      ClientHeight = 463
       ClientWidth = 783
       Enabled = False
       TabVisible = False
@@ -867,7 +866,7 @@ object Sett: TSett
         AnchorSideBottom.Control = TabBackUp
         AnchorSideBottom.Side = asrBottom
         Left = 0
-        Height = 506
+        Height = 463
         Top = 0
         Width = 783
         Anchors = [akTop, akLeft, akRight, akBottom]
@@ -878,7 +877,7 @@ object Sett: TSett
       AutoSize = True
       BorderWidth = 1
       Caption = 'Recover'
-      ClientHeight = 506
+      ClientHeight = 463
       ClientWidth = 783
       OnResize = TabRecoverResize
       object Panel2: TPanel
@@ -1116,7 +1115,7 @@ object Sett: TSett
     object TabSpell: TTabSheet
       AutoSize = True
       Caption = 'Spell'
-      ClientHeight = 506
+      ClientHeight = 463
       ClientWidth = 783
       OnResize = TabSpellResize
       object Label13: TLabel
@@ -1261,7 +1260,7 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 24
     Height = 18
-    Top = 556
+    Top = 513
     Width = 48
     Anchors = [akLeft, akBottom]
     BorderSpacing.Bottom = 7
@@ -1274,7 +1273,7 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 693
     Height = 40
-    Top = 543
+    Top = 500
     Width = 96
     Anchors = [akRight, akBottom]
     Caption = 'Close'
@@ -1287,7 +1286,7 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 577
     Height = 40
-    Top = 543
+    Top = 500
     Width = 116
     Anchors = [akTop, akRight, akBottom]
     Caption = 'Menu'
@@ -1377,7 +1376,7 @@ object Sett: TSett
     AnchorSideBottom.Side = asrBottom
     Left = 481
     Height = 40
-    Top = 543
+    Top = 500
     Width = 96
     Anchors = [akTop, akRight, akBottom]
     Caption = 'Help'
@@ -1459,6 +1458,13 @@ object Sett: TSett
     }
     Visible = False
     OnClick = SpeedButHelpClick
+  end
+  object Label3: TLabel
+    Left = 30
+    Height = 18
+    Top = 13
+    Width = 41
+    Caption = 'Label3'
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Options = [ofShareAware, ofEnableSizing, ofForceShowHidden]
