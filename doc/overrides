@@ -12,7 +12,10 @@ tomboy-ng binary: hardening-no-fortify-functions
 # opening a window in a particular place.
 # Therefore, we set an env in the Exec command. 
 # The actual command does follow the env setting.
-desktop-command-not-in-package
+# desktop-command-not-in-package
+# Above override removed because now inject env-var into
+# binary at startup. Leave this here for a while until
+# sure.
 
 # FPC has a known bug on ppc64el that prevents hardening.
 # https://gitlab.com/freepascal.org/fpc/source/-/issues/39451

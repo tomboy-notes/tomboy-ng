@@ -45,7 +45,7 @@ This, as of Nov 2022, now makes a Qt5 version.
     export DebVer="34g"
     mkdir "Build""$DebVer"; cd "Build""$DebVer"
     wget https://raw.githubusercontent.com/tomboy-notes/tomboy-ng/master/scripts/prepare.debian
-    bash ./prepare.debian -n -q
+    bash ./prepare.debian -n 
     cd tomboy-ng [tab]
     debuild -S
     cd .. 

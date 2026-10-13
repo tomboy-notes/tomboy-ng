@@ -52,7 +52,7 @@ VER="unknown"
 LAZ_BLD=""
 UFILES="NO"	# debug tool, update Makefile
 CLEAN="NO"	# debug tool, remove files from previous run, assume same ver.
-WIDGET="gtk2"	# default GTK2, else Qt5, Qt6, GTK3
+WIDGET="Qt5"	# default was GTK2, now Qt5. Can be Qt6, GTK3
 REPACK_REASON=""    # set with -r, few words about why repackaging necessary
 
 	# Looks for fpc and lazbuild on PATH, if in root space, do nothing,
@@ -152,7 +152,7 @@ function ShowHelp () {
 #    echo "-q   Make a Qt5 version instead of GTK2, ignored in repackage mode."
     echo "-p   Pause before creating Orig, make changes in another terminal."
     echo ""
-    echo "  Typically, new release     bash ./prepare.debian -n -q"
+    echo "  Typically, new release     bash ./prepare.debian -n"
     exit
 }          # End of function
 
