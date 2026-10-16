@@ -1,3 +1,15 @@
+tomboy-ng (0.42-2) unstable; urgency=medium
+
+  * Fix infinite loop in SearchNoteBook on a stale notebook entry - could
+    hang the sync window indefinitely (Web Sync).
+  * Drop the redundant explicit libgtk2.0-0 (>= 2.6) Depends - it hardcoded
+    a package name that doesn't exist on Ubuntu 24.04+/Debian trixie+
+    (renamed to libgtk2.0-0t64), making the package uninstallable there.
+    ${shlibs:Depends} already generates the correct, tighter dependency
+    automatically for whatever system the package is built on.
+
+ -- Joe WB3IHY <wb3ihy@gmail.com>  Mon, 27 Jul 2026 18:48:34 -0400
+
 tomboy-ng (0.42-1) unstable; urgency=medium
 
   *  Release of new version.
